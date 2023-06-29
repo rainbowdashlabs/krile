@@ -1,4 +1,4 @@
 package de.chojo.krile;
 
-public class Tag {
+public record Tag(TagMeta meta, FileMeta fileMeta, String text) {
 }

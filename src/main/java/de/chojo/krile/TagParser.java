@@ -8,18 +8,25 @@ import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.intellij.lang.annotations.RegExp;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TagParser {
-    private final ObjectMapper mapper = YAMLMapper.builder()
+    private static final ObjectMapper MAPPER = YAMLMapper.builder()
             .build();
     private final TagRepository tagRepository;
     private final Path filePath;
+    @RegExp
+    public static final String TAG = "^---$\n(?<meta>.+?)^---$\n(?<tag>.+)";
+    private static final Pattern TAG_PATTERN = Pattern.compile(TAG, Pattern.DOTALL);
 
     public TagParser(TagRepository tagRepository, Path filePath) {
         this.tagRepository = tagRepository;
@@ -30,7 +37,7 @@ public class TagParser {
         return new TagParser(tagRepository, path);
     }
 
-    private List<Author> getAuthors(Git git, Path path) throws GitAPIException {
+    public List<Author> getAuthors(Git git, Path path) throws GitAPIException {
         List<Author> authors = new ArrayList<>();
         BlameResult blameResult = new Git(git.getRepository()).blame().setFilePath(path.toString()).call();
 
@@ -42,8 +49,25 @@ public class TagParser {
         return authors;
     }
 
-    private FileMeta meta() throws IOException, GitAPIException {
-        return new FileMeta(getTimeCreate(), getTimeModified());
+    public FileMeta fileMeta() throws GitAPIException {
+        return new FileMeta(filePath.toFile().getName(), getTimeCreate(), getTimeModified());
+    }
+
+    public String tagContent() throws IOException {
+        String fileContent = getFileContent();
+        Matcher matcher = TAG_PATTERN.matcher(fileContent);
+        if (matcher.find()) return matcher.group("tag");
+        return fileContent;
+    }
+
+    public TagMeta tagMeta() throws IOException {
+        String tagText = Files.readString(filePath);
+        String id = filePath.toFile().getName().replace(".md", "");
+        if (tagText.startsWith("---")) {
+            return MAPPER.readValue(tagText, TagMeta.class)
+                    .inject(id, id);
+        }
+        return TagMeta.createDefault(id);
     }
 
     private Optional<FileEvent> getTimeCreate() throws GitAPIException {
@@ -53,7 +77,7 @@ public class TagParser {
             firstcommit = commit;
             break;
         }
-        if(firstcommit == null) return Optional.empty();
+        if (firstcommit == null) return Optional.empty();
         return Optional.of(new FileEvent(firstcommit.getCommitterIdent().getWhenAsInstant(), Author.of(firstcommit.getAuthorIdent())));
     }
 
@@ -64,7 +88,7 @@ public class TagParser {
         for (RevCommit commit : commits) {
             lastCommit = commit;
         }
-        if(lastCommit == null) return Optional.empty();
+        if (lastCommit == null) return Optional.empty();
         return Optional.of(new FileEvent(lastCommit.getCommitterIdent().getWhenAsInstant(), Author.of(lastCommit.getAuthorIdent())));
     }
 
@@ -72,7 +96,11 @@ public class TagParser {
         return tagRepository.git().getRepository();
     }
 
-    public Tag tag() {
-        return null;
+    public Tag tag() throws IOException, GitAPIException {
+        return new Tag(tagMeta(), fileMeta(), tagContent());
+    }
+
+    private String getFileContent() throws IOException {
+        return Files.readString(filePath);
     }
 }

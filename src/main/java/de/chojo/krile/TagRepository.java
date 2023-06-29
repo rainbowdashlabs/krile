@@ -2,7 +2,7 @@ package de.chojo.krile;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Repository;
+import org.slf4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class TagRepository implements Closeable {
+    private static final Logger log = getLogger(TagRepository.class);
     private final Path path;
     private final Git git;
 
@@ -41,8 +44,12 @@ public class TagRepository implements Closeable {
                     .toList();
             List<Tag> tags = new ArrayList<>();
             for (Path tagPath : list) {
-                TagParser parse = TagParser.parse(this, path);
-                tags.add(parse.tag());
+                TagParser parse = TagParser.parse(this, tagPath);
+                try {
+                    tags.add(parse.tag());
+                } catch (GitAPIException e) {
+                    log.error("Could not load tag", e);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

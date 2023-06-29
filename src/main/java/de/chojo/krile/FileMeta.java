@@ -1,4 +1,6 @@
 package de.chojo.krile;
 
-public record FileMeta(java.util.Optional<FileEvent> created, java.util.Optional<FileEvent> modified) {
+import java.util.Optional;
+
+public record FileMeta(String fileName, Optional<FileEvent> created, Optional<FileEvent> modified) {
 }
