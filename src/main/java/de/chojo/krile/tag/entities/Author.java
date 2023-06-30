@@ -1,4 +1,4 @@
-package de.chojo.krile;
+package de.chojo.krile.tag.entities;
 
 import org.eclipse.jgit.lib.PersonIdent;
 

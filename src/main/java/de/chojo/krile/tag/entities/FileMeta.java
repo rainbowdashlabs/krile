@@ -1,4 +1,4 @@
-package de.chojo.krile;
+package de.chojo.krile.tag.entities;
 
 import java.util.Optional;
 
