@@ -95,8 +95,28 @@ create table krile.tag_category
 create unique index tag_category_tag_id_category_id_uindex
     on krile.tag_category (tag_id, category_id);
 
+create table krile.author
+(
+    id   serial not null
+        constraint author_pk
+            primary key,
+    name text   not null,
+    mail text   not null
+);
 
+create unique index author_name_mail_uindex
+    on krile.author (name, mail);
 
+create table krile.tag_author
+(
+    tag_id    integer
+        constraint tag_author_tag_id_fk
+            references krile.tag (id),
+    author_id integer
+        constraint auth
+            references krile.author
+);
 
-
+create unique index tag_author_tag_id_author_id_uindex
+    on krile.tag_author (tag_id, author_id);
 

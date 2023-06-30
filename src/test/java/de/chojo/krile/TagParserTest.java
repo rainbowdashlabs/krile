@@ -1,10 +1,10 @@
 package de.chojo.krile;
 
-import de.chojo.krile.repo.TagRepository;
-import de.chojo.krile.tag.entities.Author;
-import de.chojo.krile.tag.entities.FileMeta;
-import de.chojo.krile.tag.entities.TagMeta;
-import de.chojo.krile.tag.parsing.TagParser;
+import de.chojo.krile.tagimport.repo.TagRepository;
+import de.chojo.krile.tagimport.tag.entities.Author;
+import de.chojo.krile.tagimport.tag.entities.FileMeta;
+import de.chojo.krile.tagimport.tag.entities.TagMeta;
+import de.chojo.krile.tagimport.tag.parsing.TagParser;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;

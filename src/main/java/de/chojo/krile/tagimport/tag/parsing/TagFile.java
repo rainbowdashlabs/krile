@@ -1,4 +1,4 @@
-package de.chojo.krile.tag.parsing;
+package de.chojo.krile.tagimport.tag.parsing;
 
 import java.util.Optional;
 

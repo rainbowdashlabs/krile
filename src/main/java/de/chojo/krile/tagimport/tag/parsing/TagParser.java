@@ -1,13 +1,13 @@
-package de.chojo.krile.tag.parsing;
+package de.chojo.krile.tagimport.tag.parsing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import de.chojo.krile.repo.TagRepository;
-import de.chojo.krile.tag.Tag;
-import de.chojo.krile.tag.entities.Author;
-import de.chojo.krile.tag.entities.FileEvent;
-import de.chojo.krile.tag.entities.FileMeta;
-import de.chojo.krile.tag.entities.TagMeta;
+import de.chojo.krile.tagimport.repo.TagRepository;
+import de.chojo.krile.tagimport.tag.RawTag;
+import de.chojo.krile.tagimport.tag.entities.Author;
+import de.chojo.krile.tagimport.tag.entities.FileEvent;
+import de.chojo.krile.tagimport.tag.entities.FileMeta;
+import de.chojo.krile.tagimport.tag.entities.TagMeta;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TagParser {
@@ -57,7 +56,7 @@ public class TagParser {
     }
 
     public FileMeta fileMeta() throws GitAPIException {
-        return new FileMeta(filePath.toFile().getName(), getTimeCreate(), getTimeModified());
+        return new FileMeta(filePath.toFile().getName(), getAuthors(), getTimeCreate(), getTimeModified());
     }
 
     public String tagContent() throws IOException {
@@ -109,8 +108,8 @@ public class TagParser {
         return tagRepository.git().getRepository();
     }
 
-    public Tag tag() throws IOException, GitAPIException {
-        return new Tag(tagMeta(), fileMeta(), tagContent());
+    public RawTag tag() throws IOException, GitAPIException {
+        return new RawTag(tagMeta(), fileMeta(), tagContent());
     }
 
     private String getFileContent() throws IOException {

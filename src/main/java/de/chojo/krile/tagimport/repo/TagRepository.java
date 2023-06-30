@@ -1,9 +1,9 @@
-package de.chojo.krile.repo;
+package de.chojo.krile.tagimport.repo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import de.chojo.krile.tag.Tag;
-import de.chojo.krile.tag.parsing.TagParser;
+import de.chojo.krile.tagimport.tag.RawTag;
+import de.chojo.krile.tagimport.tag.parsing.TagParser;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
@@ -71,13 +71,13 @@ public class TagRepository implements Closeable {
         return Optional.empty();
     }
 
-    public List<Tag> tags() throws IOException {
+    public List<RawTag> tags() throws IOException {
         try (var files = Files.list(tagPath())) {
             List<Path> list = files.filter(p -> p.toFile().isFile())
                     .filter(p -> p.toFile().getName().endsWith(".md"))
                     .filter(p -> configuration().included(p))
                     .toList();
-            List<Tag> tags = new ArrayList<>();
+            List<RawTag> tags = new ArrayList<>();
             for (Path tagPath : list) {
                 TagParser parse = TagParser.parse(this, tagPath);
                 try {

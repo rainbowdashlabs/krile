@@ -1,18 +1,15 @@
 package de.chojo.krile;
 
-import de.chojo.krile.repo.RepoConfig;
-import de.chojo.krile.repo.TagRepository;
-import de.chojo.krile.tag.Tag;
-import org.apache.logging.log4j.core.util.Assert;
+import de.chojo.krile.tagimport.repo.RepoConfig;
+import de.chojo.krile.tagimport.repo.TagRepository;
+import de.chojo.krile.tagimport.tag.RawTag;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,8 +32,8 @@ class TagRepositoryTest {
 
     @Test
     void tags() throws IOException {
-        List<Tag> tags = REPO.tags();
-        Assertions.assertEquals(1, tags.size());
+        List<RawTag> tags = REPO.tags();
+        Assertions.assertEquals(2, tags.size());
     }
 
     @AfterAll
