@@ -12,6 +12,8 @@ import static java.util.Objects.requireNonNullElse;
 public record RepoConfig(String directory,
                          List<String> include,
                          List<String> exclude
+                         //TODO: Idea: Parent repositories, to directly include them.
+                         // Also add a priority for this repo and parent repos to allow overwriting tags. (Probably too complex)
 ) {
     public static final RepoConfig DEFAULT = new RepoConfig("", Collections.emptyList(), Collections.emptyList());
 
