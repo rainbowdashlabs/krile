@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNullElse;
  */
 public record TagMeta(String id,
                       String tag,
-                       List<String> alias,
+                      List<String> alias,
                       List<String> category,
                       String image) {
     public static TagMeta createDefault(String id) {
