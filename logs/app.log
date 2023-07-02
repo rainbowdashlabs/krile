@@ -1,0 +1,24 @@
+[14:43:44][INF][  Configuration] Found variable for config file
+[14:43:44][INF][  Configuration] Found variable for config file
+[14:43:44][INF][  Configuration] Found variable for config file
+[14:43:44][INF][  Configuration] Found variable for config file
+[14:43:44][INF][           Data] Configuring QueryBuilder
+[14:43:44][INF][           Data] Creating connection pool.
+[14:43:44][INF][taSourceCreator] Creating Hikari config using jdbc url: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=******
+[14:43:44][INF][ikariDataSource] HikariPool-1 - Starting...
+[14:43:44][INF][     HikariPool] HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@674c583e
+[14:43:44][INF][ikariDataSource] HikariPool-1 - Start completed.
+[14:43:44][INF][stgreSqlUpdater] Schema krile does exist. Proceeding.
+[14:43:44][INF][     SqlUpdater] Database is up to date. No update is required! Version 1 Patch 0
+[14:43:44][INF][ticQueryAdapter] Static SADU query adapter started
+[14:43:44][INF][           Data] Creating DAOs
+[14:43:46][INF][   ShardManager] Login Successful!
+[14:43:46][INF][ InteractionHub] Updating slash commands.
+[14:43:47][INF][WebSocketClient] Connected to WebSocket
+[14:43:47][INF][            JDA] Finished Loading!
+[14:43:47][INF][ InteractionHub] Shard 0 is ready.
+[14:43:47][INF][ InteractionHub] Registering command repository.
+[14:43:47][WAR][ InteractionHub] Interactions hub is running in test mode. All interactions will be published on guilds and not globally
+[14:43:47][DEB][ InteractionHub] Published 1 commands on empty (519849671284490240).
+[14:43:47][DEB][ InteractionHub] Global slash commands were unregistered.
+[14:43:50][INF][awTagRepository] Creating repo for https://github.com/rainbowdashlabs/krile-tags.git

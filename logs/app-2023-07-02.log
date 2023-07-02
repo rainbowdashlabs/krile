@@ -1,0 +1,108 @@
+[14:41:14][INF][  Configuration] Found variable for config file
+[14:41:14][INF][  Configuration] Found variable for config file
+[14:41:14][INF][  Configuration] Found variable for config file
+[14:41:14][INF][  Configuration] Found variable for config file
+[14:41:14][INF][           Data] Configuring QueryBuilder
+[14:41:14][INF][           Data] Creating connection pool.
+[14:41:14][INF][taSourceCreator] Creating Hikari config using jdbc url: jdbc:postgresql://localhost:5432/postgres?user=postgres&password=******
+[14:41:14][INF][ikariDataSource] HikariPool-1 - Starting...
+[14:41:14][INF][     HikariPool] HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@674c583e
+[14:41:14][INF][ikariDataSource] HikariPool-1 - Start completed.
+[14:41:14][INF][stgreSqlUpdater] Schema krile does exist. Proceeding.
+[14:41:14][INF][     SqlUpdater] Database is up to date. No update is required! Version 1 Patch 0
+[14:41:14][INF][ticQueryAdapter] Static SADU query adapter started
+[14:41:14][INF][           Data] Creating DAOs
+[14:41:15][INF][   ShardManager] Login Successful!
+[14:41:16][INF][ InteractionHub] Updating slash commands.
+[14:41:16][INF][WebSocketClient] Connected to WebSocket
+[14:41:16][INF][            JDA] Finished Loading!
+[14:41:16][INF][ InteractionHub] Shard 0 is ready.
+[14:41:16][INF][ InteractionHub] Registering command repository.
+[14:41:16][WAR][ InteractionHub] Interactions hub is running in test mode. All interactions will be published on guilds and not globally
+[14:41:16][DEB][ InteractionHub] Published 1 commands on empty (519849671284490240).
+[14:41:16][DEB][ InteractionHub] Global slash commands were unregistered.
+[14:41:31][INF][awTagRepository] Creating repo for https://github.com/rainbowdashlabs/krile-tags.git
+[14:41:32][ERR][       DbLogger] An error occurred during a database request de.chojo.sadu.wrapper.exception.QueryExecutionException: ERROR: null value in column "image" of relation "tag_meta" violates not-null constraint
+  Detail: Failing row contains (8, null, 2023-06-30 13:16:33, 2023-06-30 13:16:33, 1, 1).
+	at de.chojo.sadu.wrapper.QueryBuilder.<init>(QueryBuilder.java:80)
+	at de.chojo.sadu.wrapper.QueryBuilder.builder(QueryBuilder.java:93)
+	at de.chojo.sadu.base.QueryFactory.builder(QueryFactory.java:95)
+	at de.chojo.krile.data.bind.StaticQueryAdapter.builder(StaticQueryAdapter.java:21)
+	at de.chojo.krile.data.dao.repository.tags.tag.TagMeta.update(TagMeta.java:54)
+	at de.chojo.krile.data.dao.repository.tags.Tag.update(Tag.java:68)
+	at de.chojo.krile.data.dao.repository.Tags.update(Tags.java:56)
+	at de.chojo.krile.data.dao.Repository.update(Repository.java:37)
+	at de.chojo.krile.commands.repositories.handler.add.Url.onSlashCommand(Url.java:48)
+	at de.chojo.jdautil.interactions.slash.SubCommand.onSlashCommand(SubCommand.java:55)
+	at de.chojo.jdautil.interactions.slash.Group.onSlashCommand(Group.java:57)
+	at de.chojo.jdautil.interactions.slash.Slash.onSlashCommand(Slash.java:76)
+	at de.chojo.jdautil.interactions.dispatching.InteractionHub.onSlashCommandInteraction(InteractionHub.java:117)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:442)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:88)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.lambda$handle$0(EventManagerProxy.java:68)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+Caused by: de.chojo.sadu.wrapper.exception.QueryExecutionException: ERROR: null value in column "image" of relation "tag_meta" violates not-null constraint
+  Detail: Failing row contains (8, null, 2023-06-30 13:16:33, 2023-06-30 13:16:33, 1, 1).
+	at de.chojo.sadu.wrapper.QueryBuilder$QueryTask.<init>(QueryBuilder.java:395)
+	at de.chojo.sadu.wrapper.QueryBuilder.queueTask(QueryBuilder.java:195)
+	at de.chojo.sadu.wrapper.QueryBuilder.update(QueryBuilder.java:177)
+	at de.chojo.sadu.wrapper.QueryBuilder.insert(QueryBuilder.java:183)
+	at de.chojo.krile.data.dao.repository.tags.tag.TagMeta.update(TagMeta.java:62)
+	... 15 more
+Caused by: org.postgresql.util.PSQLException: ERROR: null value in column "image" of relation "tag_meta" violates not-null constraint
+  Detail: Failing row contains (8, null, 2023-06-30 13:16:33, 2023-06-30 13:16:33, 1, 1).
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2713)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2401)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:368)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:498)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:415)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:190)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:152)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.executeUpdate(ProxyPreparedStatement.java:61)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.executeUpdate(HikariProxyPreparedStatement.java)
+	at de.chojo.sadu.wrapper.QueryBuilder$QueryTask.update(QueryBuilder.java:466)
+	at de.chojo.sadu.wrapper.QueryBuilder.executeSync(QueryBuilder.java:338)
+	at de.chojo.sadu.wrapper.QueryBuilder.sendSync(QueryBuilder.java:310)
+	at de.chojo.krile.data.dao.repository.tags.tag.TagMeta.update(TagMeta.java:63)
+	... 15 more
+
+[14:41:32][ERR][     RestAction] RestAction queue returned failure java.lang.IllegalStateException: This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!
+	at net.dv8tion.jda.internal.requests.restaction.interactions.InteractionCallbackImpl.tryAck(InteractionCallbackImpl.java:57)
+	at net.dv8tion.jda.internal.requests.restaction.interactions.InteractionCallbackImpl.queue(InteractionCallbackImpl.java:64)
+	at net.dv8tion.jda.api.requests.RestAction.queue(RestAction.java:572)
+	at net.dv8tion.jda.api.requests.RestAction.queue(RestAction.java:538)
+	at de.chojo.krile.commands.repositories.handler.add.Url.onSlashCommand(Url.java:49)
+	at de.chojo.jdautil.interactions.slash.SubCommand.onSlashCommand(SubCommand.java:55)
+	at de.chojo.jdautil.interactions.slash.Group.onSlashCommand(Group.java:57)
+	at de.chojo.jdautil.interactions.slash.Slash.onSlashCommand(Slash.java:76)
+	at de.chojo.jdautil.interactions.dispatching.InteractionHub.onSlashCommandInteraction(InteractionHub.java:117)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:442)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:88)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.lambda$handle$0(EventManagerProxy.java:68)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+
+[14:42:19][INF][awTagRepository] Creating repo for https://github.com/rainbowdashlabs/krile-tags.git
+[14:42:21][ERR][     RestAction] RestAction queue returned failure java.lang.IllegalStateException: This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction once!
+	at net.dv8tion.jda.internal.requests.restaction.interactions.InteractionCallbackImpl.tryAck(InteractionCallbackImpl.java:57)
+	at net.dv8tion.jda.internal.requests.restaction.interactions.InteractionCallbackImpl.queue(InteractionCallbackImpl.java:64)
+	at net.dv8tion.jda.api.requests.RestAction.queue(RestAction.java:572)
+	at net.dv8tion.jda.api.requests.RestAction.queue(RestAction.java:538)
+	at de.chojo.krile.commands.repositories.handler.add.Url.onSlashCommand(Url.java:49)
+	at de.chojo.jdautil.interactions.slash.SubCommand.onSlashCommand(SubCommand.java:55)
+	at de.chojo.jdautil.interactions.slash.Group.onSlashCommand(Group.java:57)
+	at de.chojo.jdautil.interactions.slash.Slash.onSlashCommand(Slash.java:76)
+	at de.chojo.jdautil.interactions.dispatching.InteractionHub.onSlashCommandInteraction(InteractionHub.java:117)
+	at net.dv8tion.jda.api.hooks.ListenerAdapter.onEvent(ListenerAdapter.java:442)
+	at net.dv8tion.jda.api.hooks.InterfacedEventManager.handle(InterfacedEventManager.java:96)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.handleInternally(EventManagerProxy.java:88)
+	at net.dv8tion.jda.internal.hooks.EventManagerProxy.lambda$handle$0(EventManagerProxy.java:68)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+

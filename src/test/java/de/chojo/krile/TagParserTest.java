@@ -1,9 +1,9 @@
 package de.chojo.krile;
 
+import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.tagimport.repo.RawTagRepository;
-import de.chojo.krile.tagimport.repo.RepositoryLocation;
-import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import de.chojo.krile.tagimport.tag.entities.FileMeta;
+import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import de.chojo.krile.tagimport.tag.entities.RawTagMeta;
 import de.chojo.krile.tagimport.tag.parsing.TagParser;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -27,7 +27,7 @@ class TagParserTest {
 
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException {
-        repo = RawTagRepository.create(RepositoryLocation.GITHUB, "rainbowdashlabs", "krile-tags");
+        repo = RawTagRepository.create(new RepositoryLocation("GitHub", "https://github.com/%s.git", "https://github.com"), "rainbowdashlabs", "krile-tags");
         parser = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
     }
 
@@ -45,7 +45,7 @@ class TagParserTest {
     @Test
     void fileMeta() throws GitAPIException {
         FileMeta meta = parser.fileMeta();
-        Assertions.assertNotEquals(meta.created().get().when(), meta.modified().get().when());
+        Assertions.assertNotEquals(meta.created().when(), meta.modified().when());
     }
 
     @Test

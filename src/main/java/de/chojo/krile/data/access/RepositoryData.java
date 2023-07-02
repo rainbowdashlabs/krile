@@ -10,17 +10,17 @@ import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
-public class Repositories {
+public class RepositoryData {
     private final Categories categories;
     private final Authors authors;
 
-    public Repositories(Categories categories, Authors authors) {
+    public RepositoryData(Categories categories, Authors authors) {
         this.categories = categories;
         this.authors = authors;
     }
 
-    public Optional<Repository> getOrCreate(RawTagRepository repository) {
-        return byIdentifier(repository.identifier()).or(() -> create(repository));
+    public Optional<Repository> getOrCreate(RawTagRepository repositoryLocation) {
+        return byIdentifier(repositoryLocation.identifier()).or(() -> create(repositoryLocation));
     }
 
     public Optional<Repository> byIdentifier(String identifier) {
@@ -45,7 +45,18 @@ public class Repositories {
                 .firstSync();
     }
 
-    public Optional<Repository> create(RawTagRepository repository) {
+    public Optional<Repository> byUrl(String url) {
+        @Language("postgresql")
+        var query = """
+                SELECT id, url, identifier FROM repository WHERE url = ?""";
+        return builder(Repository.class)
+                .query(query)
+                .parameter(stmt -> stmt.setString(url))
+                .readRow(this::buildRepository)
+                .firstSync();
+    }
+
+    public Optional<Repository> create(RawTagRepository repositoryLocation) {
         @Language("postgresql")
         var query = """
                 INSERT INTO repository(url, identifier) VALUES(?, ?)
@@ -55,7 +66,7 @@ public class Repositories {
                 """;
         return builder(Repository.class)
                 .query(query)
-                .parameter(stmt -> stmt.setString(repository.url()).setString(repository.identifier()))
+                .parameter(stmt -> stmt.setString(repositoryLocation.url()).setString(repositoryLocation.identifier()))
                 .readRow(this::buildRepository)
                 .firstSync();
     }

@@ -2,6 +2,7 @@ package de.chojo.krile.core;
 
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.interactions.dispatching.InteractionHub;
+import de.chojo.krile.commands.repositories.Repositories;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.logutil.marker.LogNotify;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -62,7 +63,7 @@ public class Bot {
                 .withDefaultMenuService()
                 .withPagination(builder -> builder.previousText("Previous").nextText("Next"))
                 .withDefaultModalService()
-                //.withCommands()
+                .withCommands(new Repositories(data.repositories(), configuration))
                 .build();
     }
 

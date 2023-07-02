@@ -31,7 +31,7 @@ public final class Tag {
     }
 
     public static Tag build(Row row, Repository repository, Categories categories, Authors authors) throws SQLException {
-        return new Tag(row.getInt("id"), row.getString("tag_id"), row.getString("tag"), row.getString("text"), repository, categories, authors);
+        return new Tag(row.getInt("id"), row.getString("tag_id"), row.getString("tag"), row.getString("content"), repository, categories, authors);
     }
 
     public boolean delete() {

@@ -82,26 +82,26 @@ public class TagParser {
         return new TagFile(Optional.empty(), fileContent);
     }
 
-    private Optional<FileEvent> getTimeCreate() throws GitAPIException {
+    private FileEvent getTimeCreate() throws GitAPIException {
         Iterable<RevCommit> commits = new Git(repository()).log().addPath(relativePath().toString()).call();
         RevCommit firstcommit = null;
         for (RevCommit commit : commits) {
             firstcommit = commit;
             break;
         }
-        if (firstcommit == null) return Optional.empty();
-        return Optional.of(new FileEvent(firstcommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(firstcommit.getAuthorIdent())));
+        if (firstcommit == null) throw new RuntimeException("Could not parse time created");
+        return new FileEvent(firstcommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(firstcommit.getAuthorIdent()));
     }
 
-    private Optional<FileEvent> getTimeModified() throws GitAPIException {
+    private FileEvent getTimeModified() throws GitAPIException {
         Iterable<RevCommit> commits = new Git(repository()).log().addPath(relativePath().toString()).call();
 
         RevCommit lastCommit = null;
         for (RevCommit commit : commits) {
             lastCommit = commit;
         }
-        if (lastCommit == null) return Optional.empty();
-        return Optional.of(new FileEvent(lastCommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(lastCommit.getAuthorIdent())));
+        if (lastCommit == null) throw new RuntimeException("Could not parse time modified");
+        return new FileEvent(lastCommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(lastCommit.getAuthorIdent()));
     }
 
     private Repository repository() {

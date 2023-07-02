@@ -2,11 +2,11 @@ package de.chojo.krile.tagimport.repo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.krile.tagimport.tag.parsing.TagParser;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.ObjectId;
 import org.slf4j.Logger;
 
 import java.io.Closeable;
@@ -39,7 +39,6 @@ public record RawTagRepository(String url, String identifier, Path path, Git git
 
     public RepoConfig configuration() {
         // TODO: Lazy loading and cache
-        System.out.println("Reading config");
         Optional<Path> path = findConfigPath();
         if (path.isPresent()) {
             try {

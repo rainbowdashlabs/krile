@@ -6,7 +6,7 @@ import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.Authors;
 import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.access.Guilds;
-import de.chojo.krile.data.access.Repositories;
+import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.bind.StaticQueryAdapter;
 import de.chojo.logutil.marker.LogNotify;
 import de.chojo.sadu.databases.PostgreSql;
@@ -29,7 +29,7 @@ public class Data {
     private Guilds guilds;
     private Authors authors;
     private Categories categories;
-    private Repositories repositories;
+    private RepositoryData repositoryData;
 
     private Data(Threading threading, Configuration<ConfigFile> configuration) {
         this.threading = threading;
@@ -70,8 +70,8 @@ public class Data {
     private void updateDatabase() throws IOException, SQLException {
         var schema = configuration.config().database().schema();
         SqlUpdater.builder(dataSource, PostgreSql.get())
-                .setReplacements(new QueryReplacement("lyna", schema))
-                .setVersionTable(schema + ".lyna_version")
+                .setReplacements(new QueryReplacement("krile", schema))
+                .setVersionTable(schema + ".krile_version")
                 .setSchemas(schema)
                 .execute();
     }
@@ -90,7 +90,7 @@ public class Data {
         guilds = new Guilds();
         authors = new Authors();
         categories = new Categories();
-        repositories = new Repositories(categories, authors);
+        repositoryData = new RepositoryData(categories, authors);
     }
 
     private HikariDataSource getConnectionPool() {
@@ -130,7 +130,7 @@ public class Data {
         return categories;
     }
 
-    public Repositories repositories() {
-        return repositories;
+    public RepositoryData repositories() {
+        return repositoryData;
     }
 }

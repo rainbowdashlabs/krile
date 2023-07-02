@@ -1,4 +1,4 @@
-create table krile.repository
+create table krile.repositoryLocation
 (
     id         serial
         constraint repository_pk
@@ -8,7 +8,7 @@ create table krile.repository
 );
 
 create unique index repository_identifier_uindex
-    on krile.repository (identifier);
+    on krile.repositoryLocation (identifier);
 
 
 create table krile.guild_repository
@@ -16,7 +16,7 @@ create table krile.guild_repository
     guild_id      bigint  not null,
     repository_id integer not null
         constraint guild_repository_repository_id_fk
-            references krile.repository
+            references krile.repositoryLocation
             on delete cascade
 );
 
@@ -30,7 +30,7 @@ create table krile.tag
 (
     repository_id integer not null
         constraint tag_repository_id_fk
-            references krile.repository
+            references krile.repositoryLocation
             on delete cascade,
     id            serial,
     tag_id        text    not null,
@@ -84,7 +84,8 @@ create table krile.tag_category
 (
     tag_id      integer not null
         constraint tag_category_tag_id_fk
-            references krile.tag (id),
+            references krile.tag (id)
+            ON DELETE CASCADE,
     category_id integer not null
         constraint tag_category_category_id_fk
             references krile.category (id)
@@ -110,10 +111,12 @@ create table krile.tag_author
 (
     tag_id    integer
         constraint tag_author_tag_id_fk
-            references krile.tag (id),
+            references krile.tag (id)
+            ON DELETE CASCADE,
     author_id integer
         constraint auth
             references krile.author
+            ON DELETE CASCADE
 );
 
 create unique index tag_author_tag_id_author_id_uindex
@@ -125,8 +128,9 @@ create table krile.repository_meta
         constraint repository_meta_pk
             primary key
         constraint repository_meta_repository_id_fk
-            references krile.repository,
-    name          text               not null,
+            references krile.repositoryLocation
+            ON DELETE CASCADE,
+    name          text,
     description   text,
     public_repo   bool default false not null,
     language      text,
@@ -137,24 +141,27 @@ create table krile.repository_category
 (
     repository_id integer not null
         constraint repository_category_repository_id_fk
-            references krile.repository,
+            references krile.repositoryLocation
+            ON DELETE CASCADE,
     category_id   integer not null
         constraint repository_category_category_id_fk
-            references krile.category (id),
+            references krile.category (id)
+            ON DELETE CASCADE,
     constraint repository_category_pk
         primary key (repository_id, category_id)
 );
 
 create table krile.repository_data
 (
-    repository_id integer not null
+    repository_id integer   not null
         constraint repository_data_pk
             primary key
         constraint repository_data_repository_id_fk
-            references krile.repository,
-    updated       integer not null,
-    checked       integer not null,
-    commit        integer not null
+            references krile.repositoryLocation
+            ON DELETE CASCADE,
+    updated       timestamp not null,
+    checked       timestamp not null,
+    commit        text      not null
 );
 
 create table krile.tag_meta
@@ -163,8 +170,9 @@ create table krile.tag_meta
         constraint tag_meta_pk
             primary key
         constraint tag_meta_tag_id_fk
-            references krile.tag (id),
-    image       text                    not null,
+            references krile.tag (id)
+            ON DELETE CASCADE,
+    image       text,
     created     timestamp default now() not null,
     created_by  integer                 not null,
     modified    timestamp default now() not null,

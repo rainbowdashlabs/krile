@@ -53,7 +53,8 @@ public class TagMeta {
 
         builder()
                  .query(insert)
-                 .parameter(stmt -> stmt.setString(raw.meta().image())
+                 .parameter(stmt -> stmt.setInt(tag.id())
+                         .setString(raw.meta().image())
                          .setOffsetDateTime(created)
                          .setInt(createdBy.id())
                          .setOffsetDateTime(modified)

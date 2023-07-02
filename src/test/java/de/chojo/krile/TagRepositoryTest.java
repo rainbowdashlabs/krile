@@ -1,8 +1,8 @@
 package de.chojo.krile;
 
-import de.chojo.krile.tagimport.repo.RepoConfig;
+import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.tagimport.repo.RawTagRepository;
-import de.chojo.krile.tagimport.repo.RepositoryLocation;
+import de.chojo.krile.tagimport.repo.RepoConfig;
 import de.chojo.krile.tagimport.tag.RawTag;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
@@ -18,9 +18,10 @@ class TagRepositoryTest {
     private static final String REPO_URL = "https://github.com/rainbowdashlabs/krile-tags.git";
 
     private static RawTagRepository repo;
+
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException {
-        repo = RawTagRepository.create(RepositoryLocation.GITHUB, "rainbowdashlabs", "krile-tags");
+        repo = RawTagRepository.create(new RepositoryLocation("GitHub", "https://github.com/%s.git", "https://github.com"), "rainbowdashlabs", "krile-tags");
     }
 
     @Test
