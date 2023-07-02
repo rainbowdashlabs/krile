@@ -1,7 +1,8 @@
 package de.chojo.krile;
 
 import de.chojo.krile.tagimport.repo.RepoConfig;
-import de.chojo.krile.tagimport.repo.TagRepository;
+import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RepositoryLocation;
 import de.chojo.krile.tagimport.tag.RawTag;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
@@ -16,15 +17,15 @@ import java.util.List;
 class TagRepositoryTest {
     private static final String REPO_URL = "https://github.com/rainbowdashlabs/krile-tags.git";
 
-    private static TagRepository REPO;
+    private static RawTagRepository repo;
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException {
-        REPO = TagRepository.create(REPO_URL);
+        repo = RawTagRepository.create(RepositoryLocation.GITHUB, "rainbowdashlabs", "krile-tags");
     }
 
     @Test
     void configuration() throws IOException {
-        RepoConfig configuration = REPO.configuration();
+        RepoConfig configuration = repo.configuration();
         Assertions.assertEquals("tags", configuration.directory());
         Assertions.assertEquals(List.of("ignored_tag"), configuration.exclude());
         Assertions.assertEquals(Collections.emptyList(), configuration.include());
@@ -32,12 +33,12 @@ class TagRepositoryTest {
 
     @Test
     void tags() throws IOException {
-        List<RawTag> tags = REPO.tags();
+        List<RawTag> tags = repo.tags();
         Assertions.assertEquals(2, tags.size());
     }
 
     @AfterAll
     static void afterAll() throws IOException {
-        REPO.close();
+        repo.close();
     }
 }

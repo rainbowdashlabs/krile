@@ -1,13 +1,15 @@
 create table krile.repository
 (
-    id  serial not null
+    id         serial
         constraint repository_pk
             primary key,
-    url text   not null
+    url        text not null,
+    identifier text not null
 );
 
-create unique index repository_url_uindex
-    on krile.repository (url);
+create unique index repository_identifier_uindex
+    on krile.repository (identifier);
+
 
 create table krile.guild_repository
 (
@@ -17,6 +19,9 @@ create table krile.guild_repository
             references krile.repository
             on delete cascade
 );
+
+alter table krile.guild_repository
+    add prio integer default 1 not null;
 
 create unique index guild_repository_guild_id_repository_id_uindex
     on krile.guild_repository (guild_id, repository_id);
@@ -29,7 +34,8 @@ create table krile.tag
             on delete cascade,
     id            serial,
     tag_id        text    not null,
-    tag           text    not null
+    tag           text    not null,
+    content       text    not null
 );
 
 create unique index tag_id_uindex
@@ -55,19 +61,12 @@ create unique Index tag_alias_tag_id_alias_uindex
     on krile.tag_alias (tag_id, alias);
 
 CREATE VIEW krile.repo_tags AS
-with tags as (SELECT tag.repository_id, tag.id, tag
-              FROM krile.tag
-                       LEFT JOIN krile.repository r on r.id = tag.repository_id),
-     aliase as (SELECT t.repository_id, a.tag_id, alias
-                FROM krile.tag_alias a
-                         LEFT JOIN krile.tag t ON t.id = a.tag_id
-                         LEFT JOIN krile.repository r on t.repository_id = r.id
-                WHERE alias NOT IN (SELECT tag from tags where tags.repository_id = t.repository_id))
-SELECT repository_id, id, tag
-FROM tags
+SELECT tag.id, tag, 1 as prio
+FROM krile.tag
 UNION
-SELECT repository_id, tag_id, alias as tag
-FROM aliase;
+SELECT a.tag_id, alias, 2 as prio
+FROM krile.tag_alias a
+ORDER BY prio;
 
 create table krile.category
 (
@@ -119,4 +118,56 @@ create table krile.tag_author
 
 create unique index tag_author_tag_id_author_id_uindex
     on krile.tag_author (tag_id, author_id);
+
+create table krile.repository_meta
+(
+    repository_id integer            not null
+        constraint repository_meta_pk
+            primary key
+        constraint repository_meta_repository_id_fk
+            references krile.repository,
+    name          text               not null,
+    description   text,
+    public_repo   bool default false not null,
+    language      text,
+    public        boolean GENERATED ALWAYS AS ( public_repo and description != '' and language != '' ) STORED
+);
+
+create table krile.repository_category
+(
+    repository_id integer not null
+        constraint repository_category_repository_id_fk
+            references krile.repository,
+    category_id   integer not null
+        constraint repository_category_category_id_fk
+            references krile.category (id),
+    constraint repository_category_pk
+        primary key (repository_id, category_id)
+);
+
+create table krile.repository_data
+(
+    repository_id integer not null
+        constraint repository_data_pk
+            primary key
+        constraint repository_data_repository_id_fk
+            references krile.repository,
+    updated       integer not null,
+    checked       integer not null,
+    commit        integer not null
+);
+
+create table krile.tag_meta
+(
+    tag_id      integer                 not null
+        constraint tag_meta_pk
+            primary key
+        constraint tag_meta_tag_id_fk
+            references krile.tag (id),
+    image       text                    not null,
+    created     timestamp default now() not null,
+    created_by  integer                 not null,
+    modified    timestamp default now() not null,
+    modified_by integer                 not null
+);
 

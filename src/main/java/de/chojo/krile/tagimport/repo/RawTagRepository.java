@@ -6,6 +6,7 @@ import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.krile.tagimport.tag.parsing.TagParser;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.slf4j.Logger;
 
 import java.io.Closeable;
@@ -20,33 +21,25 @@ import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class TagRepository implements Closeable {
+public record RawTagRepository(String url, String identifier, Path path, Git git) implements Closeable {
     private static final ObjectMapper MAPPER = YAMLMapper.builder()
             .build();
-    private static final Logger log = getLogger(TagRepository.class);
-    private final Path path;
-    private final Git git;
+    private static final Logger log = getLogger(RawTagRepository.class);
 
-    public TagRepository(Path path, Git git) {
-        this.path = path;
-        this.git = git;
-    }
-
-    public static TagRepository create(String url) throws IOException, GitAPIException {
+    public static RawTagRepository create(RepositoryLocation loc, String user, String repo) throws IOException, GitAPIException {
+        String url = loc.url(user, repo);
+        log.info("Creating repo for {}", url);
         Path git = Files.createTempDirectory("git");
         Git.cloneRepository()
                 .setURI(url)
                 .setDirectory(git.toFile())
                 .call();
-        return create(git);
-    }
-
-    public static TagRepository create(Path git) throws IOException {
-        return new TagRepository(git, Git.open(git.toFile()));
+        return new RawTagRepository(url, "%s:%s/%s".formatted(loc.name().toLowerCase(), user, repo), git, Git.open(git.toFile()));
     }
 
     public RepoConfig configuration() {
         // TODO: Lazy loading and cache
+        System.out.println("Reading config");
         Optional<Path> path = findConfigPath();
         if (path.isPresent()) {
             try {
@@ -93,19 +86,12 @@ public class TagRepository implements Closeable {
     @Override
     public void close() throws IOException {
         git.close();
+        System.out.println("closing repo");
         try (var stream = Files.walk(path)) {
             stream.sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
         }
-    }
-
-    public Git git() {
-        return git;
-    }
-
-    public Path path() {
-        return path;
     }
 
     public Path tagPath() {
@@ -114,5 +100,9 @@ public class TagRepository implements Closeable {
 
     public Path relativize(Path path) {
         return this.path.relativize(path);
+    }
+
+    public String currentCommit() throws IOException {
+        return git().getRepository().resolve("HEAD").getName();
     }
 }

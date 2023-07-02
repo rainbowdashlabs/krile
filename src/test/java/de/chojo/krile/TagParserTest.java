@@ -1,9 +1,10 @@
 package de.chojo.krile;
 
-import de.chojo.krile.tagimport.repo.TagRepository;
-import de.chojo.krile.tagimport.tag.entities.Author;
+import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RepositoryLocation;
+import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import de.chojo.krile.tagimport.tag.entities.FileMeta;
-import de.chojo.krile.tagimport.tag.entities.TagMeta;
+import de.chojo.krile.tagimport.tag.entities.RawTagMeta;
 import de.chojo.krile.tagimport.tag.parsing.TagParser;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
@@ -21,12 +22,12 @@ class TagParserTest {
 
     private static final String REPO_URL = "https://github.com/rainbowdashlabs/krile-tags.git";
 
-    private static TagRepository repo;
+    private static RawTagRepository repo;
     private static TagParser parser;
 
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException {
-        repo = TagRepository.create(REPO_URL);
+        repo = RawTagRepository.create(RepositoryLocation.GITHUB, "rainbowdashlabs", "krile-tags");
         parser = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
     }
 
@@ -37,8 +38,8 @@ class TagParserTest {
 
     @Test
     void getAuthors() throws GitAPIException {
-        Collection<Author> authors = parser.getAuthors();
-        Assertions.assertEquals(1, authors.size());
+        Collection<RawAuthor> rawAuthors = parser.getAuthors();
+        Assertions.assertEquals(1, rawAuthors.size());
     }
 
     @Test
@@ -57,7 +58,7 @@ class TagParserTest {
 
     @Test
     void tagMeta() throws IOException {
-        TagMeta meta = parser.tagMeta();
+        RawTagMeta meta = parser.tagMeta();
         Assertions.assertEquals("test tag", meta.id());
         Assertions.assertEquals("test", meta.tag());
         Assertions.assertEquals(List.of("test1", "test2"), meta.alias());

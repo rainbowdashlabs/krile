@@ -2,12 +2,12 @@ package de.chojo.krile.tagimport.tag.parsing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import de.chojo.krile.tagimport.repo.TagRepository;
+import de.chojo.krile.tagimport.repo.RawTagRepository;
 import de.chojo.krile.tagimport.tag.RawTag;
-import de.chojo.krile.tagimport.tag.entities.Author;
+import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import de.chojo.krile.tagimport.tag.entities.FileEvent;
 import de.chojo.krile.tagimport.tag.entities.FileMeta;
-import de.chojo.krile.tagimport.tag.entities.TagMeta;
+import de.chojo.krile.tagimport.tag.entities.RawTagMeta;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
@@ -28,31 +28,31 @@ import java.util.regex.Pattern;
 public class TagParser {
     private static final ObjectMapper MAPPER = YAMLMapper.builder()
             .build();
-    private final TagRepository tagRepository;
+    private final RawTagRepository tagRepository;
     private final Path filePath;
     @RegExp
     public static final String TAG = "^---$\\n(?<meta>.+?)^---$\\n(?<tag>.+)";
     private static final Pattern TAG_PATTERN = Pattern.compile(TAG, Pattern.DOTALL);
 
-    public TagParser(TagRepository tagRepository, Path filePath) {
+    public TagParser(RawTagRepository tagRepository, Path filePath) {
         this.tagRepository = tagRepository;
         this.filePath = filePath;
     }
 
-    public static TagParser parse(TagRepository tagRepository, Path path) {
+    public static TagParser parse(RawTagRepository tagRepository, Path path) {
         return new TagParser(tagRepository, path);
     }
 
-    public Collection<Author> getAuthors() throws GitAPIException {
-        Set<Author> authors = new HashSet<>();
+    public Collection<RawAuthor> getAuthors() throws GitAPIException {
+        Set<RawAuthor> rawAuthors = new HashSet<>();
         BlameResult blameResult = new Git(repository()).blame().setFilePath(relativePath().toString()).call();
 
         for (int i = 0; i < blameResult.getResultContents().size(); i++) {
             RevCommit commit = blameResult.getSourceCommit(i);
             PersonIdent author = commit.getAuthorIdent();
-            authors.add(new Author(author.getName(), author.getEmailAddress()));
+            rawAuthors.add(new RawAuthor(author.getName(), author.getEmailAddress()));
         }
-        return authors;
+        return rawAuthors;
     }
 
     public FileMeta fileMeta() throws GitAPIException {
@@ -63,14 +63,14 @@ public class TagParser {
         return tagFile().content();
     }
 
-    public TagMeta tagMeta() throws IOException {
+    public RawTagMeta tagMeta() throws IOException {
         TagFile file = tagFile();
         String id = filePath.toFile().getName().replace(".md", "");
         if (file.meta().isPresent()) {
-            return MAPPER.readValue(file.meta().get(), TagMeta.class)
+            return MAPPER.readValue(file.meta().get(), RawTagMeta.class)
                     .inject(id, id);
         }
-        return TagMeta.createDefault(id);
+        return RawTagMeta.createDefault(id);
     }
 
     private TagFile tagFile() throws IOException {
@@ -90,7 +90,7 @@ public class TagParser {
             break;
         }
         if (firstcommit == null) return Optional.empty();
-        return Optional.of(new FileEvent(firstcommit.getCommitterIdent().getWhenAsInstant(), Author.of(firstcommit.getAuthorIdent())));
+        return Optional.of(new FileEvent(firstcommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(firstcommit.getAuthorIdent())));
     }
 
     private Optional<FileEvent> getTimeModified() throws GitAPIException {
@@ -101,7 +101,7 @@ public class TagParser {
             lastCommit = commit;
         }
         if (lastCommit == null) return Optional.empty();
-        return Optional.of(new FileEvent(lastCommit.getCommitterIdent().getWhenAsInstant(), Author.of(lastCommit.getAuthorIdent())));
+        return Optional.of(new FileEvent(lastCommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(lastCommit.getAuthorIdent())));
     }
 
     private Repository repository() {
