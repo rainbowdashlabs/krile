@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$ref": "#/definitions/Welcome1",
+    "definitions": {
+        "Welcome1": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "id": {
+                    "type": "string",
+                  "description": "Change the tag id.\nBy default the tag id will be the file name without .md\nSetting the id here is helpful if you rename the file, but want to stick with the id.\nThe id is used for e.g. counting statistics."
+                },
+                "tag": {
+                    "type": "string",
+                    "description": "The actual tag name\nBy default this will be the id"
+                },
+                "alias": {
+                    "type": "array",
+                    "description": "A list of aliases this tag will be displayed.\nAliases have a lower priority than the actual tag name.\nWhen a conflict arises the tag using the name directly takes precedence.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "category": {
+                    "type": "array",
+                    "description": "The categories of the tag. This populates the search for tags and is also used in the discovery feature.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "image": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "An image which should be displayed for the tag",
+                    "qt-uri-protocols": [
+                        "https"
+                    ],
+                    "qt-uri-extensions": [
+                        ".png",
+                        ".jpg",
+                        ".jpeg",
+                        ".gif",
+                        ".mp4",
+                        ".webp"
+                    ]
+                }
+            },
+            "required": [
+            ],
+            "title": "Welcome1"
+        }
+    }
+}

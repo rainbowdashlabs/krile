@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/Welcome7",
+  "definitions": {
+    "Welcome7": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The pretty name of the repository. Otherwise, the identifier is used."
+        },
+        "description": {
+          "type": "string",
+          "description": "The repository description to describe what the tags contain"
+        },
+        "category": {
+          "type": "array",
+          "description": "A list of categories, which describe this repository",
+          "items": {
+            "type": "string"
+          }
+        },
+        "public": {
+          "type": "boolean",
+          "description": "Mark this repository as public.\nThis will make it appear in the search.\nPeople can still import your repository via the identifier or url.\nTo appear in the search you also need to define a name, description and set a language"
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[a-zA-Z]{2}(?:-[a-zA-Z]{2})?$",
+          "description": "Set the language of the repo. A valid language code as per ISO 639-1 or ISO 639-2 standards."
+        },
+        "directory": {
+          "type": "string",
+          "description": "Change the directory where the tags are located\nDefault is root\nThis allows you to include your tags in your project instead of an extra repository.\nOur tags are contained in a directory called \"tags\""
+        },
+        "include": {
+          "type": "array",
+          "description": "This is a list of included tags from the defined directory.\nYou may only set include or exclude",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exclude": {
+          "type": "array",
+          "description": "This is a list of excluded tags from the defined directory.\nYou may only set include or exclude",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [],
+      "title": "Welcome7",
+      "dependencies": {
+        "public": {
+          "properties": {
+            "public": {
+              "const": true
+            },
+            "language": {
+              "type": "string",
+              "pattern": "^[a-zA-Z]{2}(?:-[a-zA-Z]{2})?$"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "category": {
+              "type": "array",
+              "minItems": 1
+            }
+          },
+          "required": [
+            "language",
+            "name",
+            "description",
+            "category"
+          ]
+        }
+      }
+    }
+  }
+}
