@@ -11,6 +11,12 @@ repositories {
     maven("https://eldonexus.de/repository/maven-proxies")
 }
 
+java{
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(20))
+    }
+}
+
 dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r")
     implementation("de.chojo", "cjda-util", "2.8.6+beta.11") {
@@ -34,6 +40,7 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.test {
