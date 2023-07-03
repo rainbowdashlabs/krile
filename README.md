@@ -5,7 +5,7 @@
 Krile is a discord bot to manage public provided tags.
 Those tags are provided by git repositories.
 
-Servers can import the reposities they need and make the tags inside them available to their community.
+Servers can import the repositories they need and make the tags inside them available to their community.
 
 ## Importing a repository
 
@@ -44,6 +44,7 @@ public: true
 language: en
 # Change the directory where the tags are located
 # Default is root
+# This allows you to include your tags in your project instead of an extra repository.
 # Our tags are contained in a directory called "tags"
 directory: tags
 # This is a list of included tags from the defined directory.
@@ -79,7 +80,7 @@ tag: my cool tag
 alias: ["my tag", "another tag"]
 # The categories of the tag. This populates the search for tags and is also used in the discovery feature.
 category: ["java", "tutorial", "tags"]
-# A image which should be displayed for the tag
+# An image which should be displayed for the tag
 image: https://krile.dev/my_image.png
 ---
 
