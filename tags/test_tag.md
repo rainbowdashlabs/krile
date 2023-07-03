@@ -19,3 +19,5 @@ is supported and [links](https://github.com/rainbowdashlabs/krile-tags) too.
 All kind of stuff can be here.
 
 This is pretty cool, right?
+
+Try it out yourself!
