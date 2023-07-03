@@ -1,6 +1,8 @@
 package de.chojo.krile.tagimport.tag.parsing;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import de.chojo.krile.tagimport.repo.RawTagRepository;
 import de.chojo.krile.tagimport.tag.RawTag;
@@ -27,6 +29,8 @@ import java.util.regex.Pattern;
 
 public class TagParser {
     private static final ObjectMapper MAPPER = YAMLMapper.builder()
+                        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .build();
     private final RawTagRepository tagRepository;
     private final Path filePath;
@@ -49,6 +53,7 @@ public class TagParser {
 
         for (int i = 0; i < blameResult.getResultContents().size(); i++) {
             RevCommit commit = blameResult.getSourceCommit(i);
+            if(commit == null) continue;
             PersonIdent author = commit.getAuthorIdent();
             rawAuthors.add(new RawAuthor(author.getName(), author.getEmailAddress()));
         }

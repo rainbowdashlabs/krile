@@ -10,6 +10,6 @@ import java.nio.file.Path;
 
 public class TestRepository {
     public static RawTagRepository standard () throws GitAPIException, IOException {
-        return RawTagRepository.create(new File(".").toPath(), new RepositoryLocation("GitHub", "https://github.com/%s.git", "https://github.com"), "rainbowdashlabs", "krile");
+        return RawTagRepository.create(new File(".").toPath().toAbsolutePath().getParent(), new RepositoryLocation("GitHub", "https://github.com/%s.git", "https://github.com"), "rainbowdashlabs", "krile");
     }
 }

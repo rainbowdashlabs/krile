@@ -1,4 +1,5 @@
 ---
+$schema: "https://raw.githubusercontent.com/rainbowdashlabs/krile/main/.github/tag_schema.json"
 # Override the default tag, which would be the file name
 id: "test tag"
 # Override the default tag name, which would be the id

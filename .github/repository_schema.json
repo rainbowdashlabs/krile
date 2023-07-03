@@ -6,6 +6,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "$schema": {
+          "type": "string",
+          "description": ""
+        },
         "name": {
           "type": "string",
           "description": "The pretty name of the repository. Otherwise, the identifier is used."
@@ -69,7 +73,10 @@
             },
             "category": {
               "type": "array",
-              "minItems": 1
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
             }
           },
           "required": [

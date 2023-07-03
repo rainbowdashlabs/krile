@@ -1,6 +1,8 @@
 package de.chojo.krile.tagimport.repo;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.tagimport.tag.RawTag;
@@ -23,6 +25,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public record RawTagRepository(String url, String identifier, Path path, Git git) implements Closeable {
     private static final ObjectMapper MAPPER = YAMLMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .build();
     private static final Logger log = getLogger(RawTagRepository.class);
 
@@ -41,6 +45,7 @@ public record RawTagRepository(String url, String identifier, Path path, Git git
         String url = loc.url(user, repo);
         return new RawTagRepository(url, "%s:%s/%s".formatted(loc.name().toLowerCase(), user, repo), files, Git.open(git.toFile()));
     }
+
     public static RawTagRepository create(Path git, RepositoryLocation loc, String user, String repo) throws IOException, GitAPIException {
         String url = loc.url(user, repo);
         return new RawTagRepository(url, "%s:%s/%s".formatted(loc.name().toLowerCase(), user, repo), git, Git.open(git.toFile()));
@@ -53,6 +58,7 @@ public record RawTagRepository(String url, String identifier, Path path, Git git
             try {
                 return MAPPER.readValue(path.get().toFile(), RepoConfig.class);
             } catch (IOException e) {
+                log.error("Could not parse config file", e);
                 // ignore
             }
         }
@@ -62,7 +68,7 @@ public record RawTagRepository(String url, String identifier, Path path, Git git
     private Optional<Path> findConfigPath() {
         // TODO: Probably a bot config value
         final String[] paths = new String[]{".krile", ".github", ".gitlab", ""};
-        final String[] files = new String[]{"krile.yaml", "krile.yml"};
+        final String[] files = new String[]{"krile.yaml", "krile.yml", "krile.json"};
         for (String currPath : paths) {
             for (String currFile : files) {
                 Path resolved = path.resolve(currPath).resolve(currFile);
