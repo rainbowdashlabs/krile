@@ -1,6 +1,7 @@
 package de.chojo.krile.configuration.elements;
 
 import de.chojo.jdautil.container.Pair;
+import de.chojo.krile.data.dao.Identifier;
 import org.intellij.lang.annotations.RegExp;
 
 import java.util.regex.Matcher;
@@ -17,9 +18,18 @@ public record RepositoryLocation(String name, String template, String tld) {
         return url.startsWith(tld) && url.endsWith(".git");
     }
 
+    public Identifier extractIdentifier(String url){
+        Pair<String, String> pair = parseUrl(url);
+        return new Identifier(name, pair.first, pair.second);
+    }
+
     public Pair<String, String> parseUrl(String url){
         Matcher matcher = Pattern.compile(template.formatted(PATH)).matcher(url);
         matcher.find();
         return Pair.of(matcher.group("user"), matcher.group("repo"));
+    }
+
+    public String url(Identifier identifier) {
+        return url(identifier.user(), identifier.repo());
     }
 }

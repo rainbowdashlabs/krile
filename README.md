@@ -55,7 +55,7 @@ include: ["included_tag"]
 exclude: ["excluded_tag"]
 ```
 
-Note: You can also use krile.json if you like json more. A schema is available at: https://raw.githubusercontent.com/rainbowdashlabs/krile/main/.github/repository_schema.json
+Note: You can also use krile.json if you like json more. A schema is available.
 ```json
 {
   "$schema": "https://raw.githubusercontent.com/rainbowdashlabs/krile/main/.github/repository_schema.json",
@@ -97,7 +97,7 @@ image: https://krile.dev/my_image.png
 You can use any kind of markdown here supported by [Discord](https://discord.com)
 ```
 
-Note: You can also use json in the header as well if you like json more. A schema is available at: https://raw.githubusercontent.com/rainbowdashlabs/krile/main/.github/tag_schema.json
+Note: You can also use json in the header as well if you like json more. A schema is available.
 
 ```json
 {

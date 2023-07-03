@@ -13,7 +13,7 @@ import java.sql.SQLException;
 public final class Repository {
     private final int id;
     private final String url;
-    private final String identifier;
+    private final Identifier identifier;
     private final Data data;
     private final Meta meta;
     private final Tags tags;
@@ -21,7 +21,7 @@ public final class Repository {
     public Repository(int id, String url, String identifier, Categories categories, Authors authors) {
         this.id = id;
         this.url = url;
-        this.identifier = identifier;
+        this.identifier = Identifier.parse(identifier).get();
         data = new Data(this);
         meta = new Meta(this, categories);
         tags = new Tags(this, categories, authors);
@@ -46,7 +46,7 @@ public final class Repository {
         return url;
     }
 
-    public String identifier() {
+    public Identifier identifier() {
         return identifier;
     }
 

@@ -90,7 +90,7 @@ public class Data {
         guilds = new Guilds();
         authors = new Authors();
         categories = new Categories();
-        repositoryData = new RepositoryData(categories, authors);
+        repositoryData = new RepositoryData(configuration, categories, authors);
     }
 
     private HikariDataSource getConnectionPool() {

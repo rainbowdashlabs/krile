@@ -1,5 +1,7 @@
 package de.chojo.krile.configuration.elements;
 
+import de.chojo.krile.data.dao.Identifier;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +20,15 @@ private List<RepositoryLocation> repositories = List.of(
         for (RepositoryLocation repositoryLocation : repositories) {
             if (repositoryLocation.isUrl(url)) {
                 return Optional.of(repositoryLocation);
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<RepositoryLocation> find(Identifier identifier) {
+        for (RepositoryLocation repository : repositories) {
+            if (repository.name().equalsIgnoreCase(identifier.platform())) {
+                return Optional.of(repository);
             }
         }
         return Optional.empty();

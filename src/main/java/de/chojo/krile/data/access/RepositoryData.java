@@ -1,20 +1,28 @@
 package de.chojo.krile.data.access;
 
+import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.tagimport.repo.RawTagRepository;
 import de.chojo.sadu.wrapper.util.Row;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.intellij.lang.annotations.Language;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class RepositoryData {
+    private final Configuration<ConfigFile> configuration;
     private final Categories categories;
     private final Authors authors;
 
-    public RepositoryData(Categories categories, Authors authors) {
+    public RepositoryData(Configuration<ConfigFile> configuration, Categories categories, Authors authors) {
+        this.configuration = configuration;
         this.categories = categories;
         this.authors = authors;
     }
@@ -55,8 +63,29 @@ public class RepositoryData {
                 .readRow(this::buildRepository)
                 .firstSync();
     }
+    public Optional<Repository> byIdentifier(Identifier identifier) {
+        @Language("postgresql")
+        var query = """
+                SELECT id, url, identifier FROM repository WHERE identifier = ?""";
+        return builder(Repository.class)
+                .query(query)
+                .parameter(stmt -> stmt.setString(identifier.toString()))
+                .readRow(this::buildRepository)
+                .firstSync();
+    }
 
-    public Optional<Repository> create(RawTagRepository repositoryLocation) {
+    public Optional<Repository> getOrCreateByIdentifier(Identifier identifier, IDeferrableCallback callback) throws GitAPIException, IOException {
+        Optional<Repository> repository = byIdentifier(identifier);
+        if (repository.isPresent()) return repository;
+        callback.getHook().editOriginal("Unknown repository. Starting integration process");
+        RawTagRepository rawTagRepository = RawTagRepository.create(configuration, identifier);
+        callback.getHook().editOriginal("Repository found. Parsing data.");
+        create(rawTagRepository).get().update(rawTagRepository);
+
+        return repository;
+    }
+
+    public Optional<Repository> create(RawTagRepository repository) {
         @Language("postgresql")
         var query = """
                 INSERT INTO repository(url, identifier) VALUES(?, ?)
@@ -66,7 +95,7 @@ public class RepositoryData {
                 """;
         return builder(Repository.class)
                 .query(query)
-                .parameter(stmt -> stmt.setString(repositoryLocation.url()).setString(repositoryLocation.identifier()))
+                .parameter(stmt -> stmt.setString(repository.url()).setString(repository.identifier().toString()))
                 .readRow(this::buildRepository)
                 .firstSync();
     }

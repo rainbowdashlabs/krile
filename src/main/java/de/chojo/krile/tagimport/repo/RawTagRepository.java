@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
+import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.krile.tagimport.tag.parsing.TagParser;
 import org.eclipse.jgit.api.Git;
@@ -23,7 +26,7 @@ import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public record RawTagRepository(String url, String identifier, Path path, Git git) implements Closeable {
+public record RawTagRepository(String url, Identifier identifier, Path path, Git git) implements Closeable {
     private static final ObjectMapper MAPPER = YAMLMapper.builder()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
@@ -38,17 +41,28 @@ public record RawTagRepository(String url, String identifier, Path path, Git git
                 .setURI(url)
                 .setDirectory(git.toFile())
                 .call();
-        return new RawTagRepository(url, "%s:%s/%s".formatted(loc.name().toLowerCase(), user, repo), git, Git.open(git.toFile()));
+        return new RawTagRepository(url, new Identifier(loc.name(), user, repo), git, Git.open(git.toFile()));
+    }
+    public static RawTagRepository create(Configuration<ConfigFile> configuration, Identifier identifier) throws IOException, GitAPIException {
+        RepositoryLocation location = configuration.config().repositories().find(identifier).get();
+        String url = location.url(identifier);
+        log.info("Creating repo for {}", url);
+        Path git = Files.createTempDirectory("git");
+        Git.cloneRepository()
+                .setURI(url)
+                .setDirectory(git.toFile())
+                .call();
+        return new RawTagRepository(url, identifier, git, Git.open(git.toFile()));
     }
 
     public static RawTagRepository create(Path git, Path files, RepositoryLocation loc, String user, String repo) throws IOException, GitAPIException {
         String url = loc.url(user, repo);
-        return new RawTagRepository(url, "%s:%s/%s".formatted(loc.name().toLowerCase(), user, repo), files, Git.open(git.toFile()));
+        return new RawTagRepository(url, new Identifier(loc.name(), user, repo), files, Git.open(git.toFile()));
     }
 
     public static RawTagRepository create(Path git, RepositoryLocation loc, String user, String repo) throws IOException, GitAPIException {
         String url = loc.url(user, repo);
-        return new RawTagRepository(url, "%s:%s/%s".formatted(loc.name().toLowerCase(), user, repo), git, Git.open(git.toFile()));
+        return new RawTagRepository(url, new Identifier(loc.name(), user, repo), git, Git.open(git.toFile()));
     }
 
     public RepoConfig configuration() {
