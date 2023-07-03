@@ -37,6 +37,11 @@ public record RawTagRepository(String url, String identifier, Path path, Git git
         return new RawTagRepository(url, "%s:%s/%s".formatted(loc.name().toLowerCase(), user, repo), git, Git.open(git.toFile()));
     }
 
+    public static RawTagRepository create(Path git, Path files, RepositoryLocation loc, String user, String repo) throws IOException, GitAPIException {
+        String url = loc.url(user, repo);
+        return new RawTagRepository(url, "%s:%s/%s".formatted(loc.name().toLowerCase(), user, repo), files, Git.open(git.toFile()));
+    }
+
     public RepoConfig configuration() {
         // TODO: Lazy loading and cache
         Optional<Path> path = findConfigPath();

@@ -11,17 +11,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
 class TagRepositoryTest {
-    private static final String REPO_URL = "https://github.com/rainbowdashlabs/krile-tags.git";
 
     private static RawTagRepository repo;
 
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException {
-        repo = RawTagRepository.create(new RepositoryLocation("GitHub", "https://github.com/%s.git", "https://github.com"), "rainbowdashlabs", "krile-tags");
+        repo = TestRepository.standard();
     }
 
     @Test
@@ -40,6 +40,6 @@ class TagRepositoryTest {
 
     @AfterAll
     static void afterAll() throws IOException {
-        repo.close();
+        //repo.close();
     }
 }

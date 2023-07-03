@@ -1,0 +1,3 @@
+[submodule "krile-tags"]
+	path = krile-tags
+	url = https://github.com/rainbowdashlabs/krile-tags.git
