@@ -1,0 +1,29 @@
+services:
+  app:
+    image: ghcr.io/rainbowdashlabs/krile:latest
+    networks:
+      - lyna
+    depends_on:
+      - postgres
+    volumes:
+      - ./config/:/app/config/
+  postgres:
+    networks:
+      - lyna
+    image: postgres:15.3
+    expose:
+      - 5432
+    volumes:
+      - db_data:/var/lib/postgres/data
+    environment:
+      POSTGRES_USER: "krile"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "krile"
+
+networks:
+  krile:
+    name: krile
+    external: false
+
+volumes:
+  db_data:

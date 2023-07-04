@@ -4,6 +4,7 @@ import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
+import de.chojo.krile.data.access.Guilds;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Identifier;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -13,8 +14,8 @@ import java.util.Optional;
 
 public class ByNames extends BaseAdd {
 
-    public ByNames(RepositoryData repositoryData, Configuration<ConfigFile> configuration) {
-        super(repositoryData, configuration);
+    public ByNames(RepositoryData repositoryData, Guilds guilds, Configuration<ConfigFile> configuration) {
+        super(repositoryData, guilds, configuration);
     }
 
     @Override

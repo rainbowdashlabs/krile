@@ -10,7 +10,7 @@ import de.chojo.sadu.wrapper.util.Row;
 
 import java.sql.SQLException;
 
-public final class Repository {
+public class Repository {
     private final int id;
     private final String url;
     private final Identifier identifier;

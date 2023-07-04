@@ -63,7 +63,7 @@ public class Bot {
                 .withDefaultMenuService()
                 .withPagination(builder -> builder.previousText("Previous").nextText("Next"))
                 .withDefaultModalService()
-                .withCommands(new Repositories(data.repositories(), configuration))
+                .withCommands(new Repositories(data.repositories(), data.guilds(), configuration))
                 .build();
     }
 

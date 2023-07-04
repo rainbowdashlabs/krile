@@ -10,7 +10,7 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.requireNonNullElse;
 
-//TODO: Idea: Parent repositories, to directly include them.
+// TODO: Idea: Parent repositories, to directly include them.
 // Also add a priority for this repo and parent repos to allow overwriting tags. (Probably too complex),
 public record RepoConfig(@Nullable String name,
                          @Nullable String description,

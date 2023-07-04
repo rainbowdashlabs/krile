@@ -61,12 +61,14 @@ create unique Index tag_alias_tag_id_alias_uindex
     on krile.tag_alias (tag_id, alias);
 
 CREATE VIEW krile.repo_tags AS
-SELECT tag.id, tag, 1 as prio
-FROM krile.tag
-UNION
-SELECT a.tag_id, alias, 2 as prio
-FROM krile.tag_alias a
-ORDER BY prio;
+SELECT rank() over (PARTITION BY tag ORDER BY prio) as global_prio, repository_id, id, tag, prio
+FROM (SELECT repository_id, tag.id, tag, 1 as prio
+      FROM krile.tag
+      UNION
+      SELECT repository_id, a.tag_id, alias, 2 as prio
+      FROM krile.tag_alias a
+               LEFT JOIN krile.tag t ON a.tag_id = t.id
+      ORDER BY prio) tags;
 
 create table krile.category
 (

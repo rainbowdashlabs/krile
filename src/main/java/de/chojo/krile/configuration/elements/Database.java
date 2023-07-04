@@ -5,10 +5,10 @@ package de.chojo.krile.configuration.elements;
 public class Database {
     private String host = "localhost";
     private String port = "5432";
-    private String database = "db";
+    private String database = "krile";
     private String schema = "krile";
-    private String user = "user";
-    private String password = "pw";
+    private String user = "krile";
+    private String password = "password";
     private int poolSize = 5;
 
     public String host() {

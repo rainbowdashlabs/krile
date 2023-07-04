@@ -87,9 +87,9 @@ public class Data {
 
     private void initDao() {
         log.info("Creating DAOs");
-        guilds = new Guilds();
         authors = new Authors();
         categories = new Categories();
+        guilds = new Guilds(authors, categories);
         repositoryData = new RepositoryData(configuration, categories, authors);
     }
 
