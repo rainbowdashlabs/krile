@@ -2,7 +2,7 @@ package de.chojo.krile.data.dao.repository;
 
 import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.dao.Repository;
-import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.repo.RepoConfig;
 import org.intellij.lang.annotations.Language;
 
@@ -17,7 +17,7 @@ public class Meta {
         this.categories = new RepositoryCategories(this, categories);
     }
 
-    public void update(RawTagRepository repository) {
+    public void update(RawRepository repository) {
         RepoConfig configuration = repository.configuration();
         @Language("postgresql")
         var insert = """

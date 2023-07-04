@@ -2,7 +2,7 @@ package de.chojo.krile.data.dao.repository;
 
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.RepositoryUpdateException;
-import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RawRepository;
 import org.intellij.lang.annotations.Language;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ public class Data {
         this.repository = repository;
     }
 
-        public void update(RawTagRepository repository) {
+        public void update(RawRepository repository) {
         String currentCommit;
         try {
             currentCommit = repository.currentCommit();

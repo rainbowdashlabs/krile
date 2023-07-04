@@ -1,7 +1,6 @@
 package de.chojo.krile;
 
-import de.chojo.krile.configuration.elements.RepositoryLocation;
-import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.tag.entities.FileMeta;
 import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import de.chojo.krile.tagimport.tag.entities.RawTagMeta;
@@ -13,19 +12,18 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class TagParserTest {
-    private static RawTagRepository repo;
+    private static RawRepository repo;
     private static TagParser parser;
 
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException {
-        repo = TestRepository.standard();
+        repo = TestRepository.root();
         parser = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
     }
 

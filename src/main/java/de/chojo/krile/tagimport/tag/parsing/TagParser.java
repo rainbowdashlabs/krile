@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import de.chojo.krile.tagimport.tag.entities.FileEvent;
@@ -32,18 +32,18 @@ public class TagParser {
                         .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .build();
-    private final RawTagRepository tagRepository;
+    private final RawRepository tagRepository;
     private final Path filePath;
     @RegExp
     public static final String TAG = "^---$\\n(?<meta>.+?)^---$\\n(?<tag>.+)";
     private static final Pattern TAG_PATTERN = Pattern.compile(TAG, Pattern.DOTALL);
 
-    public TagParser(RawTagRepository tagRepository, Path filePath) {
+    public TagParser(RawRepository tagRepository, Path filePath) {
         this.tagRepository = tagRepository;
         this.filePath = filePath;
     }
 
-    public static TagParser parse(RawTagRepository tagRepository, Path path) {
+    public static TagParser parse(RawRepository tagRepository, Path path) {
         return new TagParser(tagRepository, path);
     }
 

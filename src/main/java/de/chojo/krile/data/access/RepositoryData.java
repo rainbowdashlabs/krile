@@ -4,7 +4,7 @@ import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
-import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.sadu.wrapper.util.Row;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -27,7 +27,7 @@ public class RepositoryData {
         this.authors = authors;
     }
 
-    public Optional<Repository> getOrCreate(RawTagRepository repositoryLocation) {
+    public Optional<Repository> getOrCreate(RawRepository repositoryLocation) {
         return byIdentifier(repositoryLocation.identifier()).or(() -> create(repositoryLocation));
     }
 
@@ -78,14 +78,14 @@ public class RepositoryData {
         Optional<Repository> repository = byIdentifier(identifier);
         if (repository.isPresent()) return repository;
         callback.getHook().editOriginal("Unknown repository. Starting integration process");
-        RawTagRepository rawTagRepository = RawTagRepository.create(configuration, identifier);
+        RawRepository rawRepository = RawRepository.remote(configuration, identifier);
         callback.getHook().editOriginal("Repository found. Parsing data.");
-        create(rawTagRepository).get().update(rawTagRepository);
+        create(rawRepository).get().update(rawRepository);
 
         return repository;
     }
 
-    public Optional<Repository> create(RawTagRepository repository) {
+    public Optional<Repository> create(RawRepository repository) {
         @Language("postgresql")
         var query = """
                 INSERT INTO repository(url, identifier) VALUES(?, ?)

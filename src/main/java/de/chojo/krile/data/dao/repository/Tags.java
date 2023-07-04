@@ -5,7 +5,7 @@ import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.RepositoryUpdateException;
 import de.chojo.krile.data.dao.repository.tags.Tag;
-import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.sadu.wrapper.util.Row;
 import org.intellij.lang.annotations.Language;
@@ -39,7 +39,7 @@ public class Tags {
                 .allSync();
     }
 
-    public void update(RawTagRepository repository) {
+    public void update(RawRepository repository) {
         List<RawTag> tags;
         try {
             tags = repository.tags();

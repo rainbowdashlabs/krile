@@ -5,7 +5,7 @@ import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.dao.repository.Data;
 import de.chojo.krile.data.dao.repository.Meta;
 import de.chojo.krile.data.dao.repository.Tags;
-import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.sadu.wrapper.util.Row;
 
 import java.sql.SQLException;
@@ -31,7 +31,7 @@ public final class Repository {
         return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), categories, authors);
     }
 
-    public void update(RawTagRepository repository) {
+    public void update(RawRepository repository) {
         meta.update(repository);
         data.update(repository);
         tags.update(repository);

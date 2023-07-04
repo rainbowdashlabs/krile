@@ -2,7 +2,7 @@ package de.chojo.krile.data.dao.repository;
 
 import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.dao.Category;
-import de.chojo.krile.tagimport.repo.RawTagRepository;
+import de.chojo.krile.tagimport.repo.RawRepository;
 import org.intellij.lang.annotations.Language;
 
 import java.util.Optional;
@@ -18,7 +18,7 @@ public class RepositoryCategories {
         this.categories = categories;
     }
 
-    public void updateCategories(RawTagRepository repository) {
+    public void updateCategories(RawRepository repository) {
         // Clear repository category links
         clearCategories();
 

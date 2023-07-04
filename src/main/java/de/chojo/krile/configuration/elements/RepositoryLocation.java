@@ -20,7 +20,7 @@ public record RepositoryLocation(String name, String template, String tld) {
 
     public Identifier extractIdentifier(String url){
         Pair<String, String> pair = parseUrl(url);
-        return new Identifier(name, pair.first, pair.second);
+        return Identifier.of(name, pair.first, pair.second);
     }
 
     public Pair<String, String> parseUrl(String url){
