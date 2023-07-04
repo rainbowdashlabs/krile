@@ -44,7 +44,7 @@ public class RawRepository {
         this.git = git;
     }
 
-    public static RawRepository remote(Configuration<ConfigFile> configuration, Identifier identifier) throws IOException, GitAPIException {
+    public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier) throws IOException, GitAPIException {
         RepositoryLocation location = configuration.config().repositories().find(identifier).get();
         String url = location.url(identifier);
         log.info("Creating repo for {}", url);
@@ -56,14 +56,9 @@ public class RawRepository {
         return new RemoteRepository(url, identifier, git, Git.open(git.toFile()));
     }
 
-    public static RawRepository root(Path git, RepositoryLocation loc, String user, String repo) throws IOException {
-        String url = loc.url(user, repo);
-        return new RawRepository(url, Identifier.of(loc.name(), user, repo), git, Git.open(git.toFile()));
-    }
-
-    public static RawRepository sub(Path git, RepositoryLocation loc, String path, String user, String repo) throws IOException {
-        String url = loc.url(user, repo);
-        return new RawRepository(url, Identifier.of(loc.name(), user, repo, path), git, Git.open(git.toFile()));
+    public static RawRepository local(Path git, RepositoryLocation loc, Identifier identifier) throws IOException {
+        String url = loc.url(identifier.user(), identifier.repo());
+        return new RawRepository(url, identifier, git, Git.open(git.toFile()));
     }
 
     public RepoConfig configuration() {

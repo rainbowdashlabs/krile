@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-class TagRepositoryTest {
+class RawRepositoryTest {
 
     private static RawRepository root;
     private static RawRepository sub;
@@ -27,22 +27,23 @@ class TagRepositoryTest {
         sub = TestRepository.sub();
     }
 
-    public static List<Arguments> repos() throws GitAPIException, IOException {
+    public static List<Arguments> repos() {
         return List.of(Arguments.of(root), Arguments.of(sub));
     }
 
     @ParameterizedTest
     @MethodSource("repos")
-    void configuration() throws IOException {
-        RepoConfig configuration = root.configuration();
+    void configuration(RawRepository repo) {
+        RepoConfig configuration = repo.configuration();
         Assertions.assertEquals("tags", configuration.directory());
         Assertions.assertEquals(List.of("ignored_tag"), configuration.exclude());
         Assertions.assertEquals(Collections.emptyList(), configuration.include());
     }
 
-    @Test
-    void tags() throws IOException {
-        List<RawTag> tags = root.tags();
+    @ParameterizedTest
+    @MethodSource("repos")
+    void tags(RawRepository repo) throws IOException {
+        List<RawTag> tags = repo.tags();
         Assertions.assertEquals(2, tags.size());
     }
 

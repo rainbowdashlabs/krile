@@ -22,7 +22,8 @@ public class ByNames extends BaseAdd {
         String platform = event.getOption("platform", OptionMapping::getAsString);
         String name = event.getOption("name", OptionMapping::getAsString);
         String repo = event.getOption("repo", OptionMapping::getAsString);
-        Identifier identifier = new Identifier(platform, name, repo);
+        String path = event.getOption("path", OptionMapping::getAsString);
+        Identifier identifier = Identifier.of(platform, name, repo, path);
         Optional<RepositoryLocation> optLocation = configuration().config().repositories().find(identifier);
         if (optLocation.isEmpty()) {
             event.reply("Invalid source").setEphemeral(true).queue();

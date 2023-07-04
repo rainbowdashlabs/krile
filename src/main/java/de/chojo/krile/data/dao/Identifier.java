@@ -1,5 +1,7 @@
 package de.chojo.krile.data.dao;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Locale;
 import java.util.Optional;
 
@@ -12,12 +14,12 @@ public record Identifier(String platform, String user, String repo, String path)
         return "%s:%s/%s".formatted(platform.toLowerCase(Locale.ROOT), user, repo);
     }
 
-    public static Identifier of(String platform, String user, String repo, String path) {
-        return new Identifier(platform, user, repo, path);
+    public static Identifier of(String platform, String user, String repo, @Nullable String path) {
+        return new Identifier(platform.toLowerCase(), user, repo, path != null ? path.replaceAll("^/", ""): null);
     }
 
     public static Identifier of(String platform, String user, String repo) {
-        return of(platform, user, repo, null);
+        return of(platform.toLowerCase(), user, repo, null);
     }
 
     public static Optional<Identifier> parse(String identifier) {
