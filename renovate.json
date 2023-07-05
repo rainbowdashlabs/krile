@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>rainbowdashlabs/RainbowDashLabs//.github/default_renovate"
+    "github>rainbowdashlabs/rainbowdashlabs//.github/renovate_default"
   ]
 }
