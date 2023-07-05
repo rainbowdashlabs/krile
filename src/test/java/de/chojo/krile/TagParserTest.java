@@ -19,12 +19,14 @@ import java.util.regex.Pattern;
 
 class TagParserTest {
     private static RawRepository repo;
-    private static TagParser parser;
+    private static TagParser testTag;
+    private static TagParser longTag;
 
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException {
         repo = TestRepository.root();
-        parser = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
+        testTag = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
+        longTag = TagParser.parse(repo, repo.tagPath().resolve("long tag.md"));
     }
 
     @Test
@@ -34,27 +36,37 @@ class TagParserTest {
 
     @Test
     void getAuthors() throws GitAPIException {
-        Collection<RawAuthor> rawAuthors = parser.getAuthors();
+        Collection<RawAuthor> rawAuthors = testTag.getAuthors();
         Assertions.assertEquals(1, rawAuthors.size());
     }
 
     @Test
     void fileMeta() throws GitAPIException {
-        FileMeta meta = parser.fileMeta();
+        FileMeta meta = testTag.fileMeta();
         Assertions.assertNotEquals(meta.created().when(), meta.modified().when());
     }
 
     @Test
     void tagContent() throws IOException {
-        String content = parser.tagContent();
+        String content = testTag.tagContent();
         Matcher matcher = Pattern.compile("^---$").matcher(content);
         Assertions.assertFalse(matcher.find());
         Assertions.assertTrue(content.contains("This is example text for a text tag"));
     }
 
     @Test
+    void splitContent() throws IOException, GitAPIException {
+        List<String> content = longTag.tag().splitText();
+        Assertions.assertTrue(content.size() > 1);
+        Assertions.assertEquals(8 , content.size());
+        for (String text : content) {
+            Assertions.assertFalse(text.contains("<new_page>"));
+        }
+    }
+
+    @Test
     void tagMeta() throws IOException {
-        RawTagMeta meta = parser.tagMeta();
+        RawTagMeta meta = testTag.tagMeta();
         Assertions.assertEquals("test tag", meta.id());
         Assertions.assertEquals("test", meta.tag());
         Assertions.assertEquals(List.of("test1", "test2"), meta.alias());
@@ -64,7 +76,7 @@ class TagParserTest {
 
     @Test
     void tag() {
-        Assertions.assertDoesNotThrow(() -> parser.tag());
+        Assertions.assertDoesNotThrow(() -> testTag.tag());
     }
 
     @AfterAll

@@ -6,6 +6,7 @@ import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.repository.tags.tag.TagMeta;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.krile.tagimport.tag.entities.FileMeta;
+import de.chojo.sadu.types.PostgreSqlTypes;
 import de.chojo.sadu.wrapper.util.Row;
 import org.intellij.lang.annotations.Language;
 
@@ -80,7 +81,7 @@ public final class Tag {
 
         builder()
                 .query(insert)
-                .parameter(stmt -> stmt.setString(raw.text()).setInt(id()))
+                .parameter(stmt -> stmt.setArray(raw.splitText(), PostgreSqlTypes.TEXT).setInt(id()))
                 .update()
                 .sendSync();
         meta.update(raw);

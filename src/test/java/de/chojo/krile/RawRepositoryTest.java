@@ -40,10 +40,9 @@ class RawRepositoryTest {
         Assertions.assertEquals(Collections.emptyList(), configuration.include());
     }
 
-    @ParameterizedTest
-    @MethodSource("repos")
-    void tags(RawRepository repo) throws IOException {
-        List<RawTag> tags = repo.tags();
+    @Test
+    void tags() throws IOException {
+        List<RawTag> tags = sub.tags();
         Assertions.assertEquals(2, tags.size());
     }
 

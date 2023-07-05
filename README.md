@@ -122,3 +122,6 @@ Note: You can also use json in the header as well if you like json more. A schem
 }
 ```
 
+### Paginated Tags
+If a tag exceeds the 2000 characters limit set by discord it will be automatically split into 2000 characters chunks.
+You can define your own pages by adding `<new_page>` in your text when a new page should star. 
