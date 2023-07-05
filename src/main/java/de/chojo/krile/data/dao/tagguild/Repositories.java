@@ -41,11 +41,11 @@ public class Repositories {
     public Optional<GuildRepository> byId(int id) {
         @Language("postgresql")
         var select = """
-                SELECT prio, r.id, url, identifier
+                SELECT priority, r.id, url, identifier
                 FROM guild_repository gr
                          LEFT JOIN repository r on r.id = gr.repository_id
                 WHERE id = ?
-                ORDER BY prio""";
+                ORDER BY priority""";
 
         return builder(GuildRepository.class)
                 .query(select)

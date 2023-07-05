@@ -3,28 +3,36 @@ package de.chojo.krile.data.dao.tagguild;
 import de.chojo.krile.data.access.Authors;
 import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.dao.TagGuild;
+import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.sadu.wrapper.util.Row;
 import org.intellij.lang.annotations.Language;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class Tags {
     private final TagGuild guild;
+    private final Repositories repositories;
+    private final Categories categories;
+    private final Authors authors;
 
-    public Tags(TagGuild guild, Categories categories, Authors authors) {
+    public Tags(TagGuild guild, Repositories repositories, Categories categories, Authors authors) {
         this.guild = guild;
+        this.repositories = repositories;
+        this.categories = categories;
+        this.authors = authors;
     }
 
     public List<CompletedTag> complete(String value) {
         @Language("postgresql")
         var select = """
                 with ranked_tags as
-                         (SELECT row_number() over (PARTITION BY tag ORDER BY gr.prio * rt.global_prio DESC) as rank,
+                         (SELECT row_number() over (PARTITION BY tag ORDER BY gr.priority * rt.global_prio DESC) as rank,
                                  gr.repository_id,
-                                 gr.prio                                                                     as repo_prio,
+                                 gr.priority                                                                     as repo_prio,
                                  global_prio,
                                  rt.id,
                                  tag,
@@ -45,6 +53,17 @@ public class Tags {
                 .parameter(stmt -> stmt.setString(value).setLong(guild.id()))
                 .readRow(CompletedTag::build)
                 .allSync();
+    }
+
+    public Optional<Tag> getById(int tag) {
+         @Language("postgresql")
+          var select = """
+              SELECT repository_id, id, tag_id, tag, content FROM tag t WHERE id = ?""";
+        return builder(Tag.class)
+                .query(select)
+                .parameter(stmt -> stmt.setInt(tag))
+                .readRow(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .firstSync();
     }
 
     public record CompletedTag(int id, String name) {

@@ -10,6 +10,7 @@ import de.chojo.sadu.wrapper.util.Row;
 import org.intellij.lang.annotations.Language;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
@@ -17,11 +18,11 @@ public final class Tag {
     private final int id;
     private final String tagId;
     private final String tag;
-    private final String text;
+    private final List<String> text;
     private final Repository repository;
     private final TagMeta meta;
 
-    public Tag(int id, String tagId, String tag, String text, Repository repository, Categories categories, Authors authors) {
+    public Tag(int id, String tagId, String tag, List<String> text, Repository repository, Categories categories, Authors authors) {
         this.id = id;
         this.tagId = tagId;
         this.tag = tag;
@@ -31,7 +32,11 @@ public final class Tag {
     }
 
     public static Tag build(Row row, Repository repository, Categories categories, Authors authors) throws SQLException {
-        return new Tag(row.getInt("id"), row.getString("tag_id"), row.getString("tag"), row.getString("content"), repository, categories, authors);
+        return new Tag(row.getInt("id"), row.getString("tag_id"), row.getString("tag"), row.getList("content"), repository, categories, authors);
+    }
+
+    public Repository repository() {
+        return repository;
     }
 
     public boolean delete() {
@@ -54,6 +59,19 @@ public final class Tag {
     public String tag() {
         return tag;
     }
+
+    public String text() {
+        return text.get(0);
+    }
+
+    public List<String> paged() {
+        return text;
+    }
+
+    public boolean isPaged() {
+        return text.size() != 1;
+    }
+
 
     public void update(RawTag raw) {
         @Language("postgresql")

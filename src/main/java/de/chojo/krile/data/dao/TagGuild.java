@@ -22,7 +22,7 @@ public class TagGuild {
     public TagGuild(Guild guild, Categories categories, Authors authors) {
         this.guild = guild;
         repositories = new Repositories(this, authors, categories);
-        tags = new Tags(this, categories, authors);
+        tags = new Tags(this, repositories, categories, authors);
     }
 
 

@@ -19,7 +19,7 @@ java{
 
 dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r")
-    implementation("de.chojo", "cjda-util", "2.8.6+beta.11") {
+    implementation("de.chojo", "cjda-util", "2.9.0+beta.11-DEV") {
         exclude(group = "club.minnced", module = "opus-java")
     }
 

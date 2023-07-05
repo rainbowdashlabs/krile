@@ -1,11 +1,12 @@
 package de.chojo.krile.data.dao;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IdentifierTest {
 
@@ -14,7 +15,7 @@ class IdentifierTest {
         Identifier of = Identifier.of("platform", "user", "repo");
         assertEquals("platform:user/repo", of.toString());
         of = Identifier.of("platform", "user", "repo", "/path/to/repo");
-        assertEquals("platform:user/repo//path/to/repo", of.toString());
+        assertEquals("platform:user/repo/path/to/repo", of.toString());
     }
 
     @Test
@@ -29,11 +30,11 @@ class IdentifierTest {
 
     @Test
     void parseSub() {
-        Optional<Identifier> parse = Identifier.parse("platform:user/repo//path/to/repo");
+        Optional<Identifier> parse = Identifier.parse("platform:user/repo/path/to/repo");
         assertTrue(parse.isPresent());
         assertEquals("platform", parse.get().platform());
         assertEquals("user", parse.get().user());
         assertEquals("repo", parse.get().repo());
-        assertEquals("/path/to/repo", parse.get().path());
+        assertEquals("path/to/repo", parse.get().path());
     }
 }

@@ -82,7 +82,7 @@ Sub repositories can be helpful when:
 
 ## Setting up a tag
 
-Tags in krile are not only tags, but also contain some metadata.
+Tags in Krile are not only tags, but also contain some metadata.
 Metadata is set via a file header at the start of a file.
 This header is optional, and you can also simply add markdown and call it a day.
 Tag files need to be of type .md otherwise they are ignored.

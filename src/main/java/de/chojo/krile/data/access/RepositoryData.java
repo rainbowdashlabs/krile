@@ -80,9 +80,10 @@ public class RepositoryData {
         callback.getHook().editOriginal("Unknown repository. Starting integration process");
         RawRepository rawRepository = RawRepository.remote(configuration, identifier);
         callback.getHook().editOriginal("Repository found. Parsing data.");
-        create(rawRepository).get().update(rawRepository);
+        Optional<Repository> repo = create(rawRepository);
+        repo.get().update(rawRepository);
 
-        return repository;
+        return repo;
     }
 
     public Optional<Repository> create(RawRepository repository) {

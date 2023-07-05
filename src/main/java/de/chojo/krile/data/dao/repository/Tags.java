@@ -7,6 +7,8 @@ import de.chojo.krile.data.dao.RepositoryUpdateException;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.tag.RawTag;
+import de.chojo.sadu.types.PostgreSqlTypes;
+import de.chojo.sadu.types.SqlType;
 import de.chojo.sadu.wrapper.util.Row;
 import org.intellij.lang.annotations.Language;
 
@@ -69,7 +71,7 @@ public class Tags {
                 RETURNING id, tag_id, tag, content""";
         return builder(Tag.class)
                 .query(insert)
-                .parameter(stmt -> stmt.setInt(repository.id()).setString(tag.meta().tag()).setString(tag.meta().tag()).setString(tag.text()))
+                .parameter(stmt -> stmt.setInt(repository.id()).setString(tag.meta().tag()).setString(tag.meta().tag()).setArray(tag.splitText(), PostgreSqlTypes.TEXT))
                 .readRow(this::buildTag)
                 .firstSync();
     }

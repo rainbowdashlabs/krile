@@ -1,4 +1,4 @@
-create table krile.repositoryLocation
+create table krile.repository
 (
     id         serial
         constraint repository_pk
@@ -8,7 +8,7 @@ create table krile.repositoryLocation
 );
 
 create unique index repository_identifier_uindex
-    on krile.repositoryLocation (identifier);
+    on krile.repository (identifier);
 
 
 create table krile.guild_repository
@@ -16,12 +16,12 @@ create table krile.guild_repository
     guild_id      bigint  not null,
     repository_id integer not null
         constraint guild_repository_repository_id_fk
-            references krile.repositoryLocation
+            references krile.repository
             on delete cascade
 );
 
 alter table krile.guild_repository
-    add prio integer default 1 not null;
+    add priority integer default 1 not null;
 
 create unique index guild_repository_guild_id_repository_id_uindex
     on krile.guild_repository (guild_id, repository_id);
@@ -30,7 +30,7 @@ create table krile.tag
 (
     repository_id integer not null
         constraint tag_repository_id_fk
-            references krile.repositoryLocation
+            references krile.repository
             on delete cascade,
     id            serial,
     tag_id        text    not null,
@@ -130,7 +130,7 @@ create table krile.repository_meta
         constraint repository_meta_pk
             primary key
         constraint repository_meta_repository_id_fk
-            references krile.repositoryLocation
+            references krile.repository
             ON DELETE CASCADE,
     name          text,
     description   text,
@@ -143,7 +143,7 @@ create table krile.repository_category
 (
     repository_id integer not null
         constraint repository_category_repository_id_fk
-            references krile.repositoryLocation
+            references krile.repository
             ON DELETE CASCADE,
     category_id   integer not null
         constraint repository_category_category_id_fk
@@ -159,7 +159,7 @@ create table krile.repository_data
         constraint repository_data_pk
             primary key
         constraint repository_data_repository_id_fk
-            references krile.repositoryLocation
+            references krile.repository
             ON DELETE CASCADE,
     updated       timestamp not null,
     checked       timestamp not null,
