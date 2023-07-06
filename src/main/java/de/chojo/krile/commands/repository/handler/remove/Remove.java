@@ -1,4 +1,4 @@
-package de.chojo.krile.commands.repositories.handler.remove;
+package de.chojo.krile.commands.repository.handler.remove;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.wrapper.EventContext;

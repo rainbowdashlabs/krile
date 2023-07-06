@@ -134,4 +134,8 @@ public class Repository {
     public String toString() {
         return identifier.toString();
     }
+
+    public void checked() {
+        data.checked();
+    }
 }

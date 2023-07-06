@@ -1,4 +1,4 @@
-package de.chojo.krile.commands.repositories.handler.add;
+package de.chojo.krile.commands.repository.handler.add;
 
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.wrapper.EventContext;

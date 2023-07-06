@@ -66,6 +66,7 @@ public class RepoUpdateService implements Runnable {
         try (var flat = RawRepository.remote(configuration, repository.identifier(), true)){
             if (flat.currentCommit().equals(repository.data().get().commit())) {
                 log.info("Repository {} is up to date", repository);
+                repository.checked();
                 return;
             }
         } catch (IOException | GitAPIException | RepositoryUpdateException e) {

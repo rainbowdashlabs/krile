@@ -65,6 +65,20 @@ public class Data {
 
     }
 
+    public void checked() {
+        @Language("postgresql")
+        var update = """
+                UPDATE repository_data
+                SET checked = now() at time zone 'UTC'
+                WHERE repository_id = ?""";
+
+        builder()
+                .query(update)
+                .parameter(stmt -> stmt.setInt(repository.id()))
+                .update()
+                .sendSync();
+    }
+
     public record RepositoryData(Instant updated, Instant checked, String commit, String branch) {
     }
 }

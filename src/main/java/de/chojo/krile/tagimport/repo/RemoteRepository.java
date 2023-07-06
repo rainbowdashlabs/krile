@@ -18,7 +18,6 @@ public class RemoteRepository extends RawRepository implements Closeable {
     @Override
     public void close() throws IOException {
         git().close();
-        System.out.println("closing repo");
         try (var stream = Files.walk(root())) {
             stream.sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
