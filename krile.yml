@@ -2,4 +2,8 @@ $schema: "https://raw.githubusercontent.com/rainbowdashlabs/krile/main/.github/t
 
 directory: "tags"
 exclude: ["ignored_tag"]
+public: true
+language: "en"
+name: Krile Test Repository
+description: A repository for testing of bot functionality.
 

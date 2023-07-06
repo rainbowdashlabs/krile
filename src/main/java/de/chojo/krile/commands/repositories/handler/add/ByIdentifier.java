@@ -1,15 +1,19 @@
 package de.chojo.krile.commands.repositories.handler.add;
 
 import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.access.Guilds;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Identifier;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ByIdentifier extends BaseAdd {
@@ -32,5 +36,10 @@ public class ByIdentifier extends BaseAdd {
             return;
         }
         add(event, context, parsed.get());
+    }
+
+    @Override
+    public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
+        event.replyChoices(Choice.toStringChoice(repositoryData().completeIdentifier(event.getFocusedOption().getValue()))).queue();
     }
 }

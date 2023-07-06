@@ -3,6 +3,8 @@ package de.chojo.krile.data.dao.repository.tags.tag;
 import de.chojo.krile.tagimport.tag.RawTag;
 import org.intellij.lang.annotations.Language;
 
+import java.util.List;
+
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class TagAliases {
@@ -36,5 +38,17 @@ public class TagAliases {
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
                 .delete()
                 .sendSync();
+    }
+
+    public List<String> all() {
+        @Language("postgresql")
+        var select = """
+                SELECT alias FROM tag_alias WHERE tag_id = ?""";
+
+        return builder(String.class)
+                .query(select)
+                .parameter(stmt -> stmt.setInt(meta.tag().id()))
+                .readRow(row -> row.getString("alias"))
+                .allSync();
     }
 }

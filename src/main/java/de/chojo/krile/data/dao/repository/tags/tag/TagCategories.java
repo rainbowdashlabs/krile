@@ -5,6 +5,7 @@ import de.chojo.krile.data.dao.Category;
 import de.chojo.krile.tagimport.tag.RawTag;
 import org.intellij.lang.annotations.Language;
 
+import java.util.List;
 import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
@@ -44,5 +45,19 @@ public class TagCategories {
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
                 .delete()
                 .sendSync();
+    }
+
+    public List<Category> all() {
+         @Language("postgresql")
+          var select = """
+              SELECT id, category
+              FROM tag_category
+                       LEFT JOIN category c on c.id = tag_category.category_id
+              WHERE tag_id = ?""";
+         return builder(Category.class)
+                 .query(select)
+                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
+                 .readRow(Category::build)
+                 .allSync();
     }
 }

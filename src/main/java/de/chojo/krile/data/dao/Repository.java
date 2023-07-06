@@ -18,7 +18,7 @@ public class Repository {
     private final Meta meta;
     private final Tags tags;
 
-    public Repository(int id, String url, String identifier, Categories categories, Authors authors) {
+    public Repository(int id, String url, String identifier, String directory, Categories categories, Authors authors) {
         this.id = id;
         this.url = url;
         this.identifier = Identifier.parse(identifier).get();
@@ -28,7 +28,7 @@ public class Repository {
     }
 
     public static Repository build(Row row, Categories categories, Authors authors) throws SQLException {
-        return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), categories, authors);
+        return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), row.getString("directory"), categories, authors);
     }
 
     public void update(RawRepository repository) {

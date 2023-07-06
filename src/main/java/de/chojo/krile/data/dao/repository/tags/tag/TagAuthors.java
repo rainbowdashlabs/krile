@@ -6,6 +6,7 @@ import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import org.intellij.lang.annotations.Language;
 
+import java.util.List;
 import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
@@ -44,5 +45,19 @@ public class TagAuthors {
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
                 .delete()
                 .sendSync();
+    }
+
+    public List<Author> all() {
+        @Language("postgresql")
+        var select = """
+                SELECT id, name, mail
+                FROM tag_author
+                         LEFT JOIN author a ON a.id = tag_author.author_id
+                WHERE tag_id = ?""";
+        return builder(Author.class)
+                .query(select)
+                .parameter(stmt -> stmt.setInt(meta.tag().id()))
+                .readRow(Author::build)
+                .allSync();
     }
 }

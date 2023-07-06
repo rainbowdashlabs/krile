@@ -4,12 +4,21 @@ create table krile.repository
         constraint repository_pk
             primary key,
     url        text not null,
-    identifier text not null
+    platform   text not null,
+    name       text not null,
+    repo       text not null,
+    path       text,
+    directory  text,
+    identifier text generated always as (
+                   CASE
+                       WHEN path IS NOT NULL THEN
+                           platform || ':' || name || '/' || repo || '/' || path
+                       ELSE platform || ':' || name || '/' || repo
+                       END) stored
 );
 
-create unique index repository_identifier_uindex
-    on krile.repository (identifier);
-
+create unique index repository_platform_name_repo_path_uindex
+    on krile.repository (platform, name, repo, COALESCE(path, ''::text));
 
 create table krile.guild_repository
 (
@@ -17,11 +26,9 @@ create table krile.guild_repository
     repository_id integer not null
         constraint guild_repository_repository_id_fk
             references krile.repository
-            on delete cascade
+            on delete cascade,
+    priority      integer default 1 notnull
 );
-
-alter table krile.guild_repository
-    add priority integer default 1 not null;
 
 create unique index guild_repository_guild_id_repository_id_uindex
     on krile.guild_repository (guild_id, repository_id);
@@ -174,6 +181,7 @@ create table krile.tag_meta
         constraint tag_meta_tag_id_fk
             references krile.tag (id)
             ON DELETE CASCADE,
+    file_name   text                    NOT NULL,
     image       text,
     created     timestamp default now() not null,
     created_by  integer                 not null,

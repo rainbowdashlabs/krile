@@ -25,11 +25,11 @@ public class Repositories {
     public List<GuildRepository> all() {
         @Language("postgresql")
         var select = """
-                SELECT prio, r.id, url, identifier
+                SELECT priority, r.id, url, identifier, directory
                 FROM guild_repository gr
                          LEFT JOIN repository r on r.id = gr.repository_id
                 WHERE guild_id = ?
-                ORDER BY prio""";
+                ORDER BY priority""";
 
         return builder(GuildRepository.class)
                 .query(select)
@@ -41,7 +41,7 @@ public class Repositories {
     public Optional<GuildRepository> byId(int id) {
         @Language("postgresql")
         var select = """
-                SELECT priority, r.id, url, identifier
+                SELECT priority, r.id, url, identifier, directory
                 FROM guild_repository gr
                          LEFT JOIN repository r on r.id = gr.repository_id
                 WHERE id = ?
@@ -55,16 +55,38 @@ public class Repositories {
     }
 
     public void add(Repository repository) {
-         @Language("postgresql")
-          var insert = """
-              INSERT INTO guild_repository(guild_id, repository_id)
-              VALUES (?, ?)
-              ON CONFLICT DO NOTHING""";
+        @Language("postgresql")
+        var insert = """
+                INSERT INTO guild_repository(guild_id, repository_id)
+                VALUES (?, ?)
+                ON CONFLICT DO NOTHING""";
 
-         builder()
-                 .query(insert)
-                 .parameter(stmt -> stmt.setLong(guild.id()).setInt(repository.id()))
-                 .insert()
-                 .sendSync();
+        builder()
+                .query(insert)
+                .parameter(stmt -> stmt.setLong(guild.id()).setInt(repository.id()))
+                .insert()
+                .sendSync();
+    }
+
+    public List<CompletedRepository> complete(String value) {
+        @Language("postgresql")
+        var select = """
+                SELECT id, identifier
+                FROM guild_repository gr
+                         left join repository r on r.id = gr.repository_id
+                WHERE guild_id = ?
+                  AND identifier ILIKE '%' || ? || '%'
+                ORDER BY priority DESC
+                LIMIT 25""";
+
+        return builder(CompletedRepository.class)
+                .query(select)
+                .parameter(stmt -> stmt.setLong(guild.id()).setString(value))
+                .readRow(row -> new CompletedRepository(row.getInt("id"), row.getString("identifier")))
+                .allSync();
+    }
+
+    public record CompletedRepository(int id, String identifier) {
+
     }
 }

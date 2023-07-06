@@ -8,6 +8,9 @@ import java.sql.SQLException;
 public record Author(int id, String name, String mail) {
 
     public static Author build(Row row) throws SQLException {
-        return new Author(row.getInt("id"), row.getString("name"), row.getString("mail"));
+        return build(row, "id", "name", "mail");
+    }
+    public static Author build(Row row, String id, String name, String mail) throws SQLException {
+        return new Author(row.getInt(id), row.getString(name), row.getString(mail));
     }
 }

@@ -42,4 +42,8 @@ public abstract class BaseAdd implements SlashHandler {
     public Configuration<ConfigFile> configuration() {
         return configuration;
     }
+
+    public RepositoryData repositoryData() {
+        return repositoryData;
+    }
 }

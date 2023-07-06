@@ -1,13 +1,21 @@
 package de.chojo.krile.data.dao.repository.tags;
 
+import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.Authors;
 import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.dao.Author;
+import de.chojo.krile.data.dao.Category;
+import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.repository.tags.tag.TagMeta;
+import de.chojo.krile.data.dao.repository.tags.tag.tagmeta.FileMeta;
 import de.chojo.krile.tagimport.tag.RawTag;
-import de.chojo.krile.tagimport.tag.entities.FileMeta;
 import de.chojo.sadu.types.PostgreSqlTypes;
 import de.chojo.sadu.wrapper.util.Row;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.utils.TimeFormat;
+import net.dv8tion.jda.api.utils.Timestamp;
 import org.intellij.lang.annotations.Language;
 
 import java.sql.SQLException;
@@ -73,6 +81,9 @@ public final class Tag {
         return text.size() != 1;
     }
 
+    public TagMeta meta() {
+        return meta;
+    }
 
     public void update(RawTag raw) {
         @Language("postgresql")
@@ -85,8 +96,26 @@ public final class Tag {
                 .update()
                 .sendSync();
         meta.update(raw);
-        FileMeta fileMeta = raw.fileMeta();
-        raw.meta();
-        raw.text();
+    }
+
+    public MessageEmbed infoEmbed(EventContext context) {
+
+        Identifier identifier = repository.identifier();
+        EmbedBuilder builder = new EmbedBuilder()
+                .setAuthor("ID: %s Repo: %s".formatted(id, identifier))
+                .setTitle(tag);
+        List<String> aliases = meta.aliases().all();
+        if (!aliases.isEmpty()) builder.addField("Aliases", String.join(", ", aliases), true);
+        List<String> categories = meta.categories().all().stream().map(Category::name).toList();
+        if (!categories.isEmpty()) builder.addField("Categories", String.join(", ", categories), true);
+        List<String> authors = meta.tagAuthors().all().stream().map(Author::name).distinct().toList();
+        if (!authors.isEmpty()) builder.addField("Authors", String.join(", ", authors), true);
+
+        FileMeta fileMeta = meta.fileMeta();
+        var created = fileMeta.created();
+        var modified = fileMeta.modified();
+        builder.addField("Created", "%s by %s".formatted(TimeFormat.RELATIVE.format(created.when()), created.who().name()), true);
+        builder.addField("Modified", "%s by %s".formatted(TimeFormat.RELATIVE.format(modified.when()), modified.who().name()), true);
+        return builder.build();
     }
 }
