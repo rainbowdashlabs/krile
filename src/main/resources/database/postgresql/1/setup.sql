@@ -25,7 +25,7 @@ CREATE TABLE krile.guild_repository (
         CONSTRAINT guild_repository_repository_id_fk
             REFERENCES krile.repository
             ON DELETE CASCADE,
-    priority      INTEGER DEFAULT 1 NOTNULL
+    priority      INTEGER DEFAULT 1 NOT NULL
 );
 
 CREATE UNIQUE INDEX guild_repository_guild_id_repository_id_uindex
