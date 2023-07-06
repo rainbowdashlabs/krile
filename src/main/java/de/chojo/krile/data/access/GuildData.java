@@ -6,12 +6,12 @@ import de.chojo.krile.data.dao.TagGuild;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 
-public class Guilds {
+public class GuildData {
     private final Configuration<ConfigFile> configuration;
-    private final Authors authors;
-    private final Categories categories;
+    private final AuthorData authors;
+    private final CategoryData categories;
 
-    public Guilds(Configuration<ConfigFile>configuration, Authors authors, Categories categories) {
+    public GuildData(Configuration<ConfigFile>configuration, AuthorData authors, CategoryData categories) {
         this.configuration = configuration;
         this.authors = authors;
         this.categories = categories;

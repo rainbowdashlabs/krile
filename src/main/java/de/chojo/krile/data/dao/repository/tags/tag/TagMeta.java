@@ -1,7 +1,7 @@
 package de.chojo.krile.data.dao.repository.tags.tag;
 
-import de.chojo.krile.data.access.Authors;
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.AuthorData;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Author;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.krile.data.dao.repository.tags.tag.tagmeta.FileMeta;
@@ -18,10 +18,10 @@ public class TagMeta {
     private final Tag tag;
     private final TagCategories categories;
     private final TagAuthors tagAuthors;
-    private final Authors authors;
+    private final AuthorData authors;
     private final TagAliases aliases;
 
-    public TagMeta(Tag tag, Categories categories, Authors authors) {
+    public TagMeta(Tag tag, CategoryData categories, AuthorData authors) {
         this.tag = tag;
         this.categories = new TagCategories(this, categories);
         this.tagAuthors = new TagAuthors(this, authors);

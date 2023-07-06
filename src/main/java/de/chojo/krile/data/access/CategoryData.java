@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
-public class Categories {
+public class CategoryData {
     public Optional<Category> getOrCreate(String name) {
         return get(name).or(() -> create(name));
     }

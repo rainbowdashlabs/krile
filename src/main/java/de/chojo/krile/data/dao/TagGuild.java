@@ -2,8 +2,8 @@ package de.chojo.krile.data.dao;
 
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.krile.configuration.ConfigFile;
-import de.chojo.krile.data.access.Authors;
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.AuthorData;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.tagguild.Repositories;
 import de.chojo.krile.data.dao.tagguild.Tags;
 import net.dv8tion.jda.api.entities.Guild;
@@ -21,7 +21,7 @@ public class TagGuild {
         return repositories;
     }
 
-    public TagGuild(Guild guild, Configuration<ConfigFile> configuration, Categories categories, Authors authors) {
+    public TagGuild(Guild guild, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
         this.guild = guild;
         repositories = new Repositories(this, configuration, authors, categories);
         tags = new Tags(this, repositories, categories, authors);

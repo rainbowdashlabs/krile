@@ -2,7 +2,7 @@ package de.chojo.krile.commands.repository.handler.remove;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.dao.tagguild.GuildRepository;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class Remove implements SlashHandler {
-    private final Guilds guilds;
+    private final GuildData guilds;
 
-    public Remove(Guilds guilds) {
+    public Remove(GuildData guilds) {
         this.guilds = guilds;
     }
 

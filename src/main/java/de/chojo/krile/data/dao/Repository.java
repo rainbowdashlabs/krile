@@ -4,8 +4,8 @@ import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
-import de.chojo.krile.data.access.Authors;
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.AuthorData;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.repository.Data;
 import de.chojo.krile.data.dao.repository.Meta;
 import de.chojo.krile.data.dao.repository.RepositoryMeta;
@@ -31,7 +31,7 @@ public class Repository {
     private final Meta meta;
     private final Tags tags;
 
-    public Repository(int id, String url, String identifier, String directory, Configuration<ConfigFile> configuration, Categories categories, Authors authors) {
+    public Repository(int id, String url, String identifier, String directory, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
         this.id = id;
         this.url = url;
         this.identifier = Identifier.parse(identifier).get();
@@ -42,7 +42,7 @@ public class Repository {
         tags = new Tags(this, categories, authors);
     }
 
-    public static Repository build(Row row, Configuration<ConfigFile> configuration, Categories categories, Authors authors) throws SQLException {
+    public static Repository build(Row row, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) throws SQLException {
         return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), row.getString("directory"), configuration, categories, authors);
     }
 

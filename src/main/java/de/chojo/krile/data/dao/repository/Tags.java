@@ -1,14 +1,13 @@
 package de.chojo.krile.data.dao.repository;
 
-import de.chojo.krile.data.access.Authors;
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.AuthorData;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.RepositoryUpdateException;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.sadu.types.PostgreSqlTypes;
-import de.chojo.sadu.types.SqlType;
 import de.chojo.sadu.wrapper.util.Row;
 import org.intellij.lang.annotations.Language;
 
@@ -21,10 +20,10 @@ import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class Tags {
     private final Repository repository;
-    private final Categories categories;
-    private final Authors authors;
+    private final CategoryData categories;
+    private final AuthorData authors;
 
-    public Tags(Repository repository, Categories categories, Authors authors) {
+    public Tags(Repository repository, CategoryData categories, AuthorData authors) {
         this.repository = repository;
         this.categories = categories;
         this.authors = authors;

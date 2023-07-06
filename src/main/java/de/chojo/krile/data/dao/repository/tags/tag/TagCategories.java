@@ -1,6 +1,6 @@
 package de.chojo.krile.data.dao.repository.tags.tag;
 
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Category;
 import de.chojo.krile.tagimport.tag.RawTag;
 import org.intellij.lang.annotations.Language;
@@ -12,9 +12,9 @@ import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class TagCategories {
     private final TagMeta meta;
-    private final Categories categories;
+    private final CategoryData categories;
 
-    public TagCategories(TagMeta meta, Categories categories) {
+    public TagCategories(TagMeta meta, CategoryData categories) {
         this.meta = meta;
         this.categories = categories;
     }

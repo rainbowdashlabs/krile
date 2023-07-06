@@ -1,6 +1,7 @@
 $schema: "https://raw.githubusercontent.com/rainbowdashlabs/krile/main/.github/tag_schema.json"
 
 directory: "tags"
+category: ["test", "random"]
 exclude: ["ignored_tag"]
 public: true
 language: "en"

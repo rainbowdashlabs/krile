@@ -4,12 +4,12 @@ import de.chojo.jdautil.interactions.slash.Argument;
 import de.chojo.jdautil.interactions.slash.Slash;
 import de.chojo.jdautil.interactions.slash.provider.SlashProvider;
 import de.chojo.krile.commands.tag.handler.Show;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 
 public class Tag implements SlashProvider<Slash> {
-    private final Guilds guilds;
+    private final GuildData guilds;
 
-    public Tag(Guilds guilds) {
+    public Tag(GuildData guilds) {
         this.guilds = guilds;
     }
 

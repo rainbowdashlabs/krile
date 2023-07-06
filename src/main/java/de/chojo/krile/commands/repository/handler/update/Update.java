@@ -4,7 +4,7 @@ import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.dao.tagguild.GuildRepository;
 import de.chojo.krile.service.RepoUpdateService;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class Update implements SlashHandler {
-    private final Guilds guilds;
+    private final GuildData guilds;
     private final RepoUpdateService updateService;
     private final Configuration<ConfigFile> configuration;
 
-    public Update(Guilds guilds, RepoUpdateService updateService, Configuration<ConfigFile> configuration) {
+    public Update(GuildData guilds, RepoUpdateService updateService, Configuration<ConfigFile> configuration) {
         this.guilds = guilds;
         this.updateService = updateService;
         this.configuration = configuration;

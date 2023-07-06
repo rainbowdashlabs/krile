@@ -2,7 +2,7 @@ package de.chojo.krile.commands.repositories.handler.info;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.dao.tagguild.GuildRepository;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class Info implements SlashHandler {
-    private final Guilds guilds;
+    private final GuildData guilds;
 
-    public Info(Guilds guilds) {
+    public Info(GuildData guilds) {
         this.guilds = guilds;
     }
 

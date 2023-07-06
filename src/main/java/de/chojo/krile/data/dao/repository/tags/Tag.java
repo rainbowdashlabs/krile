@@ -1,8 +1,8 @@
 package de.chojo.krile.data.dao.repository.tags;
 
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.data.access.Authors;
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.AuthorData;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Author;
 import de.chojo.krile.data.dao.Category;
 import de.chojo.krile.data.dao.Identifier;
@@ -32,7 +32,7 @@ public final class Tag {
     private final Repository repository;
     private final TagMeta meta;
 
-    public Tag(int id, String tagId, String tag, List<String> text, Repository repository, Categories categories, Authors authors) {
+    public Tag(int id, String tagId, String tag, List<String> text, Repository repository, CategoryData categories, AuthorData authors) {
         this.id = id;
         this.tagId = tagId;
         this.tag = tag;
@@ -41,7 +41,7 @@ public final class Tag {
         this.meta = new TagMeta(this, categories, authors);
     }
 
-    public static Tag build(Row row, Repository repository, Categories categories, Authors authors) throws SQLException {
+    public static Tag build(Row row, Repository repository, CategoryData categories, AuthorData authors) throws SQLException {
         return new Tag(
                 row.getInt("id"),
                 row.getString("tag_id"),

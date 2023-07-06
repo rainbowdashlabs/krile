@@ -7,7 +7,7 @@ import de.chojo.jdautil.menus.entries.MenuEntry;
 import de.chojo.jdautil.pagination.bag.PageButton;
 import de.chojo.jdautil.pagination.bag.PrivateListPageBag;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -32,10 +32,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Show implements SlashHandler {
     public static final Button delete = Button.danger("delete", "delete").withEmoji(Emoji.fromUnicode("🗑️"));
     public static final Button info = Button.primary("info", "info").withEmoji(Emoji.fromUnicode("❓"));
-    private final Guilds guilds;
+    private final GuildData guilds;
     private static final Logger log = getLogger(Show.class);
 
-    public Show(Guilds guilds) {
+    public Show(GuildData guilds) {
         this.guilds = guilds;
     }
 
@@ -74,6 +74,10 @@ public class Show implements SlashHandler {
 
     public static void showTag(SlashCommandInteractionEvent event, EventContext context, TagGuild tagGuild, Tag tag) {
         tagGuild.tags().used(tag);
+        showTag(event, context, tag);
+    }
+
+    public static void showTag(SlashCommandInteractionEvent event, EventContext context, Tag tag) {
         boolean view = event.getGuild().getSelfMember().hasPermission(event.getChannel().asGuildMessageChannel(), Permission.VIEW_CHANNEL);
         if (tag.isPaged()) {
             context.registerPage(new PrivateListPageBag<>(tag.paged(), event.getUser().getIdLong()) {

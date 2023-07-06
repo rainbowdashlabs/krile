@@ -4,7 +4,7 @@ import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Identifier;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class ByUrl extends BaseAdd {
 
-    public ByUrl(RepositoryData repositoryData, Guilds guilds, Configuration<ConfigFile> configuration) {
+    public ByUrl(RepositoryData repositoryData, GuildData guilds, Configuration<ConfigFile> configuration) {
         super(repositoryData, guilds, configuration);
     }
 

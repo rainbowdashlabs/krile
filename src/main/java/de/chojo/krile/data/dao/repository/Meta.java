@@ -1,6 +1,6 @@
 package de.chojo.krile.data.dao.repository;
 
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.repo.RepoConfig;
@@ -12,7 +12,7 @@ public class Meta {
     private final Repository repository;
     private final RepositoryCategories categories;
 
-    public Meta(Repository repository, Categories categories) {
+    public Meta(Repository repository, CategoryData categories) {
         this.repository = repository;
         this.categories = new RepositoryCategories(this, categories);
     }

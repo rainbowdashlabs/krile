@@ -12,12 +12,12 @@ import de.chojo.krile.commands.repository.handler.add.ByUrl;
 import de.chojo.krile.commands.repository.handler.remove.Remove;
 import de.chojo.krile.commands.repository.handler.update.Update;
 import de.chojo.krile.configuration.ConfigFile;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.service.RepoUpdateService;
 
 public class Repository extends SlashCommand {
-    public Repository(RepositoryData repositoryData, Guilds guilds, Configuration<ConfigFile> configuration, RepoUpdateService updateService) {
+    public Repository(RepositoryData repositoryData, GuildData guilds, Configuration<ConfigFile> configuration, RepoUpdateService updateService) {
         super(Slash.of("repository", "Manage repositories of your guild")
                 .unlocalized()
                 .adminCommand()

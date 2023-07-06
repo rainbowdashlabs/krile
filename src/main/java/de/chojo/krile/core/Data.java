@@ -3,10 +3,11 @@ package de.chojo.krile.core;
 import com.zaxxer.hikari.HikariDataSource;
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.krile.configuration.ConfigFile;
-import de.chojo.krile.data.access.Authors;
-import de.chojo.krile.data.access.Categories;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.AuthorData;
+import de.chojo.krile.data.access.CategoryData;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
+import de.chojo.krile.data.access.TagData;
 import de.chojo.krile.data.bind.StaticQueryAdapter;
 import de.chojo.logutil.marker.LogNotify;
 import de.chojo.sadu.databases.PostgreSql;
@@ -28,10 +29,11 @@ public class Data {
     private final Threading threading;
     private final Configuration<ConfigFile> configuration;
     private HikariDataSource dataSource;
-    private Guilds guilds;
-    private Authors authors;
-    private Categories categories;
+    private GuildData guilds;
+    private AuthorData authors;
+    private CategoryData categories;
     private RepositoryData repositoryData;
+    private TagData tagData;
 
     private Data(Threading threading, Configuration<ConfigFile> configuration) {
         this.threading = threading;
@@ -92,10 +94,11 @@ public class Data {
 
     private void initDao() {
         log.info("Creating DAOs");
-        authors = new Authors();
-        categories = new Categories();
-        guilds = new Guilds(configuration, authors, categories);
+        authors = new AuthorData();
+        categories = new CategoryData();
+        guilds = new GuildData(configuration, authors, categories);
         repositoryData = new RepositoryData(configuration, categories, authors);
+        tagData = new TagData(repositoryData, categories, authors);
     }
 
     private HikariDataSource getConnectionPool() {
@@ -123,19 +126,23 @@ public class Data {
         return dataSource;
     }
 
-    public Guilds guilds() {
+    public GuildData guilds() {
         return guilds;
     }
 
-    public Authors authors() {
+    public AuthorData authors() {
         return authors;
     }
 
-    public Categories categories() {
+    public CategoryData categories() {
         return categories;
     }
 
     public RepositoryData repositories() {
         return repositoryData;
+    }
+
+    public TagData tags() {
+        return tagData;
     }
 }

@@ -1,7 +1,7 @@
 package de.chojo.krile.data.dao.tagguild;
 
-import de.chojo.krile.data.access.Authors;
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.AuthorData;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.sadu.wrapper.util.Row;
@@ -16,10 +16,10 @@ import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 public class Tags {
     private final TagGuild guild;
     private final Repositories repositories;
-    private final Categories categories;
-    private final Authors authors;
+    private final CategoryData categories;
+    private final AuthorData authors;
 
-    public Tags(TagGuild guild, Repositories repositories, Categories categories, Authors authors) {
+    public Tags(TagGuild guild, Repositories repositories, CategoryData categories, AuthorData authors) {
         this.guild = guild;
         this.repositories = repositories;
         this.categories = categories;
@@ -81,7 +81,7 @@ public class Tags {
                 .send();
     }
 
-    public int tagCount() {
+    public int count() {
         @Language("postgresql")
         var select = """
                 SELECT count(1)

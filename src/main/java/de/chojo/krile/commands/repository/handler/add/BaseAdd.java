@@ -4,7 +4,7 @@ import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
@@ -17,10 +17,10 @@ import java.util.Optional;
 
 public abstract class BaseAdd implements SlashHandler {
     private final RepositoryData repositoryData;
-    private final Guilds guilds;
+    private final GuildData guilds;
     private final Configuration<ConfigFile> configuration;
 
-    public BaseAdd(RepositoryData repositoryData, Guilds guilds, Configuration<ConfigFile> configuration) {
+    public BaseAdd(RepositoryData repositoryData, GuildData guilds, Configuration<ConfigFile> configuration) {
         this.repositoryData = repositoryData;
         this.guilds = guilds;
         this.configuration = configuration;

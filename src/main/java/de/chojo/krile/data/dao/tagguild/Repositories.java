@@ -2,8 +2,8 @@ package de.chojo.krile.data.dao.tagguild;
 
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.krile.configuration.ConfigFile;
-import de.chojo.krile.data.access.Authors;
-import de.chojo.krile.data.access.Categories;
+import de.chojo.krile.data.access.AuthorData;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.TagGuild;
 import org.intellij.lang.annotations.Language;
@@ -16,10 +16,10 @@ import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 public class Repositories {
     private final TagGuild guild;
     private final Configuration<ConfigFile> configuration;
-    private final Authors authors;
-    private final Categories categories;
+    private final AuthorData authors;
+    private final CategoryData categories;
 
-    public Repositories(TagGuild guild, Configuration<ConfigFile> configuration,Authors authors, Categories categories) {
+    public Repositories(TagGuild guild, Configuration<ConfigFile> configuration, AuthorData authors, CategoryData categories) {
         this.guild = guild;
         this.configuration = configuration;
         this.authors = authors;
@@ -87,6 +87,40 @@ public class Repositories {
                 .query(select)
                 .parameter(stmt -> stmt.setLong(guild.id()).setString(value))
                 .readRow(row -> new CompletedRepository(row.getInt("id"), row.getString("identifier")))
+                .allSync();
+    }
+
+    public int count() {
+        @Language("postgresql")
+        var select = """
+                SELECT count(1) FROM guild_repository where guild_id = ?""";
+        return builder(Integer.class)
+                .query(select)
+                .parameter(stmt -> stmt.setLong(guild.id()))
+                .map()
+                .firstSync()
+                .orElse(0);
+    }
+
+    public List<String> page(int page, int pageSize) {
+        @Language("postgresql")
+        var select = """
+                SELECT rm.name, identifier
+                FROM guild_repository gr
+                         LEFT JOIN repository_meta rm on gr.repository_id = rm.repository_id
+                         LEFT JOIN repository r on gr.repository_id = r.id
+                WHERE guild_id = ?
+                LIMIT ? OFFSET ?""";
+
+        return builder(String.class)
+                .query(select)
+                .parameter(stmt -> stmt.setLong(guild.id()).setInt(pageSize).setInt(page * pageSize))
+                .readRow(row -> {
+                    String name = row.getString("name");
+                    String identifier = row.getString("identifier");
+                    if (name == null) return "`%s`".formatted(identifier);
+                    return "%s (`%s`)".formatted(name, identifier);
+                })
                 .allSync();
     }
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
-public class Authors {
+public class AuthorData {
     public Optional<Author> getOrCreate(RawAuthor author) {
         return get(author).or(() -> create(author));
     }

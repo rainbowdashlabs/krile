@@ -1,6 +1,6 @@
 package de.chojo.krile.data.dao.repository.tags.tag;
 
-import de.chojo.krile.data.access.Authors;
+import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.dao.Author;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.krile.tagimport.tag.entities.RawAuthor;
@@ -13,9 +13,9 @@ import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class TagAuthors {
     private final TagMeta meta;
-    private final Authors authors;
+    private final AuthorData authors;
 
-    public TagAuthors(TagMeta meta, Authors authors) {
+    public TagAuthors(TagMeta meta, AuthorData authors) {
         this.meta = meta;
         this.authors = authors;
     }

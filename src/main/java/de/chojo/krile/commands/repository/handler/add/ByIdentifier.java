@@ -5,7 +5,7 @@ import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Identifier;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public class ByIdentifier extends BaseAdd {
 
-    public ByIdentifier(RepositoryData repositoryData, Guilds guilds, Configuration<ConfigFile> configuration) {
+    public ByIdentifier(RepositoryData repositoryData, GuildData guilds, Configuration<ConfigFile> configuration) {
         super(repositoryData, guilds, configuration);
     }
 

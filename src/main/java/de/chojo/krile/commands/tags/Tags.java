@@ -7,12 +7,12 @@ import de.chojo.jdautil.interactions.slash.provider.SlashProvider;
 import de.chojo.krile.commands.tags.handler.Info;
 import de.chojo.krile.commands.tags.handler.List;
 import de.chojo.krile.commands.tags.handler.Random;
-import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.access.GuildData;
 
 public class Tags implements SlashProvider<Slash> {
-    private final Guilds guilds;
+    private final GuildData guilds;
 
-    public Tags(Guilds guilds) {
+    public Tags(GuildData guilds) {
         this.guilds = guilds;
     }
 
