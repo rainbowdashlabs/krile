@@ -8,14 +8,13 @@ group = "de.chojo"
 version = "1.0.0"
 
 repositories {
-    mavenCentral()
     maven("https://eldonexus.de/repository/maven-public")
     maven("https://eldonexus.de/repository/maven-proxies")
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(20))
+        languageVersion.set(JavaLanguageVersion.of(18))
     }
 }
 
@@ -28,7 +27,7 @@ spotless {
 
 
 dependencies {
-    implementation("org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r")
+    //implementation("org.eclipse.jgit:org.eclipse.jgit:6.6.0.202305301015-r")
     implementation("de.chojo", "cjda-util", "2.9.0+beta.11-DEV") {
         exclude(group = "club.minnced", module = "opus-java")
     }

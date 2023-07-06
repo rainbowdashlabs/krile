@@ -1,9 +1,9 @@
-FROM eclipse-temurin:20-alpine as build
+FROM eclipse-temurin:18-alpine as build
 
 COPY . .
-RUN ./gradlew clean build
+RUN ./gradlew build
 
-FROM eclipse-temurin:20-alpine as runtime
+FROM eclipse-temurin:18-alpine as runtime
 
 WORKDIR /app
 

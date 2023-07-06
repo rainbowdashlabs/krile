@@ -3,8 +3,6 @@ rootProject.name = "krile"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            // jackson & serialization
-
             // misc
             library("jetbrains-annotations", "org.jetbrains:annotations:24.0.1")
             version("sadu", "1.3.1-DEV")
@@ -25,9 +23,6 @@ dependencyResolutionManagement {
             plugin("spotless", "com.diffplug.spotless").version("6.19.0")
             plugin("shadow", "com.github.johnrengelman.shadow").version("8.1.1")
 
-        }
-        create("testlibs") {
-            library("mockbukkit", "com.github.seeseemelk:MockBukkit-v1.19:3.1.0")
         }
     }
 }

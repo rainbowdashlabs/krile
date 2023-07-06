@@ -27,7 +27,7 @@ public class Threading {
     private final ScheduledExecutorService botWorker = Executors.newScheduledThreadPool(3, createThreadFactory(workerGroup));
 
     private static final Thread.UncaughtExceptionHandler EXCEPTION_HANDLER =
-            (t, e) -> log.error(LogNotify.NOTIFY_ADMIN, "An uncaught exception occurred in " + t.getName() + "-" + t.threadId() + ".", e);
+            (t, e) -> log.error(LogNotify.NOTIFY_ADMIN, "An uncaught exception occurred in " + t.getName() + "-" + t.getId() + ".", e);
 
     public static ThreadFactory createThreadFactory(ThreadGroup group) {
         return r -> {
