@@ -1,3 +1,9 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
+
 package de.chojo.krile.tagimport.repo;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;

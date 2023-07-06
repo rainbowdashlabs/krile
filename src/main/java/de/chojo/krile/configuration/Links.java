@@ -1,9 +1,15 @@
+/*
+ *     SPDX-License-Identifier: AGPL-3.0-only
+ *
+ *     Copyright (C) RainbowDashLabs and Contributor
+ */
+
 package de.chojo.krile.configuration;
 
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal", "CanBeFinal"})
 public class Links {
     private String tos = "";
-    private String invite = "https://discord.com/oauth2/authorize?client_id=1126568385732419615&scope=bot&permissions=2415921152";
+    private String invite = "https://discord.com/oauth2/authorize?client_id=1126568385732419615&scope=bot&permissions=274877959168";
     private String support = "";
     private String website = "https://rainbowdashlabs.github.io/krile/";
     private String faq = "https://rainbowdashlabs.github.io/krile/faq";
