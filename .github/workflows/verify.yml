@@ -23,11 +23,11 @@ jobs:
         run: ./gradlew test --info
 
 
-#  build-docker:
-#    runs-on: ubuntu-latest
-#    name: Docker build
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Build as Docker image
-#        run: docker build .
+  build-docker:
+    runs-on: ubuntu-latest
+    name: Docker build
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build as Docker image
+        run: docker build .
