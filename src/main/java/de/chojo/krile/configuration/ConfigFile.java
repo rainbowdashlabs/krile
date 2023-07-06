@@ -13,7 +13,9 @@ import de.chojo.krile.configuration.elements.Repositories;
 public class ConfigFile {
     private BaseSettings baseSettings = new BaseSettings();
     private Database database = new Database();
-private Repositories repositories = new Repositories();
+    private Repositories repositories = new Repositories();
+    private Links links = new Links();
+
     public BaseSettings baseSettings() {
         return baseSettings;
     }
@@ -27,6 +29,6 @@ private Repositories repositories = new Repositories();
     }
 
     public Links links() {
-        return null;
+        return links;
     }
 }
