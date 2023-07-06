@@ -43,6 +43,24 @@ public class Meta {
         categories.updateCategories(repository);
     }
 
+    public RepositoryMeta get() {
+        @Language("postgresql")
+        var select = """
+                SELECT name, description, public_repo, language, public FROm repository_meta WHERE repository_id = ?""";
+
+        return builder(RepositoryMeta.class)
+                .query(select)
+                .parameter(stmt -> stmt.setInt(repository.id()))
+                .readRow(row -> new RepositoryMeta(
+                        row.getString("name"),
+                        row.getString("description"),
+                        row.getBoolean("public_repo"),
+                        row.getBoolean("public"),
+                        row.getString("language")))
+                .firstSync()
+                .get();
+    }
+
     public Repository repository() {
         return repository;
     }

@@ -5,6 +5,7 @@ import de.chojo.jdautil.interactions.dispatching.InteractionHub;
 import de.chojo.krile.commands.repositories.Repositories;
 import de.chojo.krile.commands.tag.Tag;
 import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.service.RepoUpdateService;
 import de.chojo.logutil.marker.LogNotify;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
@@ -21,6 +22,7 @@ public class Bot {
     private final Threading threading;
     private final Configuration<ConfigFile> configuration;
     private ShardManager shardManager;
+        private RepoUpdateService repoUpdateService;
 
     private Bot(Data data, Threading threading, Configuration<ConfigFile> configuration) {
         this.data = data;
@@ -41,6 +43,7 @@ public class Bot {
     }
 
     private void initServices() {
+        repoUpdateService = RepoUpdateService.create(threading, configuration, data.repositories());
     }
 
     private void initShardManager() {
@@ -64,7 +67,7 @@ public class Bot {
                 .withDefaultMenuService()
                 .withPagination(builder -> builder.previousText("Previous").nextText("Next"))
                 .withDefaultModalService()
-                .withCommands(new Repositories(data.repositories(), data.guilds(), configuration),
+                .withCommands(new Repositories(data.repositories(), data.guilds(), configuration, repoUpdateService),
                         new Tag(data.guilds()))
                 .build();
     }

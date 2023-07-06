@@ -31,7 +31,7 @@ public class Data {
         @Language("postgresql")
         var insert = """
                 INSERT INTO repository_data(repository_id, updated, checked, commit, branch)
-                VALUES (?, now(), now(), ?, ?)
+                VALUES (?, now() at time zone 'UTC', now() at time zone 'UTC', ?, ?)
                 ON CONFLICT(repository_id)
                     DO UPDATE
                     SET updated = now(),

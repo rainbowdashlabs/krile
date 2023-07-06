@@ -9,13 +9,16 @@ import de.chojo.jdautil.interactions.slash.provider.SlashCommand;
 import de.chojo.krile.commands.repositories.handler.add.ByIdentifier;
 import de.chojo.krile.commands.repositories.handler.add.ByNames;
 import de.chojo.krile.commands.repositories.handler.add.ByUrl;
+import de.chojo.krile.commands.repositories.handler.info.Info;
 import de.chojo.krile.commands.repositories.handler.remove.Remove;
+import de.chojo.krile.commands.repositories.handler.update.Update;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.Guilds;
 import de.chojo.krile.data.access.RepositoryData;
+import de.chojo.krile.service.RepoUpdateService;
 
 public class Repositories extends SlashCommand {
-    public Repositories(RepositoryData repositoryData, Guilds guilds, Configuration<ConfigFile> configuration) {
+    public Repositories(RepositoryData repositoryData, Guilds guilds, Configuration<ConfigFile> configuration, RepoUpdateService updateService) {
         super(Slash.of("repository", "Manage repositories of your guild")
                 .unlocalized()
                 .adminCommand()
@@ -37,6 +40,12 @@ public class Repositories extends SlashCommand {
                 )
                 .subCommand(SubCommand.of("remove", "Remove a repository")
                         .handler(new Remove(guilds))
+                        .argument(Argument.text("repository", "repository identifier").asRequired().withAutoComplete()))
+                .subCommand(SubCommand.of("update", "Manually update a repository")
+                        .handler(new Update(guilds, updateService, configuration))
+                        .argument(Argument.text("repository", "repository identifier").asRequired().withAutoComplete()))
+                .subCommand(SubCommand.of("info", "Information about a repository")
+                        .handler(new Info(guilds))
                         .argument(Argument.text("repository", "repository identifier").asRequired().withAutoComplete()))
                 .build());
     }

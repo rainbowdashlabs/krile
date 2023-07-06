@@ -66,6 +66,21 @@ public class Tags {
                 .firstSync();
     }
 
+    public void used(Tag tag) {
+         @Language("postgresql")
+          var insert = """
+              INSERT INTO tag_stat as s (guild_id, tag_id)
+              VALUES (?, ?)
+              ON CONFLICT (guild_id, tag_id)
+              DO UPDATE SET views = s.views + 1""";
+         builder()
+                 .query(insert)
+                 .parameter(stmt -> stmt.setLong(guild.id()).setInt(tag.id()))
+                 .insert()
+                 .send();
+
+    }
+
     public record CompletedTag(int id, String name) {
         public static CompletedTag build(Row row) throws SQLException {
             return new CompletedTag(row.getInt("id"), row.getString("name"));

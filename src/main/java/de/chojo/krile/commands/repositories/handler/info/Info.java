@@ -1,9 +1,10 @@
-package de.chojo.krile.commands.repositories.handler.remove;
+package de.chojo.krile.commands.repositories.handler.info;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.Guilds;
 import de.chojo.krile.data.dao.tagguild.GuildRepository;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -12,26 +13,22 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import java.util.List;
 import java.util.Optional;
 
-public class Remove implements SlashHandler {
+public class Info implements SlashHandler {
     private final Guilds guilds;
 
-    public Remove(Guilds guilds) {
+    public Info(Guilds guilds) {
         this.guilds = guilds;
     }
 
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
-        Optional<GuildRepository> optRepo = guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
-        if (optRepo.isEmpty()) {
-            event.reply("Unknown repository").setEphemeral(true).queue();
+        Optional<GuildRepository> repository = guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
+        if (repository.isEmpty()) {
+            event.reply("Unknown Repository").setEphemeral(true).queue();
             return;
         }
-        GuildRepository repository = optRepo.get();
-        if (repository.unsubscribe()) {
-            event.reply("Repository `%s` removed from guild".formatted(repository.identifier())).setEphemeral(true).queue();
-        } else {
-            event.reply("Could not remove repository").setEphemeral(true).queue();
-        }
+        MessageEmbed messageEmbed = repository.get().infoEmbed(context);
+        event.replyEmbeds(messageEmbed).setEphemeral(true).queue();
     }
 
     @Override

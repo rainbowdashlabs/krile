@@ -33,7 +33,7 @@ public class Tags {
     public List<Tag> all() {
         @Language("postgresql")
         var select = """
-                SELECT repository_id, id, tag_id, tag FROM tag WHERE repository_id = ?""";
+                SELECT repository_id, id, tag_id, tag, content FROM tag WHERE repository_id = ?""";
         return builder(Tag.class)
                 .query(select)
                 .parameter(stmt -> stmt.setInt(repository.id()))
@@ -83,7 +83,7 @@ public class Tags {
     public Optional<Tag> byTagId(String tagId) {
         @Language("postgresql")
         var select = """
-                SELECT repository_id, id, tag_id, tag
+                SELECT repository_id, id, tag_id, tag, content
                 FROM tag
                 WHERE tag_id = ?
                   AND repository_id = ?""";
@@ -96,5 +96,14 @@ public class Tags {
 
     private Tag buildTag(Row row) throws SQLException {
         return Tag.build(row, repository, categories, authors);
+    }
+
+    public int count() {
+        return builder(Integer.class)
+                .query("SELECT count(1) FROM tag WHERE repository_id = ?")
+                .parameter(stmt -> stmt.setInt(repository.id()))
+                .readRow(row -> row.getInt("count"))
+                .firstSync()
+                .orElse(0);
     }
 }

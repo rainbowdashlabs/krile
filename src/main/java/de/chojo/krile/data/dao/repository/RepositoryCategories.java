@@ -5,6 +5,7 @@ import de.chojo.krile.data.dao.Category;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import org.intellij.lang.annotations.Language;
 
+import java.util.List;
 import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
@@ -44,5 +45,19 @@ public class RepositoryCategories {
                 .parameter(stmt -> stmt.setInt(meta.repository().id()))
                 .delete()
                 .sendSync();
+    }
+
+    public List<Category> all() {
+        @Language("postgresql")
+        var select = """
+                SELECT id, category
+                FROM repository_category rc
+                         LEFT JOIN category c on c.id = rc.category_id
+                WHERE repository_id = ?""";
+        return builder(Category.class)
+                .query(select)
+                .parameter(stmt -> stmt.setInt(meta.repository().id()))
+                .readRow(Category::build)
+                .allSync();
     }
 }

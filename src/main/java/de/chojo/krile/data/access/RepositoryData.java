@@ -150,4 +150,20 @@ public class RepositoryData {
     public List<String> completeIdentifier(String value) {
         return complete("identifier", value);
     }
+
+    public List<Repository> leastUpdated(int check, int limit) {
+         @Language("postgresql")
+          var select = """
+              SELECT id, url, identifier, directory
+              FROM repository r
+                       LEFT JOIN repository_data rd on r.id = rd.repository_id
+              WHERE checked < now() at time zone 'UTC' - (?::TEXT || ' MINUTES')::INTERVAL
+              ORDER BY checked
+              LIMIT ?""";
+         return builder(Repository.class)
+                 .query(select)
+                 .parameter(stmt -> stmt.setInt(check).setInt(limit))
+                 .readRow(this::buildRepository)
+                 .allSync();
+    }
 }

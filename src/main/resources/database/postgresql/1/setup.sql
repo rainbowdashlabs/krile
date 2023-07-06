@@ -190,3 +190,15 @@ create table krile.tag_meta
     modified_by integer                 not null
 );
 
+create table krile.tag_stat
+(
+    guild_id integer,
+    tag_id   integer           not null
+        constraint tag_stat_tag_id_fk
+            references krile.tag (id),
+    views    integer default 1 not null
+);
+
+create unique index tag_stat_guild_id_tag_id_uindex
+    on krile.tag_stat (guild_id, tag_id);
+

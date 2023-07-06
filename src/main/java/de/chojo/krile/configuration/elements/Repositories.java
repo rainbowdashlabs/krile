@@ -21,11 +21,27 @@ public class Repositories {
             "https://gitlab.com",
             "https://gitlab.com/{user}/{repo}/-/blob/{branch}/{path}",
             "https://gitlab.com/{user}/{repo}/-/tree/{branch}/{path}"
-            );
+    );
     private List<RepositoryLocation> repositories = List.of(GITHUB, GITLAB);
+    /**
+     * Minutes after which a repository will be checked automatically
+     */
+    private int check = 60;
+    /**
+     * Minutes after which a repository can be scheduled to be checked again.
+     */
+    private int minCheck = 5;
 
     public List<RepositoryLocation> repositories() {
         return repositories;
+    }
+
+    public int check() {
+        return check;
+    }
+
+    public int minCheck() {
+        return minCheck;
     }
 
     public Optional<RepositoryLocation> find(String url) {

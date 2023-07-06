@@ -68,6 +68,7 @@ public class Show implements SlashHandler {
             return;
         }
         Tag tag = byId.get();
+        guilds.guild(event).tags().used(tag);
         boolean view = event.getGuild().getSelfMember().hasPermission(event.getChannel().asGuildMessageChannel(), Permission.VIEW_CHANNEL);
         if (tag.isPaged()) {
             context.registerPage(new PrivateListPageBag<>(tag.paged(), event.getUser().getIdLong()) {

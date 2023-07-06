@@ -1,6 +1,7 @@
 package de.chojo.krile.data.dao.tagguild;
 
 import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.Authors;
 import de.chojo.krile.data.access.Categories;
