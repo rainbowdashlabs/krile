@@ -18,6 +18,7 @@ public class Repositories implements SlashProvider<Slash> {
     @Override
     public Slash slash() {
         return Slash.of("repositories", "Information about repositories on this server")
+                .unlocalized()
                 .subCommand(SubCommand.of("info", "Information about a repository")
                         .handler(new Info(guilds))
                         .argument(Argument.text("repository", "repository identifier").asRequired().withAutoComplete()))

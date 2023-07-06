@@ -45,7 +45,7 @@ public class Discover implements SlashProvider<Slash> {
                 )
                 .group(Group.of("tags", "Discover new tags")
                         .subCommand(SubCommand.of("search", "Search a tag by filters")
-                                .handler(new SearchTag(tagData))
+                                .handler(new SearchTag(tagData, repositoryData))
                                 .argument(Argument.text("category", "category").withAutoComplete())
                                 .argument(Argument.text("language", "language of the repository containing the tag").withAutoComplete())
                                 .argument(Argument.text("name", "part of the name"))

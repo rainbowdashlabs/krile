@@ -46,6 +46,11 @@ public class SearchRepo implements SlashHandler {
             public CompletableFuture<MessageEditData> buildPage() {
                 return CompletableFuture.completedFuture(MessageEditData.fromEmbeds(currentElement().infoEmbed(context)));
             }
+
+            @Override
+            public CompletableFuture<MessageEditData> buildEmptyPage() {
+                return CompletableFuture.completedFuture(MessageEditData.fromContent("No repositories found"));
+            }
         };
         context.registerPage(page, true);
     }

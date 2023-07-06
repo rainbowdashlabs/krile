@@ -2,12 +2,16 @@ package de.chojo.krile.commands.discover.handler.tags;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.pagination.bag.ListPageBag;
+import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.wrapper.EventContext;
+import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.access.TagData;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.krile.data.util.TagFilter;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
@@ -16,9 +20,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class SearchTag implements SlashHandler {
     private final TagData tagData;
+    private final RepositoryData repositoryData;
 
-    public SearchTag(TagData tagData) {
+    public SearchTag(TagData tagData, RepositoryData repositoryData) {
         this.tagData = tagData;
+        this.repositoryData = repositoryData;
     }
 
     @Override
@@ -34,6 +40,11 @@ public class SearchTag implements SlashHandler {
             public CompletableFuture<MessageEditData> buildPage() {
                 return CompletableFuture.completedFuture(MessageEditData.fromEmbeds(currentElement().infoEmbed(context)));
             }
+
+            @Override
+            public CompletableFuture<MessageEditData> buildEmptyPage() {
+                return CompletableFuture.completedFuture(MessageEditData.fromContent("No tags found"));
+            }
         };
         context.registerPage(page, true);
 
@@ -41,6 +52,14 @@ public class SearchTag implements SlashHandler {
 
     @Override
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
-        SlashHandler.super.onAutoComplete(event, context);
+        AutoCompleteQuery option = event.getFocusedOption();
+        if (option.getName().equals("language")) {
+            event.replyChoices(Choice.toStringChoice(repositoryData.completeLanguage(option.getValue()))).queue();
+            return;
+        }
+        if (option.getName().equals("category")) {
+            event.replyChoices(tagData.completeCategories(option.getValue()).stream().map(e -> new Command.Choice(e.category(), e.id())).toList()).queue();
+            return;
+        }
     }
 }

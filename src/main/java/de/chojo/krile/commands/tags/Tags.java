@@ -19,6 +19,7 @@ public class Tags implements SlashProvider<Slash> {
     @Override
     public Slash slash() {
         return Slash.of("tags", "Information about tags on this server")
+                .unlocalized()
                 .subCommand(SubCommand.of("info", "Information about a tag")
                         .handler(new Info(guilds))
                         .argument(Argument.text("tag", "name of tag").withAutoComplete().asRequired()))

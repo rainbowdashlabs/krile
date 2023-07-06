@@ -146,26 +146,17 @@ public class RepositoryData {
                 SELECT rm.%s
                 FROM repository r
                          LEFT JOIN repository_meta rm on r.id = rm.repository_id
-                WHERE r.%s ILIKE '%%' || ? || '%%'
+                WHERE rm.%s ILIKE '%%' || ? || '%%'
                   AND rm.public
                 LIMIT 24
                 """;
         return complete(select, column, value);
     }
     private List<String> complete(String query, String column, String value) {
-        @Language("postgresql")
-        var select = """
-                SELECT rm.%s
-                FROM repository r
-                         LEFT JOIN repository_meta rm on r.id = rm.repository_id
-                WHERE r.%s ILIKE '%%' || ? || '%%'
-                  AND rm.public
-                LIMIT 24
-                """;
         List<String> result = new ArrayList<>();
         if (!value.isBlank()) result.add(value);
         List<String> name = builder(String.class)
-                .query(select, column, column)
+                .query(query, column, column)
                 .parameter(stmt -> stmt.setString(value))
                 .readRow(row -> row.getString(column))
                 .allSync();

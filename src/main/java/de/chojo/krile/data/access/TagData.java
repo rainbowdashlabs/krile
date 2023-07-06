@@ -1,6 +1,7 @@
 package de.chojo.krile.data.access;
 
 import de.chojo.krile.data.dao.repository.tags.Tag;
+import de.chojo.krile.data.util.CompletedCategory;
 import de.chojo.krile.data.util.TagFilter;
 import org.intellij.lang.annotations.Language;
 
@@ -95,5 +96,29 @@ public class TagData {
                 ).readRow(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
                 .allSync();
 
+    }
+
+    public List<CompletedCategory> completeCategories(String value) {
+        @Language("postgresql")
+        var select = """
+                SELECT
+                    c.id,
+                    category
+                FROM
+                    repository_meta m
+                        LEFT JOIN tag t
+                        ON m.repository_id = t.repository_id
+                        LEFT JOIN tag_category tc
+                        ON t.id = tc.tag_id
+                        LEFT JOIN category c
+                        ON tc.category_id = c.id
+                WHERE public
+                  AND category ILIKE '%' || ? || '%'
+                LIMIT 25""";
+        return builder(CompletedCategory.class)
+                .query(select)
+                .parameter(stmt -> stmt.setString(value))
+                .readRow(row -> new CompletedCategory(row.getInt("id"), row.getString("category")))
+                .allSync();
     }
 }
