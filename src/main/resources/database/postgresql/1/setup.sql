@@ -192,7 +192,7 @@ create table krile.tag_meta
 
 create table krile.tag_stat
 (
-    guild_id integer,
+    guild_id bigint not null ,
     tag_id   integer           not null
         constraint tag_stat_tag_id_fk
             references krile.tag (id),

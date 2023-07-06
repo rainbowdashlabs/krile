@@ -11,6 +11,8 @@ import de.chojo.krile.data.bind.StaticQueryAdapter;
 import de.chojo.logutil.marker.LogNotify;
 import de.chojo.sadu.databases.PostgreSql;
 import de.chojo.sadu.datasource.DataSourceCreator;
+import de.chojo.sadu.mapper.PostgresqlMapper;
+import de.chojo.sadu.mapper.RowMapperRegistry;
 import de.chojo.sadu.updater.QueryReplacement;
 import de.chojo.sadu.updater.SqlUpdater;
 import de.chojo.sadu.wrapper.QueryBuilderConfig;
@@ -79,9 +81,12 @@ public class Data {
     private void configure() {
         log.info("Configuring QueryBuilder");
         var logger = getLogger("DbLogger");
+        RowMapperRegistry rowMapperRegistry = new RowMapperRegistry();
+        rowMapperRegistry.register(PostgresqlMapper.getDefaultMapper());
         QueryBuilderConfig.setDefault(QueryBuilderConfig.builder()
                 .withExceptionHandler(err -> logger.error(LogNotify.NOTIFY_ADMIN, "An error occurred during a database request", err))
                 .withExecutor(threading.botWorker())
+                .rowMappers(rowMapperRegistry)
                 .build());
     }
 

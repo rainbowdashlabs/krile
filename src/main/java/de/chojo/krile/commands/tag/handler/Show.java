@@ -1,4 +1,4 @@
-package de.chojo.krile.commands.tag;
+package de.chojo.krile.commands.tag.handler;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.menus.MenuAction;
@@ -8,6 +8,7 @@ import de.chojo.jdautil.pagination.bag.PageButton;
 import de.chojo.jdautil.pagination.bag.PrivateListPageBag;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.Guilds;
+import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -68,7 +69,11 @@ public class Show implements SlashHandler {
             return;
         }
         Tag tag = byId.get();
-        guilds.guild(event).tags().used(tag);
+        showTag(event, context, guilds.guild(event), tag);
+    }
+
+    public static void showTag(SlashCommandInteractionEvent event, EventContext context, TagGuild tagGuild, Tag tag) {
+        tagGuild.tags().used(tag);
         boolean view = event.getGuild().getSelfMember().hasPermission(event.getChannel().asGuildMessageChannel(), Permission.VIEW_CHANNEL);
         if (tag.isPaged()) {
             context.registerPage(new PrivateListPageBag<>(tag.paged(), event.getUser().getIdLong()) {
@@ -95,12 +100,15 @@ public class Show implements SlashHandler {
         }
         menu.addComponent(MenuEntry.of(info, ctx -> ctx.event().replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
         context.registerMenu(menu.build());
-
     }
 
     @Override
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
-        List<Command.Choice> choices = guilds.guild(event).tags().complete(event.getFocusedOption().getValue()).stream().limit(25).map(e -> new Command.Choice(e.name(), e.id())).toList();
+        List<Command.Choice> choices = guilds.guild(event).tags()
+                .complete(event.getFocusedOption().getValue())
+                .stream()
+                .map(e -> new Command.Choice(e.name(), e.id()))
+                .toList();
         event.replyChoices(choices).queue();
     }
 }

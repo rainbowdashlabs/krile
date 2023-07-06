@@ -19,4 +19,8 @@ private Repositories repositories = new Repositories();
     public Repositories repositories() {
         return repositories;
     }
+
+    public Links links() {
+        return null;
+    }
 }

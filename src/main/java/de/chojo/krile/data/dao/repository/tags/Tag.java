@@ -15,7 +15,6 @@ import de.chojo.sadu.wrapper.util.Row;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.TimeFormat;
-import org.eclipse.jetty.util.UrlEncoded;
 import org.intellij.lang.annotations.Language;
 
 import java.net.URLEncoder;
@@ -43,7 +42,14 @@ public final class Tag {
     }
 
     public static Tag build(Row row, Repository repository, Categories categories, Authors authors) throws SQLException {
-        return new Tag(row.getInt("id"), row.getString("tag_id"), row.getString("tag"), row.getList("content"), repository, categories, authors);
+        return new Tag(
+                row.getInt("id"),
+                row.getString("tag_id"),
+                row.getString("tag"),
+                row.getList("content"),
+                repository,
+                categories,
+                authors);
     }
 
     public Repository repository() {

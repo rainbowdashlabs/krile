@@ -45,7 +45,8 @@ public class Tags {
                             and tag ILIKE ('%' || ? || '%')
                             and gr.guild_id = ?)
                 SELECT id, case when rank = 1 then tag else tag || ' (' || identifier || ')' end as name
-                FROM ranked_tags;
+                FROM ranked_tags
+                LIMIT 25;
                 """;
 
         return builder(CompletedTag.class)
@@ -56,9 +57,9 @@ public class Tags {
     }
 
     public Optional<Tag> getById(int tag) {
-         @Language("postgresql")
-          var select = """
-              SELECT repository_id, id, tag_id, tag, content FROM tag t WHERE id = ?""";
+        @Language("postgresql")
+        var select = """
+                SELECT repository_id, id, tag_id, tag, content FROM tag t WHERE id = ?""";
         return builder(Tag.class)
                 .query(select)
                 .parameter(stmt -> stmt.setInt(tag))
@@ -67,18 +68,82 @@ public class Tags {
     }
 
     public void used(Tag tag) {
-         @Language("postgresql")
-          var insert = """
-              INSERT INTO tag_stat as s (guild_id, tag_id)
-              VALUES (?, ?)
-              ON CONFLICT (guild_id, tag_id)
-              DO UPDATE SET views = s.views + 1""";
-         builder()
-                 .query(insert)
-                 .parameter(stmt -> stmt.setLong(guild.id()).setInt(tag.id()))
-                 .insert()
-                 .send();
+        @Language("postgresql")
+        var insert = """
+                INSERT INTO tag_stat as s (guild_id, tag_id)
+                VALUES (?, ?)
+                ON CONFLICT (guild_id, tag_id)
+                DO UPDATE SET views = s.views + 1""";
+        builder()
+                .query(insert)
+                .parameter(stmt -> stmt.setLong(guild.id()).setInt(tag.id()))
+                .insert()
+                .send();
+    }
 
+    public int tagCount() {
+        @Language("postgresql")
+        var select = """
+                SELECT count(1)
+                FROM guild_repository gr
+                         LEFT JOIN tag t ON gr.repository_id = t.repository_id
+                WHERE guild_id = ?""";
+        return builder(Integer.class)
+                .query(select)
+                .parameter(stmt -> stmt.setLong(guild.id()))
+                .map()
+                .firstSync()
+                .orElse(0);
+    }
+
+    public List<RankedTag> rankingPage(int page, int size) {
+        @Language("postgresql")
+        var select = """
+                with ranked_tags
+                         AS (SELECT row_number() over (PARTITION BY tag ORDER BY gr.priority DESC) as duplicate,
+                                    rank() OVER (ORDER BY views) as rank,
+                                    gr.priority,
+                                    t.id,
+                                    tag,
+                                    identifier,
+                                    coalesce(views, 0)                                             as views
+                             FROM guild_repository gr
+                                      LEFT JOIN tag t ON gr.repository_id = t.repository_id
+                                      LEFT JOIN tag_stat s ON t.id = s.tag_id
+                                      LEFT JOIN repository r on gr.repository_id = r.id
+                             WHERE gr.guild_id = ?
+                             ORDER BY views DESC, priority DESC)
+                SELECT id, rank, case when duplicate = 1 then tag else tag || ' (' || identifier || ')' end as name, views
+                FROM ranked_tags
+                LIMIT ? OFFSET ?""";
+        return builder(RankedTag.class)
+                .query(select)
+                .parameter(stmt -> stmt.setLong(guild.id()).setInt(size).setInt(size * page))
+                .readRow(row -> new RankedTag(row.getInt("rank"), row.getString("name"), row.getInt("views")))
+                .allSync();
+    }
+
+    public Optional<Tag> random() {
+        @Language("postgresql")
+        var select = """
+                SELECT gr.repository_id, t.id,  tag_id, tag, content
+                FROM guild_repository gr
+                         LEFT JOIN tag t on gr.repository_id = t.repository_id
+                where guild_id = ?
+                ORDER BY random()
+                LIMIT 1""";
+        return builder(Tag.class)
+                .query(select)
+                .parameter(stmt -> stmt.setLong(guild.id()))
+                .readRow(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .firstSync();
+    }
+
+    public record RankedTag(int rank, String tag, int views) {
+        @Override
+        public String toString() {
+            return "`%d`. %s - %d".formatted(rank, tag, views);
+        }
     }
 
     public record CompletedTag(int id, String name) {

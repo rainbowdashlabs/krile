@@ -2,8 +2,12 @@ package de.chojo.krile.core;
 
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.interactions.dispatching.InteractionHub;
+import de.chojo.krile.commands.discover.Discover;
+import de.chojo.krile.commands.info.Info;
+import de.chojo.krile.commands.repositories.Repositories;
 import de.chojo.krile.commands.repository.Repository;
 import de.chojo.krile.commands.tag.Tag;
+import de.chojo.krile.commands.tags.Tags;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.service.RepoUpdateService;
 import de.chojo.logutil.marker.LogNotify;
@@ -49,7 +53,7 @@ public class Bot {
     private void initShardManager() {
         shardManager = DefaultShardManagerBuilder
                 .createDefault(configuration.config().baseSettings().token())
-                .enableIntents(GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
+                .enableIntents(GatewayIntent.DIRECT_MESSAGES)
                 .setEnableShutdownHook(false)
                 .setThreadFactory(Threading.createThreadFactory(threading.jdaGroup()))
                 .setEventPool(threading.jdaWorker())
@@ -67,8 +71,13 @@ public class Bot {
                 .withDefaultMenuService()
                 .withPagination(builder -> builder.previousText("Previous").nextText("Next"))
                 .withDefaultModalService()
-                .withCommands(new Repository(data.repositories(), data.guilds(), configuration, repoUpdateService),
-                        new Tag(data.guilds()))
+                .withCommands(
+                        new Repository(data.repositories(), data.guilds(), configuration, repoUpdateService),
+                        new Tag(data.guilds()),
+                        Info.create(configuration),
+                        new Tags(data.guilds()),
+                        new Repositories(data.guilds()),
+                        new Discover())
                 .build();
     }
 
