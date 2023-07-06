@@ -1,5 +1,7 @@
 package de.chojo.krile.data.dao.tagguild;
 
+import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.Authors;
 import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.dao.Repository;
@@ -15,19 +17,20 @@ public class GuildRepository extends Repository {
     private final TagGuild guild;
     private int priority;
 
-    public GuildRepository(TagGuild guild, int priority, int id, String url, String identifier, String directory, Categories categories, Authors authors) {
-        super(id, url, identifier, directory, categories, authors);
+    public GuildRepository(TagGuild guild, int priority, int id, String url, String identifier, String directory, Configuration<ConfigFile> configuration, Categories categories, Authors authors) {
+        super(id, url, identifier, directory, configuration, categories, authors);
         this.guild = guild;
         this.priority = priority;
     }
 
-    public static GuildRepository build(Row row, TagGuild guild, Categories categories, Authors authors) throws SQLException {
+    public static GuildRepository build(Row row, TagGuild guild, Configuration<ConfigFile> configuration, Categories categories, Authors authors) throws SQLException {
         return new GuildRepository(guild,
                 row.getInt("priority"),
                 row.getInt("id"),
                 row.getString("url"),
                 row.getString("identifier"),
                 row.getString("directory"),
+                configuration,
                 categories,
                 authors);
     }

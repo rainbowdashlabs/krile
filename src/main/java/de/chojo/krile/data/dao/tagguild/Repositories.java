@@ -1,5 +1,7 @@
 package de.chojo.krile.data.dao.tagguild;
 
+import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.Authors;
 import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.dao.Repository;
@@ -13,11 +15,13 @@ import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class Repositories {
     private final TagGuild guild;
+    private final Configuration<ConfigFile> configuration;
     private final Authors authors;
     private final Categories categories;
 
-    public Repositories(TagGuild guild, Authors authors, Categories categories) {
+    public Repositories(TagGuild guild, Configuration<ConfigFile> configuration,Authors authors, Categories categories) {
         this.guild = guild;
+        this.configuration = configuration;
         this.authors = authors;
         this.categories = categories;
     }
@@ -34,7 +38,7 @@ public class Repositories {
         return builder(GuildRepository.class)
                 .query(select)
                 .parameter(stmt -> stmt.setLong(guild.guild().getIdLong()))
-                .readRow(row -> GuildRepository.build(row, guild, categories, authors))
+                .readRow(row -> GuildRepository.build(row, guild, configuration, categories, authors))
                 .allSync();
     }
 
@@ -50,7 +54,7 @@ public class Repositories {
         return builder(GuildRepository.class)
                 .query(select)
                 .parameter(stmt -> stmt.setInt(id))
-                .readRow(row -> GuildRepository.build(row, guild, categories, authors))
+                .readRow(row -> GuildRepository.build(row, guild, configuration, categories, authors))
                 .firstSync();
     }
 

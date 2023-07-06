@@ -15,9 +15,11 @@ import de.chojo.sadu.wrapper.util.Row;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.TimeFormat;
-import net.dv8tion.jda.api.utils.Timestamp;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.intellij.lang.annotations.Language;
 
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -85,6 +87,11 @@ public final class Tag {
         return meta;
     }
 
+    public String link() {
+        // TODO proper string encoding. Something which does not replace space with a +
+        return repository.fileLink(URLEncoder.encode(meta.fileMeta().fileName(), Charset.defaultCharset()).replace("+", "%20"));
+    }
+
     public void update(RawTag raw) {
         @Language("postgresql")
         var insert = """
@@ -102,7 +109,7 @@ public final class Tag {
 
         Identifier identifier = repository.identifier();
         EmbedBuilder builder = new EmbedBuilder()
-                .setAuthor("ID: %s Repo: %s".formatted(id, identifier))
+                .setAuthor("ID: %s Repo: %s".formatted(tagId, identifier), link())
                 .setTitle(tag);
         List<String> aliases = meta.aliases().all();
         if (!aliases.isEmpty()) builder.addField("Aliases", String.join(", ", aliases), true);
@@ -116,6 +123,7 @@ public final class Tag {
         var modified = fileMeta.modified();
         builder.addField("Created", "%s by %s".formatted(TimeFormat.RELATIVE.format(created.when()), created.who().name()), true);
         builder.addField("Modified", "%s by %s".formatted(TimeFormat.RELATIVE.format(modified.when()), modified.who().name()), true);
+        builder.addField("", "Links: [File](%s) | [Repository](%s)".formatted(link(), repository.link()), false);
         return builder.build();
     }
 }

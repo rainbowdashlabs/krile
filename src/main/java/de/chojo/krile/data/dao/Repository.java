@@ -1,5 +1,8 @@
 package de.chojo.krile.data.dao;
 
+import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.access.Authors;
 import de.chojo.krile.data.access.Categories;
 import de.chojo.krile.data.dao.repository.Data;
@@ -14,21 +17,25 @@ public class Repository {
     private final int id;
     private final String url;
     private final Identifier identifier;
+    private final String directory;
+    private final Configuration<ConfigFile> configuration;
     private final Data data;
     private final Meta meta;
     private final Tags tags;
 
-    public Repository(int id, String url, String identifier, String directory, Categories categories, Authors authors) {
+    public Repository(int id, String url, String identifier, String directory, Configuration<ConfigFile> configuration, Categories categories, Authors authors) {
         this.id = id;
         this.url = url;
         this.identifier = Identifier.parse(identifier).get();
+        this.directory = directory;
+        this.configuration = configuration;
         data = new Data(this);
         meta = new Meta(this, categories);
         tags = new Tags(this, categories, authors);
     }
 
-    public static Repository build(Row row, Categories categories, Authors authors) throws SQLException {
-        return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), row.getString("directory"), categories, authors);
+    public static Repository build(Row row, Configuration<ConfigFile> configuration, Categories categories, Authors authors) throws SQLException {
+        return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), row.getString("directory"), configuration, categories, authors);
     }
 
     public void update(RawRepository repository) {
@@ -50,6 +57,20 @@ public class Repository {
         return identifier;
     }
 
+    public String directoryLink(String path) {
+        if (directory != null && !directory.isBlank()) path = directory + "/" + path;
+        if (identifier.path() != null) path = identifier.path() + "/" + path;
+        RepositoryLocation repositoryLocation = configuration.config().repositories().find(identifier).get();
+        return repositoryLocation.dirPath(identifier.user(), identifier.repo(), data.get().branch(), path);
+    }
+
+    public String fileLink(String path) {
+        if (directory != null && !directory.isBlank()) path = directory + "/" + path;
+        if (identifier.path() != null) path = identifier.path() + "/" + path;
+        RepositoryLocation repositoryLocation = configuration.config().repositories().find(identifier).get();
+        return repositoryLocation.filePath(identifier.user(), identifier.repo(), data.get().branch(), path);
+    }
+
     public Data data() {
         return data;
     }
@@ -60,5 +81,9 @@ public class Repository {
 
     public Tags tags() {
         return tags;
+    }
+
+    public String link() {
+        return directoryLink("");
     }
 }

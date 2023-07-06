@@ -111,7 +111,7 @@ public class RepositoryData {
     }
 
     private Repository buildRepository(Row row) throws SQLException {
-        return Repository.build(row, categories, authors);
+        return Repository.build(row, configuration, categories, authors);
     }
 
     public List<String> completeName(String value) {

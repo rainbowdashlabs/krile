@@ -170,7 +170,8 @@ create table krile.repository_data
             ON DELETE CASCADE,
     updated       timestamp not null,
     checked       timestamp not null,
-    commit        text      not null
+    commit        text      not null,
+    branch        text      not null
 );
 
 create table krile.tag_meta

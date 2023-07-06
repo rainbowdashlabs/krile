@@ -8,9 +8,21 @@ import java.util.Optional;
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal", "CanBeFinal"})
 
 public class Repositories {
-private List<RepositoryLocation> repositories = List.of(
-            new RepositoryLocation("GitHub", "https://github.com/%s.git", "https://github.com"),
-            new RepositoryLocation("GitLab", "https://gitlab.com/%s.git", "https://gitlab.com"));
+    public static final RepositoryLocation GITHUB = new RepositoryLocation(
+            "GitHub",
+            "https://github.com/{user}/{repo}.git",
+            "https://github.com",
+            "https://github.com/{user}/{repo}/blob/{branch}/{path}",
+            "https://github.com/{user}/{repo}/tree/{branch}/{path}"
+    );
+    public static final RepositoryLocation GITLAB = new RepositoryLocation(
+            "GitLab",
+            "https://gitlab.com/{user}/{repo}.git",
+            "https://gitlab.com",
+            "https://gitlab.com/{user}/{repo}/-/blob/{branch}/{path}",
+            "https://gitlab.com/{user}/{repo}/-/tree/{branch}/{path}"
+            );
+    private List<RepositoryLocation> repositories = List.of(GITHUB, GITLAB);
 
     public List<RepositoryLocation> repositories() {
         return repositories;

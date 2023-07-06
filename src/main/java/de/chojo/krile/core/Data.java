@@ -89,7 +89,7 @@ public class Data {
         log.info("Creating DAOs");
         authors = new Authors();
         categories = new Categories();
-        guilds = new Guilds(authors, categories);
+        guilds = new Guilds(configuration, authors, categories);
         repositoryData = new RepositoryData(configuration, categories, authors);
     }
 

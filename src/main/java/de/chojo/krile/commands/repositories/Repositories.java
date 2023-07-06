@@ -18,6 +18,7 @@ public class Repositories extends SlashCommand {
     public Repositories(RepositoryData repositoryData, Guilds guilds, Configuration<ConfigFile> configuration) {
         super(Slash.of("repository", "Manage repositories of your guild")
                 .unlocalized()
+                .adminCommand()
                 .group(Group.of("add", "add a repository")
                         .subCommand(SubCommand.of("url", "Use a url to add a new repository")
                                 .handler(new ByUrl(repositoryData, guilds, configuration))

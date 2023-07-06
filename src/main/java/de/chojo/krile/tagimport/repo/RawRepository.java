@@ -119,6 +119,9 @@ public class RawRepository {
     public String currentCommit() throws IOException {
         return git().getRepository().resolve("HEAD").getName();
     }
+    public String currentBranch() throws IOException {
+        return git().getRepository().getBranch();
+    }
 
     public String url() {
         return url;
