@@ -3,7 +3,7 @@ FROM gradle:jdk19-alpine as build
 COPY . .
 RUN gradle build
 
-FROM eclipse-temurin:18-alpine as runtime
+FROM eclipse-temurin:19-alpine as runtime
 
 WORKDIR /app
 
