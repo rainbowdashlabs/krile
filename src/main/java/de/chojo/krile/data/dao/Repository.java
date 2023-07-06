@@ -129,4 +129,9 @@ public class Repository {
     public int hashCode() {
         return identifier.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return identifier.toString();
+    }
 }

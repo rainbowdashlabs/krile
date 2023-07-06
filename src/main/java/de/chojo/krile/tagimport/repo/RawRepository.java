@@ -10,6 +10,7 @@ import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.krile.tagimport.tag.parsing.TagParser;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
@@ -45,14 +46,23 @@ public class RawRepository {
     }
 
     public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier) throws IOException, GitAPIException {
+        return remote(configuration, identifier, false);
+    }
+
+    public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier, boolean flat) throws IOException, GitAPIException {
         RepositoryLocation location = configuration.config().repositories().find(identifier).get();
         String url = location.url(identifier);
-        log.info("Creating repo for {}", url);
         Path git = Files.createTempDirectory("git");
-        Git.cloneRepository()
+        CloneCommand cloneCommand = Git.cloneRepository()
                 .setURI(url)
-                .setDirectory(git.toFile())
-                .call();
+                .setDirectory(git.toFile());
+        if (flat) {
+            log.info("Creating flat repo for {}", url);
+            cloneCommand.setDepth(1);
+        }else {
+            log.info("Creating full repo for {}", url);
+        }
+        cloneCommand.call();
         return new RemoteRepository(url, identifier, git, Git.open(git.toFile()));
     }
 
@@ -119,6 +129,7 @@ public class RawRepository {
     public String currentCommit() throws IOException {
         return git().getRepository().resolve("HEAD").getName();
     }
+
     public String currentBranch() throws IOException {
         return git().getRepository().getBranch();
     }
@@ -134,7 +145,8 @@ public class RawRepository {
     public Path root() {
         return root;
     }
-public Path path() {
+
+    public Path path() {
         return path;
     }
 
@@ -148,9 +160,9 @@ public Path path() {
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (RawRepository) obj;
         return Objects.equals(this.url, that.url) &&
-                Objects.equals(this.identifier, that.identifier) &&
-                Objects.equals(this.root, that.root) &&
-                Objects.equals(this.git, that.git);
+               Objects.equals(this.identifier, that.identifier) &&
+               Objects.equals(this.root, that.root) &&
+               Objects.equals(this.git, that.git);
     }
 
     @Override
@@ -161,9 +173,9 @@ public Path path() {
     @Override
     public String toString() {
         return "RawRepository[" +
-                "url=" + url + ", " +
-                "identifier=" + identifier + ", " +
-                "path=" + root + ", " +
-                "git=" + git + ']';
+               "url=" + url + ", " +
+               "identifier=" + identifier + ", " +
+               "path=" + root + ", " +
+               "git=" + git + ']';
     }
 }

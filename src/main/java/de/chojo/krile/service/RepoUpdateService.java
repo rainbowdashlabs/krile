@@ -62,11 +62,22 @@ public class RepoUpdateService implements Runnable {
     }
 
     public void update(Repository repository) {
-        log.info("Updating {}", repository.identifier());
+        log.info("Checking {} for updates", repository);
+        try (var flat = RawRepository.remote(configuration, repository.identifier(), true)){
+            if (flat.currentCommit().equals(repository.data().get().commit())) {
+                log.info("Repository {} is up to date", repository);
+                return;
+            }
+        } catch (IOException | GitAPIException | RepositoryUpdateException e) {
+            log.error(LogNotify.NOTIFY_ADMIN, "Could not check repository {} for updates", repository, e);
+        }
+        log.info("Repository {} is outdated. Performing update", repository);
         try (var raw = RawRepository.remote(configuration, repository.identifier())) {
             repository.update(raw);
         } catch (IOException | GitAPIException | RepositoryUpdateException e) {
-            log.error(LogNotify.NOTIFY_ADMIN, "Could not update repository {}", repository.identifier(), e);
+            log.error(LogNotify.NOTIFY_ADMIN, "Could not update repository {}", repository, e);
+            return;
         }
+        log.info("Updated {}.", repository);
     }
 }

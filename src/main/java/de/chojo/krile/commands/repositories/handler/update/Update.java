@@ -11,8 +11,11 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.utils.TimeFormat;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +41,7 @@ public class Update implements SlashHandler {
         Instant checked = repository.get().data().get().checked();
         int minCheck = configuration.config().repositories().minCheck();
         if (checked.isAfter(Instant.now().minus(minCheck, ChronoUnit.MINUTES))) {
-            event.reply("This repository was already checked in the last %d minutes. Please wait some time".formatted(minCheck)).setEphemeral(true).queue();
+            event.reply("This repository was already checked in the last %d (%s) minutes. Please wait some time".formatted(minCheck, TimeFormat.RELATIVE.format(checked))).setEphemeral(true).queue();
             return;
         }
         event.reply("Repository is scheduled for an update").setEphemeral(true).queue();

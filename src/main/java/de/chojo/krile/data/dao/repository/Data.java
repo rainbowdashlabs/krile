@@ -34,8 +34,8 @@ public class Data {
                 VALUES (?, now() at time zone 'UTC', now() at time zone 'UTC', ?, ?)
                 ON CONFLICT(repository_id)
                     DO UPDATE
-                    SET updated = now(),
-                        checked = now(),
+                    SET updated = now() at time zone 'UTC',
+                        checked = now() at time zone 'UTC',
                         commit  = excluded.commit,
                         branch = excluded.branch""";
         builder()
