@@ -30,13 +30,13 @@ public class ByIdentifier extends BaseAdd {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         String identifier = event.getOption("identifier", OptionMapping::getAsString);
         Optional<Identifier> parsed = Identifier.parse(identifier);
-        if(parsed.isEmpty()) {
-            event.reply("Invalid identifier").setEphemeral(true).queue();
+        if (parsed.isEmpty()) {
+            event.reply(context.localize("error.identifier.invalid")).setEphemeral(true).queue();
             return;
         }
         Optional<RepositoryLocation> optLocation = configuration().config().repositories().find(parsed.get());
         if (optLocation.isEmpty()) {
-            event.reply("Invalid source").setEphemeral(true).queue();
+            event.reply(context.localize("error.source.invalid")).setEphemeral(true).queue();
             return;
         }
         add(event, context, parsed.get());

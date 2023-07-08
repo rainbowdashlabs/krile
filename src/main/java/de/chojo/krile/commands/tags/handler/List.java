@@ -7,11 +7,11 @@
 package de.chojo.krile.commands.tags.handler;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
+import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
 import de.chojo.jdautil.pagination.bag.PageBag;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.dao.TagGuild;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
@@ -39,8 +39,8 @@ public class List implements SlashHandler {
                         .stream()
                         .map("%s"::formatted)
                         .collect(Collectors.joining("\n"));
-                MessageEditData tags = MessageEditData.fromEmbeds(new EmbedBuilder()
-                        .setTitle("Tags")
+                MessageEditData tags = MessageEditData.fromEmbeds(new LocalizedEmbedBuilder(context.guildLocalizer())
+                        .setTitle("words.tags")
                         .setDescription(message)
                         .build());
                 return CompletableFuture.completedFuture(tags);

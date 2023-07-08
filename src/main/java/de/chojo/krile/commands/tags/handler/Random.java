@@ -26,7 +26,7 @@ public class Random implements SlashHandler {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<Tag> random = guilds.guild(event).tags().random();
         if (random.isEmpty()) {
-            event.reply("No tags registered on this guild").queue();
+            event.reply(context.localize("error.tag.notagsregistered")).queue();
             return;
         }
         Show.showTag(event, context, guilds.guild(event), random.get());

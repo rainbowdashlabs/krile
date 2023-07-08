@@ -8,6 +8,7 @@ package de.chojo.krile.core;
 
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.interactions.dispatching.InteractionHub;
+import de.chojo.jdautil.localization.Localizer;
 import de.chojo.krile.commands.discover.Discover;
 import de.chojo.krile.commands.info.Info;
 import de.chojo.krile.commands.repositories.Repositories;
@@ -17,12 +18,14 @@ import de.chojo.krile.commands.tags.Tags;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.service.RepoUpdateService;
 import de.chojo.logutil.marker.LogNotify;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.slf4j.Logger;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -32,7 +35,8 @@ public class Bot {
     private final Threading threading;
     private final Configuration<ConfigFile> configuration;
     private ShardManager shardManager;
-        private RepoUpdateService repoUpdateService;
+    private RepoUpdateService repoUpdateService;
+    private Localizer localizer;
 
     private Bot(Data data, Threading threading, Configuration<ConfigFile> configuration) {
         this.data = data;
@@ -46,6 +50,10 @@ public class Bot {
         return bot;
     }
 
+    public ShardManager shardManager() {
+        return shardManager;
+    }
+
     private void init() {
         initShardManager();
         initServices();
@@ -53,6 +61,13 @@ public class Bot {
     }
 
     private void initServices() {
+        localizer = Localizer.builder(DiscordLocale.ENGLISH_US)
+                .addLanguage(DiscordLocale.GERMAN)
+                .embedCode("\\{", "\\}")
+                // TODO: replace with database access
+                // Or just use guild locale
+                .withLanguageProvider(guild -> Optional.empty())
+                .build();
         repoUpdateService = RepoUpdateService.create(threading, configuration, data.repositories());
     }
 
@@ -77,6 +92,7 @@ public class Bot {
                 .withDefaultMenuService()
                 .withPagination(builder -> builder.previousText("Previous").nextText("Next"))
                 .withDefaultModalService()
+                .withLocalizer(localizer)
                 .withCommands(
                         new Repository(data.repositories(), data.guilds(), configuration, repoUpdateService),
                         new Tag(data.guilds()),
@@ -85,9 +101,5 @@ public class Bot {
                         new Repositories(data.guilds()),
                         new Discover(data.repositories(), data.tags(), configuration))
                 .build();
-    }
-
-    public ShardManager shardManager() {
-        return shardManager;
     }
 }

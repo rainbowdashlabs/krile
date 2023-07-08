@@ -21,7 +21,7 @@ import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class GuildRepository extends Repository {
     private final TagGuild guild;
-    private int priority;
+    private final int priority;
 
     public GuildRepository(TagGuild guild, int priority, int id, String url, String identifier, String directory, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
         super(id, url, identifier, directory, configuration, categories, authors);

@@ -7,18 +7,20 @@
 package de.chojo.krile.data.access;
 
 import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.util.CompletedCategory;
 import de.chojo.krile.data.util.RepositoryFilter;
+import de.chojo.krile.tagimport.exception.ImportException;
+import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
+import de.chojo.krile.tagimport.repo.RepoConfig;
 import de.chojo.sadu.wrapper.util.Row;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.intellij.lang.annotations.Language;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,12 +87,12 @@ public class RepositoryData {
                 .firstSync();
     }
 
-    public Optional<Repository> getOrCreateByIdentifier(Identifier identifier, IDeferrableCallback callback) throws GitAPIException, IOException {
+    public Optional<Repository> getOrCreateByIdentifier(Identifier identifier, EventContext context, IDeferrableCallback callback) throws ImportException, ParsingException {
         Optional<Repository> repository = byIdentifier(identifier);
         if (repository.isPresent()) return repository;
-        callback.getHook().editOriginal("Unknown repository. Starting integration process");
+        callback.getHook().editOriginal(context.guildLocale("command.add.message.unknown")).queue();
         RawRepository rawRepository = RawRepository.remote(configuration, identifier);
-        callback.getHook().editOriginal("Repository found. Parsing data.");
+        callback.getHook().editOriginal(context.guildLocale("command.add.message.parsing")).queue();
         Optional<Repository> repo = create(rawRepository);
         repo.get().update(rawRepository);
 
@@ -99,6 +101,14 @@ public class RepositoryData {
 
     public Optional<Repository> create(RawRepository repository) {
         Identifier id = repository.identifier();
+        RepoConfig conf;
+        try {
+            conf = repository.configuration();
+        } catch (ParsingException e) {
+            // ignore.
+            // Should not happen since the config is already parsed at this point.
+            return Optional.empty();
+        }
         @Language("postgresql")
         var query = """
                 INSERT INTO repository(url, platform, name, repo, path, directory) VALUES(?, ?, ?, ?, ?, ?)
@@ -113,13 +123,9 @@ public class RepositoryData {
                         .setString(id.user())
                         .setString(id.repo())
                         .setString(id.path())
-                        .setString(repository.configuration().directory()))
+                        .setString(conf.directory()))
                 .readRow(this::buildRepository)
                 .firstSync();
-    }
-
-    private Repository buildRepository(Row row) throws SQLException {
-        return Repository.build(row, configuration, categories, authors);
     }
 
     public List<String> completeName(String value) {
@@ -134,45 +140,10 @@ public class RepositoryData {
         return completeBase("path", value);
     }
 
-    private List<String> completeBase(String column, String value) {
-        @Language("postgresql")
-        var select = """
-                SELECT r.%s
-                FROM repository r
-                         LEFT JOIN repository_meta rm on r.id = rm.repository_id
-                WHERE r.%s ILIKE '%%' || ? || '%%'
-                  AND rm.public
-                LIMIT 24
-                """;
-        return complete(select, column, value);
-    }
-    private List<String> completeMeta(String column, String value) {
-        @Language("postgresql")
-        var select = """
-                SELECT rm.%s
-                FROM repository r
-                         LEFT JOIN repository_meta rm on r.id = rm.repository_id
-                WHERE rm.%s ILIKE '%%' || ? || '%%'
-                  AND rm.public
-                LIMIT 24
-                """;
-        return complete(select, column, value);
-    }
-    private List<String> complete(String query, String column, String value) {
-        List<String> result = new ArrayList<>();
-        if (!value.isBlank()) result.add(value);
-        List<String> name = builder(String.class)
-                .query(query, column, column)
-                .parameter(stmt -> stmt.setString(value))
-                .readRow(row -> row.getString(column))
-                .allSync();
-        result.addAll(name);
-        return result;
-    }
-
     public List<String> completeIdentifier(String value) {
         return completeBase("identifier", value);
     }
+
     public List<String> completeLanguage(String value) {
         return completeMeta("language", value);
     }
@@ -182,8 +153,8 @@ public class RepositoryData {
         var select = """
                 SELECT id, url, identifier, directory
                 FROM repository r
-                         LEFT JOIN repository_data rd on r.id = rd.repository_id
-                WHERE checked < now() at time zone 'UTC' - (?::TEXT || ' MINUTES')::INTERVAL
+                         LEFT JOIN repository_data rd ON r.id = rd.repository_id
+                WHERE checked < now() AT TIME ZONE 'UTC' - (?::TEXT || ' MINUTES')::INTERVAL
                 ORDER BY checked
                 LIMIT ?""";
         return builder(Repository.class)
@@ -211,7 +182,7 @@ public class RepositoryData {
     public List<Repository> search(RepositoryFilter filter) {
         @Language("postgresql")
         var select = """
-                with categories
+                WITH categories
                          AS (SELECT DISTINCT repository_id
                              FROM repository_category
                              WHERE category_id = ?
@@ -219,10 +190,10 @@ public class RepositoryData {
                 SELECT r.id, url, identifier, directory
                 FROM categories c
                          LEFT JOIN repository r ON c.repository_id = r.id
-                         LEFT JOIN repository_meta rm on r.id = rm.repository_id
+                         LEFT JOIN repository_meta rm ON r.id = rm.repository_id
                          LEFT JOIN repo_stats s ON r.id = s.id
-                WHERE (platform ILIKE ? or ? IS NULL)
-                  AND (r.name ILIKE ? or ? IS NULL) -- username
+                WHERE (platform ILIKE ? OR ? IS NULL)
+                  AND (r.name ILIKE ? OR ? IS NULL) -- username
                   AND (repo ILIKE ? OR ? IS NULL)
                   AND (rm.name ILIKE ? OR ? IS NULL) -- repository name
                   AND (rm.language ILIKE ? OR ? IS NULL)
@@ -244,19 +215,61 @@ public class RepositoryData {
     }
 
     public List<CompletedCategory> completeCategories(String value) {
-         @Language("postgresql")
-          var select = """
-                 SELECT id, category
-                 FROM repository_category rc
-                          LEFT JOIN category c on rc.category_id = c.id
-                          LEFT JOIN repository_meta rm on rc.repository_id = rm.repository_id
-                 WHERE rm.public AND category ILIKE ('%' || ? || '%')
-                 LIMIT 25""";
+        @Language("postgresql")
+        var select = """
+                SELECT id, category
+                FROM repository_category rc
+                         LEFT JOIN category c ON rc.category_id = c.id
+                         LEFT JOIN repository_meta rm ON rc.repository_id = rm.repository_id
+                WHERE rm.public AND category ILIKE ('%' || ? || '%')
+                LIMIT 25""";
 
         return builder(CompletedCategory.class)
                 .query(select)
                 .parameter(stmt -> stmt.setString(value))
                 .readRow(row -> new CompletedCategory(row.getInt("id"), row.getString("category")))
                 .allSync();
+    }
+
+    private Repository buildRepository(Row row) throws SQLException {
+        return Repository.build(row, configuration, categories, authors);
+    }
+
+    private List<String> completeBase(String column, String value) {
+        @Language("postgresql")
+        var select = """
+                SELECT r.%s
+                FROM repository r
+                         LEFT JOIN repository_meta rm ON r.id = rm.repository_id
+                WHERE r.%s ILIKE '%%' || ? || '%%'
+                  AND rm.public
+                LIMIT 24
+                """;
+        return complete(select, column, value);
+    }
+
+    private List<String> completeMeta(String column, String value) {
+        @Language("postgresql")
+        var select = """
+                SELECT rm.%s
+                FROM repository r
+                         LEFT JOIN repository_meta rm ON r.id = rm.repository_id
+                WHERE rm.%s ILIKE '%%' || ? || '%%'
+                  AND rm.public
+                LIMIT 24
+                """;
+        return complete(select, column, value);
+    }
+
+    private List<String> complete(String query, String column, String value) {
+        List<String> result = new ArrayList<>();
+        if (!value.isBlank()) result.add(value);
+        List<String> name = builder(String.class)
+                .query(query, column, column)
+                .parameter(stmt -> stmt.setString(value))
+                .readRow(row -> row.getString(column))
+                .allSync();
+        result.addAll(name);
+        return result;
     }
 }

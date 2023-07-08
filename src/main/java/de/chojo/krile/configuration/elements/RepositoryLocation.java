@@ -39,6 +39,7 @@ public record RepositoryLocation(String name, String template, String tld, Strin
     public String filePath(String user, String repo, String branch, String path) {
         return filePath.replace("{user}", user).replace("{repo}", repo).replace("{branch}", branch).replace("{path}", path);
     }
+
     public String dirPath(String user, String repo, String branch, String path) {
         return dirPath.replace("{user}", user).replace("{repo}", repo).replace("{branch}", branch).replace("{path}", path);
     }

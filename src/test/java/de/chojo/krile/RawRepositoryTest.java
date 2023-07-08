@@ -6,6 +6,8 @@
 
 package de.chojo.krile;
 
+import de.chojo.krile.tagimport.exception.ImportException;
+import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.repo.RepoConfig;
 import de.chojo.krile.tagimport.tag.RawTag;
@@ -39,7 +41,7 @@ class RawRepositoryTest {
 
     @ParameterizedTest
     @MethodSource("repos")
-    void configuration(RawRepository repo) {
+    void configuration(RawRepository repo) throws ParsingException {
         RepoConfig configuration = repo.configuration();
         Assertions.assertEquals("tags", configuration.directory());
         Assertions.assertEquals(List.of("ignored_tag"), configuration.exclude());
@@ -47,7 +49,7 @@ class RawRepositoryTest {
     }
 
     @Test
-    void tags() throws IOException {
+    void tags() throws ImportException, ParsingException {
         List<RawTag> tags = sub.tags();
         Assertions.assertEquals(2, tags.size());
     }

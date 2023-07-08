@@ -8,12 +8,13 @@ package de.chojo.krile.commands.tags;
 
 import de.chojo.jdautil.interactions.slash.Argument;
 import de.chojo.jdautil.interactions.slash.Slash;
-import de.chojo.jdautil.interactions.slash.SubCommand;
 import de.chojo.jdautil.interactions.slash.provider.SlashProvider;
 import de.chojo.krile.commands.tags.handler.Info;
 import de.chojo.krile.commands.tags.handler.List;
 import de.chojo.krile.commands.tags.handler.Random;
 import de.chojo.krile.data.access.GuildData;
+
+import static de.chojo.jdautil.interactions.slash.SubCommand.sub;
 
 public class Tags implements SlashProvider<Slash> {
     private final GuildData guilds;
@@ -24,14 +25,13 @@ public class Tags implements SlashProvider<Slash> {
 
     @Override
     public Slash slash() {
-        return Slash.of("tags", "Information about tags on this server")
-                .unlocalized()
-                .subCommand(SubCommand.of("info", "Information about a tag")
+        return Slash.of("tags", "command.tags.description")
+                .subCommand(sub("info", "command.tags.info.description")
                         .handler(new Info(guilds))
-                        .argument(Argument.text("tag", "name of tag").withAutoComplete().asRequired()))
-                .subCommand(SubCommand.of("list", "A list of all tags on this server")
+                        .argument(Argument.text("tag", "command.tags.info.options.tag.description").withAutoComplete().asRequired()))
+                .subCommand(sub("list", "command.tags.list.description")
                         .handler(new List(guilds)))
-                .subCommand(SubCommand.of("random", "Get a random tag")
+                .subCommand(sub("random", "command.tags.random.description")
                         .handler(new Random(guilds)))
                 .build();
     }

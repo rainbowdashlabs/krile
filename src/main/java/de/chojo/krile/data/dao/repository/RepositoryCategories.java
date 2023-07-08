@@ -8,6 +8,7 @@ package de.chojo.krile.data.dao.repository;
 
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Category;
+import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import org.intellij.lang.annotations.Language;
 
@@ -25,7 +26,7 @@ public class RepositoryCategories {
         this.categories = categories;
     }
 
-    public void updateCategories(RawRepository repository) {
+    public void updateCategories(RawRepository repository) throws ParsingException {
         // Clear repository category links
         clearCategories();
 
@@ -47,7 +48,7 @@ public class RepositoryCategories {
     }
 
     public void clearCategories() {
-        builder().query("DELETE FROM repository_category where repository_id = ?")
+        builder().query("DELETE FROM repository_category WHERE repository_id = ?")
                 .parameter(stmt -> stmt.setInt(meta.repository().id()))
                 .delete()
                 .sendSync();
@@ -58,7 +59,7 @@ public class RepositoryCategories {
         var select = """
                 SELECT id, category
                 FROM repository_category rc
-                         LEFT JOIN category c on c.id = rc.category_id
+                         LEFT JOIN category c ON c.id = rc.category_id
                 WHERE repository_id = ?""";
         return builder(Category.class)
                 .query(select)

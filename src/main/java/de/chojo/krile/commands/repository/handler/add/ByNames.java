@@ -39,7 +39,7 @@ public class ByNames extends BaseAdd {
         Identifier identifier = Identifier.of(platform, name, repo, path);
         Optional<RepositoryLocation> optLocation = configuration().config().repositories().find(identifier);
         if (optLocation.isEmpty()) {
-            event.reply("Invalid source").setEphemeral(true).queue();
+            event.reply(context.localize("error.source.invalid")).setEphemeral(true).queue();
             return;
         }
         add(event, context, identifier);
@@ -63,7 +63,6 @@ public class ByNames extends BaseAdd {
         }
         if (option.getName().equals("path")) {
             event.replyChoices(Choice.toStringChoice(repositoryData().completePath(option.getValue()))).queue();
-            return;
         }
     }
 }

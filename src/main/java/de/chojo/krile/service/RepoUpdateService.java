@@ -11,10 +11,10 @@ import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.core.Threading;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Repository;
-import de.chojo.krile.data.dao.RepositoryUpdateException;
+import de.chojo.krile.tagimport.exception.ImportException;
+import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.logutil.marker.LogNotify;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -43,10 +43,6 @@ public class RepoUpdateService implements Runnable {
         return repoUpdateService;
     }
 
-    void schedule() {
-        repositoryQueue.addAll(repositoryData.leastUpdated(configuration.config().repositories().check(), 10));
-    }
-
     public void schedule(Repository repository) {
         if (priorityQueue.contains(repository)) return;
         repositoryQueue.remove(repository);
@@ -69,22 +65,30 @@ public class RepoUpdateService implements Runnable {
 
     public void update(Repository repository) {
         log.info("Checking {} for updates", repository);
-        try (var flat = RawRepository.remote(configuration, repository.identifier(), true)){
+        try (var flat = RawRepository.remote(configuration, repository.identifier(), true)) {
             if (flat.currentCommit().equals(repository.data().get().commit())) {
                 log.info("Repository {} is up to date", repository);
                 repository.checked();
                 return;
             }
-        } catch (IOException | GitAPIException | RepositoryUpdateException e) {
+        } catch (ImportException | IOException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Could not check repository {} for updates", repository, e);
+        } catch (ParsingException e) {
+            repository.updateFailed(e.getMessage());
         }
         log.info("Repository {} is outdated. Performing update", repository);
         try (var raw = RawRepository.remote(configuration, repository.identifier())) {
             repository.update(raw);
-        } catch (IOException | GitAPIException | RepositoryUpdateException e) {
+        } catch (ImportException | IOException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Could not update repository {}", repository, e);
             return;
+        } catch (ParsingException e) {
+            repository.updateFailed(e.getMessage());
         }
         log.info("Updated {}.", repository);
+    }
+
+    void schedule() {
+        repositoryQueue.addAll(repositoryData.leastUpdated(configuration.config().repositories().check(), 10));
     }
 }

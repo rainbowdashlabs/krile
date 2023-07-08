@@ -6,6 +6,8 @@
 
 package de.chojo.krile.data.dao.repository.tags;
 
+import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
+import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
@@ -120,22 +122,22 @@ public final class Tag {
     public MessageEmbed infoEmbed(EventContext context) {
 
         Identifier identifier = repository.identifier();
-        EmbedBuilder builder = new EmbedBuilder()
-                .setAuthor("ID: %s Repo: %s".formatted(tagId, identifier), link())
+        EmbedBuilder builder = new LocalizedEmbedBuilder(context.guildLocalizer())
+                .setAuthor("embeds.tag.author", link(), Replacement.create("id", id), Replacement.create("identifier", identifier))
                 .setTitle(tag);
         List<String> aliases = meta.aliases().all();
-        if (!aliases.isEmpty()) builder.addField("Aliases", String.join(", ", aliases), true);
+        if (!aliases.isEmpty()) builder.addField("words.aliases", String.join(", ", aliases), true);
         List<String> categories = meta.categories().all().stream().map(Category::name).toList();
-        if (!categories.isEmpty()) builder.addField("Categories", String.join(", ", categories), true);
+        if (!categories.isEmpty()) builder.addField("words.categories", String.join(", ", categories), true);
         List<String> authors = meta.tagAuthors().all().stream().map(Author::name).distinct().toList();
-        if (!authors.isEmpty()) builder.addField("Authors", String.join(", ", authors), true);
+        if (!authors.isEmpty()) builder.addField("words.authors", String.join(", ", authors), true);
 
         FileMeta fileMeta = meta.fileMeta();
         var created = fileMeta.created();
         var modified = fileMeta.modified();
-        builder.addField("Created", "%s by %s".formatted(TimeFormat.RELATIVE.format(created.when()), created.who().name()), true);
-        builder.addField("Modified", "%s by %s".formatted(TimeFormat.RELATIVE.format(modified.when()), modified.who().name()), true);
-        builder.addField("", "Links: [File](%s) | [Repository](%s)".formatted(link(), repository.link()), false);
+        builder.addField("words.created", ("%s $words.by$ %s").formatted(TimeFormat.RELATIVE.format(created.when()), created.who().name()), true);
+        builder.addField("words.modified", "%s $words.by$ %s".formatted(TimeFormat.RELATIVE.format(modified.when()), modified.who().name()), true);
+        builder.addField("", "$words.links$: [$words.file$](%s) | [$words.repository$](%s)".formatted(link(), repository.link()), false);
         return builder.build();
     }
 }

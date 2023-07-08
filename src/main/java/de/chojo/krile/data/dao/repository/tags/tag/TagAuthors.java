@@ -47,7 +47,7 @@ public class TagAuthors {
     }
 
     public void clear() {
-        builder().query("DELETE FROM tag_author where tag_id = ?")
+        builder().query("DELETE FROM tag_author WHERE tag_id = ?")
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
                 .delete()
                 .sendSync();

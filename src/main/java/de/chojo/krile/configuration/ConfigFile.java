@@ -11,10 +11,10 @@ import de.chojo.krile.configuration.elements.Database;
 import de.chojo.krile.configuration.elements.Repositories;
 
 public class ConfigFile {
-    private BaseSettings baseSettings = new BaseSettings();
-    private Database database = new Database();
-    private Repositories repositories = new Repositories();
-    private Links links = new Links();
+    private final BaseSettings baseSettings = new BaseSettings();
+    private final Database database = new Database();
+    private final Repositories repositories = new Repositories();
+    private final Links links = new Links();
 
     public BaseSettings baseSettings() {
         return baseSettings;

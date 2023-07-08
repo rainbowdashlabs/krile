@@ -6,11 +6,12 @@
 
 package de.chojo.krile.commands.tag;
 
-import de.chojo.jdautil.interactions.slash.Argument;
 import de.chojo.jdautil.interactions.slash.Slash;
 import de.chojo.jdautil.interactions.slash.provider.SlashProvider;
 import de.chojo.krile.commands.tag.handler.Show;
 import de.chojo.krile.data.access.GuildData;
+
+import static de.chojo.jdautil.interactions.slash.Argument.text;
 
 public class Tag implements SlashProvider<Slash> {
     private final GuildData guilds;
@@ -21,10 +22,9 @@ public class Tag implements SlashProvider<Slash> {
 
     @Override
     public Slash slash() {
-        return Slash.of("tag", "Retrieve a tag")
-                .unlocalized()
+        return Slash.of("tag", "command.tag.description")
                 .command(new Show(guilds))
-                .argument(Argument.text("tag", "Get a tag").withAutoComplete().asRequired())
+                .argument(text("tag", "command.tag.options.tag.description").withAutoComplete().asRequired())
                 .build();
     }
 }

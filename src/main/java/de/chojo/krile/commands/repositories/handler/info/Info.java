@@ -30,7 +30,7 @@ public class Info implements SlashHandler {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<GuildRepository> repository = guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
         if (repository.isEmpty()) {
-            event.reply("Unknown Repository").setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.unknown")).setEphemeral(true).queue();
             return;
         }
         MessageEmbed messageEmbed = repository.get().infoEmbed(context);

@@ -8,6 +8,7 @@ package de.chojo.krile.data.dao.repository;
 
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Repository;
+import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.repo.RepoConfig;
 import org.intellij.lang.annotations.Language;
@@ -23,7 +24,7 @@ public class Meta {
         this.categories = new RepositoryCategories(this, categories);
     }
 
-    public void update(RawRepository repository) {
+    public void update(RawRepository repository) throws ParsingException {
         RepoConfig configuration = repository.configuration();
         @Language("postgresql")
         var insert = """
@@ -52,7 +53,7 @@ public class Meta {
     public RepositoryMeta get() {
         @Language("postgresql")
         var select = """
-                SELECT name, description, public_repo, language, public FROm repository_meta WHERE repository_id = ?""";
+                SELECT name, description, public_repo, language, public FROM repository_meta WHERE repository_id = ?""";
 
         return builder(RepositoryMeta.class)
                 .query(select)

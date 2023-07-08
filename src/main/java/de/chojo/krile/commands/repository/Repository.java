@@ -7,10 +7,8 @@
 package de.chojo.krile.commands.repository;
 
 import de.chojo.jdautil.configuratino.Configuration;
-import de.chojo.jdautil.interactions.slash.Argument;
 import de.chojo.jdautil.interactions.slash.Group;
 import de.chojo.jdautil.interactions.slash.Slash;
-import de.chojo.jdautil.interactions.slash.SubCommand;
 import de.chojo.jdautil.interactions.slash.provider.SlashCommand;
 import de.chojo.krile.commands.repository.handler.add.ByIdentifier;
 import de.chojo.krile.commands.repository.handler.add.ByNames;
@@ -22,33 +20,36 @@ import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.service.RepoUpdateService;
 
+import static de.chojo.jdautil.interactions.slash.Argument.text;
+import static de.chojo.jdautil.interactions.slash.SubCommand.sub;
+
 public class Repository extends SlashCommand {
     public Repository(RepositoryData repositoryData, GuildData guilds, Configuration<ConfigFile> configuration, RepoUpdateService updateService) {
-        super(Slash.of("repository", "Manage repositories of your guild")
-                .unlocalized()
+        super(Slash.of("repository", "command.repository.description")
                 .adminCommand()
-                .group(Group.of("add", "add a repository")
-                        .subCommand(SubCommand.of("url", "Use a url to add a new repository")
+                .group(Group.of("add", "command.repository.add.description")
+                        .subCommand(sub("url", "command.repository.add.url.description")
                                 .handler(new ByUrl(repositoryData, guilds, configuration))
-                                .argument(Argument.text("url", "repository url").asRequired()))
-                        .subCommand(SubCommand.of("identifier", "Use an identifier to add a new repository")
-                                .handler(new ByIdentifier(repositoryData, guilds, configuration))
-                                .argument(Argument.text("identifier", "repository identifier").asRequired().withAutoComplete())
+                                .argument(text("url", "command.repository.add.url.options.url.description").asRequired())
                         )
-                        .subCommand(SubCommand.of("name", "Use a url to add a new repository")
+                        .subCommand(sub("identifier", "command.repository.add.identifier.description")
+                                .handler(new ByIdentifier(repositoryData, guilds, configuration))
+                                .argument(text("identifier", "command.repository.add.identifier.options.identifier.description").asRequired().withAutoComplete())
+                        )
+                        .subCommand(sub("name", "command.repository.add.name.description")
                                 .handler(new ByNames(repositoryData, guilds, configuration))
-                                .argument(Argument.text("platform", "platform name").asRequired().withAutoComplete())
-                                .argument(Argument.text("user", "user name").asRequired().withAutoComplete())
-                                .argument(Argument.text("repository", "repository name").asRequired().withAutoComplete())
-                                .argument(Argument.text("path", "repository path").withAutoComplete())
+                                .argument(text("platform", "command.repository.add.name.options.platform.description").asRequired().withAutoComplete())
+                                .argument(text("user", "command.repository.add.name.options.user.description").asRequired().withAutoComplete())
+                                .argument(text("repository", "command.repository.add.name.options.repository.description").asRequired().withAutoComplete())
+                                .argument(text("path", "command.repository.add.name.options.path.description").withAutoComplete())
                         )
                 )
-                .subCommand(SubCommand.of("remove", "Remove a repository")
+                .subCommand(sub("remove", "command.repository.remove.description")
                         .handler(new Remove(guilds))
-                        .argument(Argument.text("repository", "repository identifier").asRequired().withAutoComplete()))
-                .subCommand(SubCommand.of("update", "Manually update a repository")
+                        .argument(text("repository", "command.repository.remove.options.repository.description").asRequired().withAutoComplete()))
+                .subCommand(sub("update", "command.repository.update.description")
                         .handler(new Update(guilds, updateService, configuration))
-                        .argument(Argument.text("repository", "repository identifier").asRequired().withAutoComplete()))
+                        .argument(text("repository", "command.repository.update.options.repository.description").asRequired().withAutoComplete()))
                 .build());
     }
 }

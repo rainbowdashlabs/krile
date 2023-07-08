@@ -7,6 +7,7 @@
 package de.chojo.krile.data.dao;
 
 import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
@@ -16,6 +17,8 @@ import de.chojo.krile.data.dao.repository.Data;
 import de.chojo.krile.data.dao.repository.Meta;
 import de.chojo.krile.data.dao.repository.RepositoryMeta;
 import de.chojo.krile.data.dao.repository.Tags;
+import de.chojo.krile.tagimport.exception.ImportException;
+import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.sadu.wrapper.util.Row;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -52,7 +55,7 @@ public class Repository {
         return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), row.getString("directory"), configuration, categories, authors);
     }
 
-    public void update(RawRepository repository) {
+    public void update(RawRepository repository) throws ParsingException, ImportException {
         meta.update(repository);
         data.update(repository);
         tags.update(repository);
@@ -115,18 +118,18 @@ public class Repository {
         List<String> categories = meta.categories().all().stream().map(Category::name).toList();
         RepositoryMeta meta = this.meta.get();
         Data.RepositoryData data = this.data.get();
-        EmbedBuilder builder = new EmbedBuilder()
+        EmbedBuilder builder = new LocalizedEmbedBuilder(context.guildLocalizer())
                 .setAuthor(identifier.toString())
                 .setTitle(requireNonNullElse(meta.name(), identifier.name()), link());
         if (meta.description() != null) builder.setDescription(meta.description());
-        if (meta.language() != null) builder.addField("Language", meta.language(), true);
-        builder.addField("Public", (meta.visible() ? "yes" : "no"), true);
-        if (!categories.isEmpty()) builder.addField("Categories", String.join(", ", categories), true);
-        builder.addField("Tags", String.valueOf(tags.count()), true);
+        if (meta.language() != null) builder.addField("words.language", meta.language(), true);
+        builder.addField("words.public", (meta.visible() ? "words.yes" : "words.no"), true);
+        if (!categories.isEmpty()) builder.addField("words.categories", String.join(", ", categories), true);
+        builder.addField("words.tags", String.valueOf(tags.count()), true);
         builder.addBlankField(false);
-        builder.addField("Status", "%s on %s".formatted(data.commit().substring(0, 8), data.branch()), true);
-        builder.addField("Last Checked", TimeFormat.RELATIVE.format(data.checked()), true);
-        builder.addField("Last Updated", TimeFormat.RELATIVE.format(data.updated()), true);
+        builder.addField("words.status", "%s / %s".formatted(data.commit().substring(0, 8), data.branch()), true);
+        builder.addField("embeds.repository.last.checked", TimeFormat.RELATIVE.format(data.checked()), true);
+        builder.addField("embeds.repository.last.update", TimeFormat.RELATIVE.format(data.updated()), true);
         // TODO add rankings and metrics c:
         return builder.build();
     }
@@ -143,5 +146,9 @@ public class Repository {
 
     public void checked() {
         data.checked();
+    }
+
+    public void updateFailed(String reason) {
+        data.updateFailed(reason);
     }
 }

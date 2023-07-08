@@ -8,7 +8,6 @@ package de.chojo.krile.data.dao.repository.tags.tag.tagmeta;
 
 import de.chojo.krile.data.dao.Author;
 
-import java.nio.file.Path;
 import java.time.Instant;
 
 public class FileMeta {
@@ -34,6 +33,6 @@ public class FileMeta {
         return fileName;
     }
 
-    public static record FileEvent(Instant when, Author who) {
+    public record FileEvent(Instant when, Author who) {
     }
 }

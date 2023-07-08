@@ -8,20 +8,25 @@ package de.chojo.krile.commands.repository.handler.add;
 
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
+import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
-import de.chojo.krile.data.dao.RepositoryUpdateException;
+import de.chojo.krile.tagimport.exception.ImportException;
+import de.chojo.krile.tagimport.exception.ParsingException;
+import de.chojo.logutil.marker.LogNotify;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.util.Optional;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 public abstract class BaseAdd implements SlashHandler {
+    private static final Logger log = getLogger(BaseAdd.class);
     private final RepositoryData repositoryData;
     private final GuildData guilds;
     private final Configuration<ConfigFile> configuration;
@@ -33,16 +38,20 @@ public abstract class BaseAdd implements SlashHandler {
     }
 
     public void add(SlashCommandInteractionEvent event, EventContext context, Identifier identifier) {
-        event.reply("Resolving repository").setEphemeral(true).queue();
+        event.reply(context.guildLocale("command.add.message.resolving")).setEphemeral(true).queue();
         Optional<Repository> repository;
         try {
-            repository = repositoryData.getOrCreateByIdentifier(identifier, event);
-        } catch (GitAPIException | IOException | RepositoryUpdateException e) {
-            event.getHook().editOriginal("Failed to parse repository.").queue();
+            repository = repositoryData.getOrCreateByIdentifier(identifier, context, event);
+        } catch (ParsingException e) {
+            event.getHook().editOriginal(context.guildLocale("error.repository.parsing", Replacement.create("error", e.getMessage()))).queue();
+            return;
+        } catch (ImportException e) {
+            log.error(LogNotify.NOTIFY_ADMIN, "Could not import repository", e);
+            event.getHook().editOriginal(context.guildLocale("error.repository.import")).queue();
             return;
         }
         guilds.guild(event.getGuild()).repositories().add(repository.get());
-        event.getHook().editOriginal("Repository added to server").queue();
+        event.getHook().editOriginal("command.add.message.added").queue();
     }
 
     public Configuration<ConfigFile> configuration() {

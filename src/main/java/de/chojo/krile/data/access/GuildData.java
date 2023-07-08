@@ -17,7 +17,7 @@ public class GuildData {
     private final AuthorData authors;
     private final CategoryData categories;
 
-    public GuildData(Configuration<ConfigFile>configuration, AuthorData authors, CategoryData categories) {
+    public GuildData(Configuration<ConfigFile> configuration, AuthorData authors, CategoryData categories) {
         this.configuration = configuration;
         this.authors = authors;
         this.categories = categories;
@@ -26,6 +26,7 @@ public class GuildData {
     public TagGuild guild(Guild guild) {
         return new TagGuild(guild, configuration, categories, authors);
     }
+
     public TagGuild guild(GenericInteractionCreateEvent event) {
         return new TagGuild(event.getGuild(), configuration, categories, authors);
     }

@@ -9,15 +9,15 @@ package de.chojo.krile.data.dao.repository;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Repository;
-import de.chojo.krile.data.dao.RepositoryUpdateException;
 import de.chojo.krile.data.dao.repository.tags.Tag;
+import de.chojo.krile.tagimport.exception.ImportException;
+import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.sadu.types.PostgreSqlTypes;
 import de.chojo.sadu.wrapper.util.Row;
 import org.intellij.lang.annotations.Language;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -46,13 +46,9 @@ public class Tags {
                 .allSync();
     }
 
-    public void update(RawRepository repository) {
+    public void update(RawRepository repository) throws ImportException, ParsingException {
         List<RawTag> tags;
-        try {
-            tags = repository.tags();
-        } catch (IOException e) {
-            throw new RepositoryUpdateException(repository, "Could not read tags", e);
-        }
+        tags = repository.tags();
 
         List<Tag> all = all();
 
@@ -99,10 +95,6 @@ public class Tags {
                 .firstSync();
     }
 
-    private Tag buildTag(Row row) throws SQLException {
-        return Tag.build(row, repository, categories, authors);
-    }
-
     public int count() {
         return builder(Integer.class)
                 .query("SELECT count(1) FROM tag WHERE repository_id = ?")
@@ -110,5 +102,9 @@ public class Tags {
                 .readRow(row -> row.getInt("count"))
                 .firstSync()
                 .orElse(0);
+    }
+
+    private Tag buildTag(Row row) throws SQLException {
+        return Tag.build(row, repository, categories, authors);
     }
 }

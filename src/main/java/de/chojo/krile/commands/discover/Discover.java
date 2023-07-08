@@ -7,10 +7,7 @@
 package de.chojo.krile.commands.discover;
 
 import de.chojo.jdautil.configuratino.Configuration;
-import de.chojo.jdautil.interactions.slash.Argument;
-import de.chojo.jdautil.interactions.slash.Group;
 import de.chojo.jdautil.interactions.slash.Slash;
-import de.chojo.jdautil.interactions.slash.SubCommand;
 import de.chojo.jdautil.interactions.slash.provider.SlashProvider;
 import de.chojo.krile.commands.discover.handler.repositories.RandomRepo;
 import de.chojo.krile.commands.discover.handler.repositories.SearchRepo;
@@ -19,6 +16,11 @@ import de.chojo.krile.commands.discover.handler.tags.SearchTag;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.access.TagData;
+
+import static de.chojo.jdautil.interactions.slash.Argument.integer;
+import static de.chojo.jdautil.interactions.slash.Argument.text;
+import static de.chojo.jdautil.interactions.slash.Group.group;
+import static de.chojo.jdautil.interactions.slash.SubCommand.sub;
 
 public class Discover implements SlashProvider<Slash> {
     private final RepositoryData repositoryData;
@@ -33,30 +35,29 @@ public class Discover implements SlashProvider<Slash> {
 
     @Override
     public Slash slash() {
-        return Slash.of("discover", "Discover new tags and repositories")
-                .unlocalized()
-                .group(Group.of("repositories", "Discover new repositories")
-                        .subCommand(SubCommand.of("search", "Search repositories by filters")
+        return Slash.slash("discover", "command.discover.description")
+                .group(group("repositories", "command.discover.repositories.description")
+                        .subCommand(sub("search", "command.discover.repositories.search.description")
                                 .handler(new SearchRepo(configuration, repositoryData))
-                                .argument(Argument.text("category", "category").withAutoComplete())
-                                .argument(Argument.text("language", "language of the repository containing the tag").withAutoComplete())
-                                .argument(Argument.text("name", "name of the repository"))
-                                .argument(Argument.text("platform", "platform").withAutoComplete())
-                                .argument(Argument.text("user", "username").withAutoComplete())
-                                .argument(Argument.text("repo", "repository name").withAutoComplete())
-                                .argument(Argument.integer("tags", "Min amount of tags associated with this repository").withAutoComplete())
+                                .argument(text("category", "command.discover.repositories.search.options.category.description").withAutoComplete())
+                                .argument(text("language", "command.discover.repositories.search.options.language.description").withAutoComplete())
+                                .argument(text("name", "command.discover.repositories.search.options.name.description"))
+                                .argument(text("platform", "command.discover.repositories.search.options.platform.description").withAutoComplete())
+                                .argument(text("user", "command.discover.repositories.search.options.user.description").withAutoComplete())
+                                .argument(text("repository", "command.discover.repositories.search.options.repository.description").withAutoComplete())
+                                .argument(integer("tags", "command.discover.repositories.search.options.tags.description").withAutoComplete())
                         )
-                        .subCommand(SubCommand.of("random", "Get a random repository")
+                        .subCommand(sub("random", "command.discover.repositories.random.description")
                                 .handler(new RandomRepo(repositoryData)))
                 )
-                .group(Group.of("tags", "Discover new tags")
-                        .subCommand(SubCommand.of("search", "Search a tag by filters")
+                .group(group("tags", "command.discover.tags.description")
+                        .subCommand(sub("search", "command.discover.tags.search.description")
                                 .handler(new SearchTag(tagData, repositoryData))
-                                .argument(Argument.text("category", "category").withAutoComplete())
-                                .argument(Argument.text("language", "language of the repository containing the tag").withAutoComplete())
-                                .argument(Argument.text("name", "part of the name"))
+                                .argument(text("category", "command.discover.tags.search.options.category.description").withAutoComplete())
+                                .argument(text("language", "command.discover.tags.search.options.language.description").withAutoComplete())
+                                .argument(text("name", "command.discover.tags.search.options.name.description"))
                         )
-                        .subCommand(SubCommand.of("random", "Get a random tag from any repository")
+                        .subCommand(sub("random", "command.discover.tags.random.description")
                                 .handler(new RandomTag(tagData)))
                 )
                 .build();

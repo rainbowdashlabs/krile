@@ -88,16 +88,16 @@ public class TagMeta {
         var select = """
                 SELECT file_name,
                        created,
-                       ca.id as created_id,
-                       ca.mail as created_mail,
-                       ca.name as created_name,
+                       ca.id AS created_id,
+                       ca.mail AS created_mail,
+                       ca.name AS created_name,
                        modified,
-                       ma.id as modified_id,
-                       ma.mail as modified_mail,
-                       ca.name as modified_name
+                       ma.id AS modified_id,
+                       ma.mail AS modified_mail,
+                       ca.name AS modified_name
                 FROM tag_meta
-                LEFT JOIN author ma on tag_meta.modified_by = ma.id
-                LEFT JOIN author ca on tag_meta.created_by = ca.id
+                LEFT JOIN author ma ON tag_meta.modified_by = ma.id
+                LEFT JOIN author ca ON tag_meta.created_by = ca.id
                 WHERE tag_id = ?""";
         return builder(FileMeta.class)
                 .query(select)

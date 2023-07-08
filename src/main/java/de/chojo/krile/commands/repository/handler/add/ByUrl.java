@@ -29,7 +29,7 @@ public class ByUrl extends BaseAdd {
         String url = event.getOption("url", OptionMapping::getAsString);
         Optional<RepositoryLocation> optLocation = configuration().config().repositories().find(url);
         if (optLocation.isEmpty()) {
-            event.reply("Invalid source url").setEphemeral(true).queue();
+            event.reply(context.localize("error.url.invalidsource")).setEphemeral(true).queue();
             return;
         }
 

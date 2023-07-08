@@ -100,9 +100,9 @@ public class Default implements SlashHandler {
         return new LocalizedEmbedBuilder(context.guildLocalizer())
                 .setTitle("Information about Krile")
                 .setThumbnail(event.getJDA().getSelfUser().getEffectiveAvatarUrl())
-                .addField("Contributor", contributors, false)
-                .addField("Source", SOURCE, true)
-                .addField("Version", version, true)
+                .addField("words.contributor", contributors, false)
+                .addField("words.sourcecode", SOURCE, true)
+                .addField("words.version", version, true)
                 .addField("", "**" + getLinks(context) + "**", false)
                 .setColor(Colors.Pastel.BLUE)
                 .build();
@@ -110,8 +110,8 @@ public class Default implements SlashHandler {
 
     private String getLinks(EventContext context) {
         var links = List.of(
-                getLink("Invite me", configuration.config().links().invite())
-                //getLink("", configuration.config().support()),
+                getLink(context.localize("phrases.inviteme"), configuration.config().links().invite()),
+                getLink(context.localize("words.support"), configuration.config().links().support())
                 //getLink("TOS", configuration.config().tos()),
                 //getLink( "Website", configuration.config().website()),
                 //getLink("FAQ", configuration.config().faq())

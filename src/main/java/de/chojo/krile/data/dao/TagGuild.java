@@ -19,6 +19,12 @@ public class TagGuild {
     private final Repositories repositories;
     private final Tags tags;
 
+    public TagGuild(Guild guild, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
+        this.guild = guild;
+        repositories = new Repositories(this, configuration, authors, categories);
+        tags = new Tags(this, repositories, categories, authors);
+    }
+
     public Tags tags() {
         return tags;
     }
@@ -26,14 +32,6 @@ public class TagGuild {
     public Repositories repositories() {
         return repositories;
     }
-
-    public TagGuild(Guild guild, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
-        this.guild = guild;
-        repositories = new Repositories(this, configuration, authors, categories);
-        tags = new Tags(this, repositories, categories, authors);
-    }
-
-
 
     public Guild guild() {
         return guild;

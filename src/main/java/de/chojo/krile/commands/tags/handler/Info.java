@@ -30,7 +30,7 @@ public class Info implements SlashHandler {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<Tag> byId = guilds.guild(event).tags().getById(event.getOption("tag", -1, OptionMapping::getAsInt));
         if (byId.isEmpty()) {
-            event.reply("Invalid tag").setEphemeral(true).queue();
+            event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
             return;
         }
         MessageEmbed messageEmbed = byId.get().infoEmbed(context);

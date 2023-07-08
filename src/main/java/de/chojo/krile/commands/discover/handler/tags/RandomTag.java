@@ -25,8 +25,8 @@ public class RandomTag implements SlashHandler {
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<Tag> random = tagData.random();
-        if(random.isEmpty()){
-            event.reply("No tag found").setEphemeral(true).queue();
+        if (random.isEmpty()) {
+            event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
             return;
         }
         Show.showTag(event, context, random.get());

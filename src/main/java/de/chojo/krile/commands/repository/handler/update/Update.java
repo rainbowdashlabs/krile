@@ -8,6 +8,7 @@ package de.chojo.krile.commands.repository.handler.update;
 
 import de.chojo.jdautil.configuratino.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
+import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.GuildData;
@@ -39,16 +40,16 @@ public class Update implements SlashHandler {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<GuildRepository> repository = guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
         if (repository.isEmpty()) {
-            event.reply("Unknown Repository").setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.unknown")).setEphemeral(true).queue();
             return;
         }
         Instant checked = repository.get().data().get().checked();
         int minCheck = configuration.config().repositories().minCheck();
         if (checked.isAfter(Instant.now().minus(minCheck, ChronoUnit.MINUTES))) {
-            event.reply("This repository was already checked in the last %d (%s) minutes. Please wait some time".formatted(minCheck, TimeFormat.RELATIVE.format(checked))).setEphemeral(true).queue();
+            event.reply(context.localize("command.repository.update.message.cooldown", Replacement.create("minutes", minCheck), Replacement.create("relative", TimeFormat.RELATIVE.format(checked)))).setEphemeral(true).queue();
             return;
         }
-        event.reply("Repository is scheduled for an update").setEphemeral(true).queue();
+        event.reply(context.localize("command.repository.update.message.scheduled")).setEphemeral(true).queue();
         updateService.schedule(repository.get());
     }
 

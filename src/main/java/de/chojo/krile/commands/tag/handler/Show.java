@@ -38,44 +38,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Show implements SlashHandler {
     public static final Button delete = Button.danger("delete", "delete").withEmoji(Emoji.fromUnicode("🗑️"));
     public static final Button info = Button.primary("info", "info").withEmoji(Emoji.fromUnicode("❓"));
-    private final GuildData guilds;
     private static final Logger log = getLogger(Show.class);
+    private final GuildData guilds;
 
     public Show(GuildData guilds) {
         this.guilds = guilds;
-    }
-
-    private static List<PageButton> buttons(Tag tag, EventContext context, boolean delete) {
-        // not really a nice solution
-        if (delete) {
-            return List.of(
-                    PageButton.of(
-                            page -> Show.delete,
-                            (page, event) -> {
-                                log.trace("Deleting post");
-                                event.getMessage().delete().complete();
-                            }),
-                    PageButton.of(
-                            page -> info,
-                            (page, button) -> button.replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
-        }
-        return List.of(
-                PageButton.of(
-                        page -> info,
-                        (page, button) -> button.replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
-    }
-
-    @Override
-    public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
-        Integer id = event.getOption("tag", OptionMapping::getAsInt);
-        event.deferReply().queue();
-        Optional<Tag> byId = guilds.guild(event.getGuild()).tags().getById(id);
-        if (byId.isEmpty()) {
-            event.reply("Invalid tag").setEphemeral(true).queue();
-            return;
-        }
-        Tag tag = byId.get();
-        showTag(event, context, guilds.guild(event), tag);
     }
 
     public static void showTag(SlashCommandInteractionEvent event, EventContext context, TagGuild tagGuild, Tag tag) {
@@ -110,6 +77,39 @@ public class Show implements SlashHandler {
         }
         menu.addComponent(MenuEntry.of(info, ctx -> ctx.event().replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
         context.registerMenu(menu.build());
+    }
+
+    private static List<PageButton> buttons(Tag tag, EventContext context, boolean delete) {
+        // not really a nice solution
+        if (delete) {
+            return List.of(
+                    PageButton.of(
+                            page -> Show.delete,
+                            (page, event) -> {
+                                log.trace("Deleting post");
+                                event.getMessage().delete().complete();
+                            }),
+                    PageButton.of(
+                            page -> info,
+                            (page, button) -> button.replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
+        }
+        return List.of(
+                PageButton.of(
+                        page -> info,
+                        (page, button) -> button.replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
+    }
+
+    @Override
+    public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
+        Integer id = event.getOption("tag", OptionMapping::getAsInt);
+        event.deferReply().queue();
+        Optional<Tag> byId = guilds.guild(event.getGuild()).tags().getById(id);
+        if (byId.isEmpty()) {
+            event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
+            return;
+        }
+        Tag tag = byId.get();
+        showTag(event, context, guilds.guild(event), tag);
     }
 
     @Override

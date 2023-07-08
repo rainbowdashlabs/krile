@@ -47,23 +47,23 @@ public class TagCategories {
     }
 
     public void clear() {
-        builder().query("DELETE FROM tag_category where tag_id = ?")
+        builder().query("DELETE FROM tag_category WHERE tag_id = ?")
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
                 .delete()
                 .sendSync();
     }
 
     public List<Category> all() {
-         @Language("postgresql")
-          var select = """
-              SELECT id, category
-              FROM tag_category
-                       LEFT JOIN category c on c.id = tag_category.category_id
-              WHERE tag_id = ?""";
-         return builder(Category.class)
-                 .query(select)
-                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
-                 .readRow(Category::build)
-                 .allSync();
+        @Language("postgresql")
+        var select = """
+                SELECT id, category
+                FROM tag_category
+                         LEFT JOIN category c ON c.id = tag_category.category_id
+                WHERE tag_id = ?""";
+        return builder(Category.class)
+                .query(select)
+                .parameter(stmt -> stmt.setInt(meta.tag().id()))
+                .readRow(Category::build)
+                .allSync();
     }
 }

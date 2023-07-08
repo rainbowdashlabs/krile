@@ -18,16 +18,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class Threading {
     private static final Logger log = getLogger(Threading.class);
-
+    private static final Thread.UncaughtExceptionHandler EXCEPTION_HANDLER =
+            (t, e) -> log.error(LogNotify.NOTIFY_ADMIN, "An uncaught exception occurred in " + t.getName() + "-" + t.getId() + ".", e);
     private final ThreadGroup hikariGroup = new ThreadGroup("Hikari Worker");
     private final ThreadGroup jdaGroup = new ThreadGroup("JDA Worker");
     private final ThreadGroup workerGroup = new ThreadGroup("Bot Worker");
-
     private final ExecutorService jdaWorker = Executors.newCachedThreadPool(createThreadFactory(jdaGroup));
     private final ScheduledExecutorService botWorker = Executors.newScheduledThreadPool(3, createThreadFactory(workerGroup));
-
-    private static final Thread.UncaughtExceptionHandler EXCEPTION_HANDLER =
-            (t, e) -> log.error(LogNotify.NOTIFY_ADMIN, "An uncaught exception occurred in " + t.getName() + "-" + t.getId() + ".", e);
 
     public static ThreadFactory createThreadFactory(ThreadGroup group) {
         return r -> {

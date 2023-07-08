@@ -7,11 +7,10 @@
 package de.chojo.krile.data.dao.repository;
 
 import de.chojo.krile.data.dao.Repository;
-import de.chojo.krile.data.dao.RepositoryUpdateException;
+import de.chojo.krile.tagimport.exception.ImportException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import org.intellij.lang.annotations.Language;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 
@@ -24,26 +23,21 @@ public class Data {
         this.repository = repository;
     }
 
-    public void update(RawRepository repository) {
-        String currentCommit;
-        String currentBranch;
-        try {
-            currentCommit = repository.currentCommit();
-            currentBranch = repository.currentBranch();
-        } catch (IOException e) {
-            throw new RepositoryUpdateException(repository, e);
-        }
+    public void update(RawRepository repository) throws ImportException {
+        String currentCommit = repository.currentCommit();
+        String currentBranch = repository.currentBranch();
 
         @Language("postgresql")
         var insert = """
                 INSERT INTO repository_data(repository_id, updated, checked, commit, branch)
-                VALUES (?, now() at time zone 'UTC', now() at time zone 'UTC', ?, ?)
+                VALUES (?, now() AT TIME ZONE 'UTC', now() AT TIME ZONE 'UTC', ?, ?)
                 ON CONFLICT(repository_id)
                     DO UPDATE
-                    SET updated = now() at time zone 'UTC',
-                        checked = now() at time zone 'UTC',
+                    SET updated = now() AT TIME ZONE 'UTC',
+                        checked = now() AT TIME ZONE 'UTC',
                         commit  = excluded.commit,
-                        branch = excluded.branch""";
+                        branch = excluded.branch,
+                        status = NULL""";
         builder()
                 .query(insert)
                 .parameter(stmt -> stmt.setInt(this.repository.id()).setString(currentCommit).setString(currentBranch))
@@ -75,12 +69,23 @@ public class Data {
         @Language("postgresql")
         var update = """
                 UPDATE repository_data
-                SET checked = now() at time zone 'UTC'
+                SET checked = now() AT TIME ZONE 'UTC', status = NULL
                 WHERE repository_id = ?""";
 
         builder()
                 .query(update)
                 .parameter(stmt -> stmt.setInt(repository.id()))
+                .update()
+                .sendSync();
+    }
+
+    public void updateFailed(String reason) {
+        @Language("postgresql")
+        var update = """
+                UPDATE repository_data SET status = ? WHERE repository_id = ?""";
+        builder()
+                .query(update)
+                .parameter(stmt -> stmt.setString(reason).setInt(repository.id()))
                 .update()
                 .sendSync();
     }

@@ -35,22 +35,22 @@ public class Tags {
     public List<CompletedTag> complete(String value) {
         @Language("postgresql")
         var select = """
-                with ranked_tags as
-                         (SELECT row_number() over (PARTITION BY tag ORDER BY gr.priority * rt.global_prio DESC) as rank,
+                WITH ranked_tags AS
+                         (SELECT row_number() OVER (PARTITION BY tag ORDER BY gr.priority * rt.global_prio DESC) AS rank,
                                  gr.repository_id,
-                                 gr.priority                                                                     as repo_prio,
+                                 gr.priority                                                                     AS repo_prio,
                                  global_prio,
                                  rt.id,
                                  tag,
-                                 rt.prio                                                                     as tag_prio,
+                                 rt.prio                                                                     AS tag_prio,
                                  r.identifier
                           FROM guild_repository gr
-                                   LEFT JOIN repo_tags rt on gr.repository_id = rt.repository_id
-                                   LEFT JOIN repository r on gr.repository_id = r.id
+                                   LEFT JOIN repo_tags rt ON gr.repository_id = rt.repository_id
+                                   LEFT JOIN repository r ON gr.repository_id = r.id
                           WHERE global_prio = 1
-                            and tag ILIKE ('%' || ? || '%')
-                            and gr.guild_id = ?)
-                SELECT id, case when rank = 1 then tag else tag || ' (' || identifier || ')' end as name
+                            AND tag ILIKE ('%' || ? || '%')
+                            AND gr.guild_id = ?)
+                SELECT id, CASE WHEN rank = 1 THEN tag ELSE tag || ' (' || identifier || ')' END AS name
                 FROM ranked_tags
                 LIMIT 25;
                 """;
@@ -76,7 +76,7 @@ public class Tags {
     public void used(Tag tag) {
         @Language("postgresql")
         var insert = """
-                INSERT INTO tag_stat as s (guild_id, tag_id)
+                INSERT INTO tag_stat AS s (guild_id, tag_id)
                 VALUES (?, ?)
                 ON CONFLICT (guild_id, tag_id)
                 DO UPDATE SET views = s.views + 1""";
@@ -105,21 +105,21 @@ public class Tags {
     public List<RankedTag> rankingPage(int page, int size) {
         @Language("postgresql")
         var select = """
-                with ranked_tags
-                         AS (SELECT row_number() over (PARTITION BY tag ORDER BY gr.priority DESC) as duplicate,
-                                    rank() OVER (ORDER BY views) as rank,
+                WITH ranked_tags
+                         AS (SELECT row_number() OVER (PARTITION BY tag ORDER BY gr.priority DESC) AS duplicate,
+                                    rank() OVER (ORDER BY views) AS rank,
                                     gr.priority,
                                     t.id,
                                     tag,
                                     identifier,
-                                    coalesce(views, 0)                                             as views
+                                    coalesce(views, 0)                                             AS views
                              FROM guild_repository gr
                                       LEFT JOIN tag t ON gr.repository_id = t.repository_id
                                       LEFT JOIN tag_stat s ON t.id = s.tag_id
-                                      LEFT JOIN repository r on gr.repository_id = r.id
+                                      LEFT JOIN repository r ON gr.repository_id = r.id
                              WHERE gr.guild_id = ?
                              ORDER BY views DESC, priority DESC)
-                SELECT id, rank, case when duplicate = 1 then tag else tag || ' (' || identifier || ')' end as name, views
+                SELECT id, rank, CASE WHEN duplicate = 1 THEN tag ELSE tag || ' (' || identifier || ')' END AS name, views
                 FROM ranked_tags
                 LIMIT ? OFFSET ?""";
         return builder(RankedTag.class)
@@ -134,8 +134,8 @@ public class Tags {
         var select = """
                 SELECT gr.repository_id, t.id,  tag_id, tag, content
                 FROM guild_repository gr
-                         LEFT JOIN tag t on gr.repository_id = t.repository_id
-                where guild_id = ?
+                         LEFT JOIN tag t ON gr.repository_id = t.repository_id
+                WHERE guild_id = ?
                 ORDER BY random()
                 LIMIT 1""";
         return builder(Tag.class)

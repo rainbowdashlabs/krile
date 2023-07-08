@@ -40,8 +40,7 @@ public class Info implements SlashProvider<Slash> {
 
     @Override
     public Slash slash() {
-        return Slash.of("info", "Bot information")
-                .unlocalized()
+        return Slash.of("info", "command.info.description")
                 .command(new Default(version, configuration))
                 .build();
     }

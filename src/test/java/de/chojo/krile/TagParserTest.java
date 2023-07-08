@@ -6,6 +6,8 @@
 
 package de.chojo.krile;
 
+import de.chojo.krile.tagimport.exception.ImportException;
+import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.tag.entities.FileMeta;
 import de.chojo.krile.tagimport.tag.entities.RawAuthor;
@@ -30,32 +32,32 @@ class TagParserTest {
     private static TagParser longTag;
 
     @BeforeAll
-    static void beforeAll() throws GitAPIException, IOException {
+    static void beforeAll() throws GitAPIException, IOException, ParsingException {
         repo = TestRepository.root();
         testTag = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
         longTag = TagParser.parse(repo, repo.tagPath().resolve("long tag.md"));
     }
 
     @Test
-    void parse() {
+    void parse() throws ParsingException {
         TagParser testTag = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
     }
 
     @Test
-    void getAuthors() throws GitAPIException {
+    void getAuthors() throws ImportException {
         Collection<RawAuthor> rawAuthors = testTag.getAuthors();
         Assertions.assertEquals(1, rawAuthors.size());
     }
 
     @Test
     @Disabled
-    void fileMeta() throws GitAPIException {
+    void fileMeta() throws ImportException {
         FileMeta meta = testTag.fileMeta();
         Assertions.assertNotEquals(meta.created().when(), meta.modified().when());
     }
 
     @Test
-    void tagContent() throws IOException {
+    void tagContent() throws ImportException {
         String content = testTag.tagContent();
         Matcher matcher = Pattern.compile("^---$").matcher(content);
         Assertions.assertFalse(matcher.find());
@@ -63,17 +65,17 @@ class TagParserTest {
     }
 
     @Test
-    void splitContent() throws IOException, GitAPIException {
+    void splitContent() throws ImportException, ParsingException {
         List<String> content = longTag.tag().splitText();
         Assertions.assertTrue(content.size() > 1);
-        Assertions.assertEquals(8 , content.size());
+        Assertions.assertEquals(8, content.size());
         for (String text : content) {
             Assertions.assertFalse(text.contains("<new_page>"));
         }
     }
 
     @Test
-    void tagMeta() throws IOException {
+    void tagMeta() throws ImportException, ParsingException {
         RawTagMeta meta = testTag.tagMeta();
         Assertions.assertEquals("test tag", meta.id());
         Assertions.assertEquals("test", meta.tag());

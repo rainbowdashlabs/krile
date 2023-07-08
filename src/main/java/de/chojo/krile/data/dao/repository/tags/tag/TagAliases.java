@@ -40,7 +40,7 @@ public class TagAliases {
     }
 
     public void clear() {
-        builder().query("DELETE FROM tag_alias where tag_id = ?")
+        builder().query("DELETE FROM tag_alias WHERE tag_id = ?")
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
                 .delete()
                 .sendSync();

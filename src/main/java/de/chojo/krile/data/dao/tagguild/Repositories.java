@@ -37,7 +37,7 @@ public class Repositories {
         var select = """
                 SELECT priority, r.id, url, identifier, directory
                 FROM guild_repository gr
-                         LEFT JOIN repository r on r.id = gr.repository_id
+                         LEFT JOIN repository r ON r.id = gr.repository_id
                 WHERE guild_id = ?
                 ORDER BY priority""";
 
@@ -53,7 +53,7 @@ public class Repositories {
         var select = """
                 SELECT priority, r.id, url, identifier, directory
                 FROM guild_repository gr
-                         LEFT JOIN repository r on r.id = gr.repository_id
+                         LEFT JOIN repository r ON r.id = gr.repository_id
                 WHERE id = ?
                 ORDER BY priority""";
 
@@ -83,7 +83,7 @@ public class Repositories {
         var select = """
                 SELECT id, identifier
                 FROM guild_repository gr
-                         left join repository r on r.id = gr.repository_id
+                         LEFT JOIN repository r ON r.id = gr.repository_id
                 WHERE guild_id = ?
                   AND identifier ILIKE '%' || ? || '%'
                 ORDER BY priority DESC
@@ -99,7 +99,7 @@ public class Repositories {
     public int count() {
         @Language("postgresql")
         var select = """
-                SELECT count(1) FROM guild_repository where guild_id = ?""";
+                SELECT count(1) FROM guild_repository WHERE guild_id = ?""";
         return builder(Integer.class)
                 .query(select)
                 .parameter(stmt -> stmt.setLong(guild.id()))
@@ -113,8 +113,8 @@ public class Repositories {
         var select = """
                 SELECT rm.name, identifier
                 FROM guild_repository gr
-                         LEFT JOIN repository_meta rm on gr.repository_id = rm.repository_id
-                         LEFT JOIN repository r on gr.repository_id = r.id
+                         LEFT JOIN repository_meta rm ON gr.repository_id = rm.repository_id
+                         LEFT JOIN repository r ON gr.repository_id = r.id
                 WHERE guild_id = ?
                 LIMIT ? OFFSET ?""";
 

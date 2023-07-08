@@ -60,10 +60,6 @@ public class Data {
         initDao();
     }
 
-    private void initSaduAdapter() {
-        StaticQueryAdapter.start(dataSource);
-    }
-
     public void initConnection() {
         try {
             dataSource = getConnectionPool();
@@ -75,6 +71,38 @@ public class Data {
             }
             initConnection();
         }
+    }
+
+    public void shutDown() {
+        dataSource.close();
+    }
+
+    public HikariDataSource dataSource() {
+        return dataSource;
+    }
+
+    public GuildData guilds() {
+        return guilds;
+    }
+
+    public AuthorData authors() {
+        return authors;
+    }
+
+    public CategoryData categories() {
+        return categories;
+    }
+
+    public RepositoryData repositories() {
+        return repositoryData;
+    }
+
+    public TagData tags() {
+        return tagData;
+    }
+
+    private void initSaduAdapter() {
+        StaticQueryAdapter.start(dataSource);
     }
 
     private void updateDatabase() throws IOException, SQLException {
@@ -122,33 +150,5 @@ public class Data {
                 .withThreadFactory(Threading.createThreadFactory(threading.hikariGroup()))
                 .forSchema(data.schema())
                 .build();
-    }
-
-    public void shutDown() {
-        dataSource.close();
-    }
-
-    public HikariDataSource dataSource() {
-        return dataSource;
-    }
-
-    public GuildData guilds() {
-        return guilds;
-    }
-
-    public AuthorData authors() {
-        return authors;
-    }
-
-    public CategoryData categories() {
-        return categories;
-    }
-
-    public RepositoryData repositories() {
-        return repositoryData;
-    }
-
-    public TagData tags() {
-        return tagData;
     }
 }

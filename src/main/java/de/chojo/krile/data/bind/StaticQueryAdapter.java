@@ -32,13 +32,13 @@ public class StaticQueryAdapter {
         return factory.builder(clazz);
     }
 
-    public static void start(DataSource dataSource, QueryBuilderConfig config){
+    public static void start(DataSource dataSource, QueryBuilderConfig config) {
         if (factory != null) throw new AlreadyInitializedException();
         factory = new QueryFactory(dataSource, config);
         log.info("Static SADU query adapter started");
     }
 
-    public static void start(DataSource dataSource){
+    public static void start(DataSource dataSource) {
         if (factory != null) throw new AlreadyInitializedException();
         factory = new QueryFactory(dataSource);
         log.info("Static SADU query adapter started");

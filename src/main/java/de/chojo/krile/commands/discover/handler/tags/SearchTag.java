@@ -7,7 +7,8 @@
 package de.chojo.krile.commands.discover.handler.tags;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
-import de.chojo.jdautil.pagination.bag.ListPageBag;
+import de.chojo.jdautil.pagination.bag.IPageBag;
+import de.chojo.jdautil.pagination.bag.PageBuilder;
 import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.RepositoryData;
@@ -22,7 +23,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class SearchTag implements SlashHandler {
     private final TagData tagData;
@@ -41,19 +41,11 @@ public class SearchTag implements SlashHandler {
 
         TagFilter tagFilter = new TagFilter(category, language, name);
         List<Tag> search = tagData.search(tagFilter);
-        var page = new ListPageBag<>(search) {
-            @Override
-            public CompletableFuture<MessageEditData> buildPage() {
-                return CompletableFuture.completedFuture(MessageEditData.fromEmbeds(currentElement().infoEmbed(context)));
-            }
-
-            @Override
-            public CompletableFuture<MessageEditData> buildEmptyPage() {
-                return CompletableFuture.completedFuture(MessageEditData.fromContent("No tags found"));
-            }
-        };
+        IPageBag page = PageBuilder.list(search)
+                .syncPage(p -> MessageEditData.fromEmbeds(p.currentElement().infoEmbed(context)))
+                .syncEmptyPage(p -> MessageEditData.fromContent(context.localize("error.tag.notfound")))
+                .build();
         context.registerPage(page, true);
-
     }
 
     @Override
@@ -65,7 +57,6 @@ public class SearchTag implements SlashHandler {
         }
         if (option.getName().equals("category")) {
             event.replyChoices(tagData.completeCategories(option.getValue()).stream().map(e -> new Command.Choice(e.category(), e.id())).toList()).queue();
-            return;
         }
     }
 }

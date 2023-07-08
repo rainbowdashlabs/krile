@@ -29,6 +29,7 @@ public record RepositoryFilter(Integer category,
     public String user() {
         return search(user);
     }
+
     public String name() {
         return search(name);
     }

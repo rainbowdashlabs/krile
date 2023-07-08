@@ -7,6 +7,7 @@
 package de.chojo.krile.commands.repository.handler.remove;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
+import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.dao.tagguild.GuildRepository;
@@ -29,14 +30,14 @@ public class Remove implements SlashHandler {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<GuildRepository> optRepo = guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
         if (optRepo.isEmpty()) {
-            event.reply("Unknown repository").setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.unknown")).setEphemeral(true).queue();
             return;
         }
         GuildRepository repository = optRepo.get();
         if (repository.unsubscribe()) {
-            event.reply("Repository `%s` removed from guild".formatted(repository.identifier())).setEphemeral(true).queue();
+            event.reply(context.localize("command.repository.remove.message.removed", Replacement.create("identifier", repository.identifier()))).setEphemeral(true).queue();
         } else {
-            event.reply("Could not remove repository").setEphemeral(true).queue();
+            event.reply("command.repository.remove.message.notsubscribed").setEphemeral(true).queue();
         }
     }
 
