@@ -30,12 +30,14 @@ class TagParserTest {
     private static RawRepository repo;
     private static TagParser testTag;
     private static TagParser longTag;
+    private static TagParser devmarkt;
 
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException, ParsingException {
         repo = TestRepository.root();
         testTag = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
         longTag = TagParser.parse(repo, repo.tagPath().resolve("long tag.md"));
+        devmarkt = TagParser.parse(repo, repo.tagPath().resolve("devmarkt.md"));
     }
 
     @Test
@@ -62,6 +64,11 @@ class TagParserTest {
         Matcher matcher = Pattern.compile("^---$").matcher(content);
         Assertions.assertFalse(matcher.find());
         Assertions.assertTrue(content.contains("This is example text for a text tag"));
+
+        content = devmarkt.tagContent();
+        matcher = Pattern.compile("^---$").matcher(content);
+        Assertions.assertFalse(matcher.find());
+        Assertions.assertTrue(content.contains("weiteren Leitfaden"));
     }
 
     @Test

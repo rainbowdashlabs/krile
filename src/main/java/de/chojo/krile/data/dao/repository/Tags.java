@@ -67,13 +67,24 @@ public class Tags {
     public Optional<Tag> create(RawTag tag) {
         @Language("postgresql")
         var insert = """
-                INSERT INTO tag(repository_id, tag_id, tag, content) VALUES(?,?,?,?)
-                ON CONFLICT(repository_id, tag_id) DO NOTHING
-                RETURNING id, tag_id, tag, content""";
+                INSERT
+                INTO
+                    tag(repository_id, tag_id, tag, content)
+                VALUES
+                    (?, ?, ?, ?)
+                ON CONFLICT(repository_id, tag_id)
+                    DO UPDATE
+                    SET
+                        tag     = excluded.tag,
+                        content = excluded.content
+                RETURNING id,
+                    tag_id,
+                    tag,
+                    content""";
         return builder(Tag.class)
                 .query(insert)
                 .parameter(stmt -> stmt.setInt(repository.id())
-                        .setString(tag.meta().tag())
+                        .setString(tag.meta().id())
                         .setString(tag.meta().tag())
                         .setArray(tag.splitText(), PostgreSqlTypes.TEXT))
                 .readRow(this::buildTag)
