@@ -1,6 +1,7 @@
 FROM gradle:jdk19-alpine as build
 
 COPY . .
+ENV docker=true
 RUN gradle build
 
 FROM eclipse-temurin:19-alpine as runtime

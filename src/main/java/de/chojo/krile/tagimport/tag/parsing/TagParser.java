@@ -75,7 +75,7 @@ public class TagParser {
     }
 
     public FileMeta fileMeta() throws ImportException {
-        return new FileMeta(filePath.toFile().getName(), getAuthors(), getTimeCreate(), getTimeModified());
+        return new FileMeta(filePath.toFile().getName(), getAuthors(), getTimeModified(), getTimeCreated());
     }
 
     public String tagContent() throws ImportException {
@@ -109,7 +109,7 @@ public class TagParser {
         return new TagFile(Optional.empty(), fileContent);
     }
 
-    private FileEvent getTimeCreate() throws ImportException {
+    private FileEvent getTimeModified() throws ImportException {
         Iterable<RevCommit> commits;
         try {
             commits = new Git(repository()).log().addPath(relativePath().toString()).call();
@@ -125,7 +125,7 @@ public class TagParser {
         return new FileEvent(firstcommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(firstcommit.getAuthorIdent()));
     }
 
-    private FileEvent getTimeModified() throws ImportException {
+    private FileEvent getTimeCreated() throws ImportException {
         Iterable<RevCommit> commits;
         try {
             commits = new Git(repository()).log().addPath(relativePath().toString()).call();

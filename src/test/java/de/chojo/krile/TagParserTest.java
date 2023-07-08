@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -51,11 +52,13 @@ class TagParserTest {
         Assertions.assertEquals(1, rawAuthors.size());
     }
 
+    // This test does not work inside docker build
     @Test
-    @Disabled
+    @DisabledIfEnvironmentVariable(named = "docker", matches = "true")
     void fileMeta() throws ImportException {
         FileMeta meta = testTag.fileMeta();
         Assertions.assertNotEquals(meta.created().when(), meta.modified().when());
+        Assertions.assertTrue(meta.created().when().isAfter(meta.modified().when()));
     }
 
     @Test
