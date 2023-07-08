@@ -73,7 +73,13 @@ public class Show implements SlashHandler {
         tag.meta().image().ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
         MenuActionBuilder menu = MenuAction.forCallback(builder.build(), event);
         if (view) {
-            menu.addComponent(MenuEntry.of(delete, ctx -> ctx.event().getMessage().delete().queue()));
+            menu.addComponent(MenuEntry.of(delete, ctx -> {
+                if (ctx.event().getUser().getIdLong() == event.getUser().getIdLong()) {
+                    ctx.event().getMessage().delete().queue();
+                } else {
+                    ctx.event().reply("❌").queue();
+                }
+            }));
         }
         menu.addComponent(MenuEntry.of(info, ctx -> ctx.event().replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
         context.registerMenu(menu.build());
