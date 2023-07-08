@@ -98,7 +98,7 @@ public class Default implements SlashHandler {
         }
 
         return new LocalizedEmbedBuilder(context.guildLocalizer())
-                .setTitle("Information about Krile")
+                .setTitle("command.info.message.title")
                 .setThumbnail(event.getJDA().getSelfUser().getEffectiveAvatarUrl())
                 .addField("words.contributor", contributors, false)
                 .addField("words.sourcecode", SOURCE, true)
