@@ -63,7 +63,6 @@ public class Bot {
     private void initServices() {
         localizer = Localizer.builder(DiscordLocale.ENGLISH_US)
                 .addLanguage(DiscordLocale.GERMAN)
-                .embedCode("\\{", "\\}")
                 // TODO: replace with database access
                 // Or just use guild locale
                 .withLanguageProvider(guild -> Optional.empty())
