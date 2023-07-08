@@ -20,6 +20,7 @@ import de.chojo.krile.tagimport.repo.RepoConfig;
 import de.chojo.sadu.wrapper.util.Row;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,20 +28,18 @@ import java.util.List;
 import java.util.Optional;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class RepositoryData {
     private final Configuration<ConfigFile> configuration;
     private final CategoryData categories;
     private final AuthorData authors;
+    private static final Logger log = getLogger(RepositoryData.class);
 
     public RepositoryData(Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
         this.configuration = configuration;
         this.categories = categories;
         this.authors = authors;
-    }
-
-    public Optional<Repository> getOrCreate(RawRepository repositoryLocation) {
-        return byIdentifier(repositoryLocation.identifier()).or(() -> create(repositoryLocation));
     }
 
     public Optional<Repository> byIdentifier(String identifier) {
@@ -90,25 +89,23 @@ public class RepositoryData {
     public Optional<Repository> getOrCreateByIdentifier(Identifier identifier, EventContext context, IDeferrableCallback callback) throws ImportException, ParsingException {
         Optional<Repository> repository = byIdentifier(identifier);
         if (repository.isPresent()) return repository;
+        log.info("Starting integration process for {}", identifier);
         callback.getHook().editOriginal(context.guildLocale("command.add.message.unknown")).queue();
         RawRepository rawRepository = RawRepository.remote(configuration, identifier);
+        log.info("Cloned repository");
         callback.getHook().editOriginal(context.guildLocale("command.add.message.parsing")).queue();
+        log.info("Creating database entry");
         Optional<Repository> repo = create(rawRepository);
+        callback.getHook().editOriginal(context.guildLocale("command.add.message.parsing")).queue();
+        log.info("Inserting data");
         repo.get().update(rawRepository);
-
+        log.info("Integration done.");
         return repo;
     }
 
-    public Optional<Repository> create(RawRepository repository) {
+    public Optional<Repository> create(RawRepository repository) throws ParsingException {
         Identifier id = repository.identifier();
-        RepoConfig conf;
-        try {
-            conf = repository.configuration();
-        } catch (ParsingException e) {
-            // ignore.
-            // Should not happen since the config is already parsed at this point.
-            return Optional.empty();
-        }
+        RepoConfig conf = repository.configuration();
         @Language("postgresql")
         var query = """
                 INSERT INTO repository(url, platform, name, repo, path, directory) VALUES(?, ?, ?, ?, ?, ?)

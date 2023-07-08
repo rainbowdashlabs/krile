@@ -51,7 +51,7 @@ public abstract class BaseAdd implements SlashHandler {
             return;
         }
         guilds.guild(event.getGuild()).repositories().add(repository.get());
-        event.getHook().editOriginal("command.add.message.added").queue();
+        event.getHook().editOriginal(context.localize("command.add.message.added")).queue();
     }
 
     public Configuration<ConfigFile> configuration() {
