@@ -107,7 +107,7 @@ public class Tags {
         var select = """
                 WITH ranked_tags
                          AS (SELECT row_number() OVER (PARTITION BY tag ORDER BY gr.priority DESC) AS duplicate,
-                                    rank() OVER (ORDER BY views) AS rank,
+                                    rank() OVER (ORDER BY views DESC) AS rank,
                                     gr.priority,
                                     t.id,
                                     tag,
