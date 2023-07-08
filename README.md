@@ -7,6 +7,8 @@ Those tags are provided by git repositories.
 
 Servers can import the repositories they need and make the tags inside them available to their community.
 
+You can either use the docker image or the [public instance](https://discord.com/oauth2/authorize?client_id=1126568385732419615&scope=bot&permissions=274877959168) provided by me.
+
 ## Importing a repository
 
 To import a repository use the `/repositories add` command. 
