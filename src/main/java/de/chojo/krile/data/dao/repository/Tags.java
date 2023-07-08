@@ -72,7 +72,10 @@ public class Tags {
                 RETURNING id, tag_id, tag, content""";
         return builder(Tag.class)
                 .query(insert)
-                .parameter(stmt -> stmt.setInt(repository.id()).setString(tag.meta().tag()).setString(tag.meta().tag()).setArray(tag.splitText(), PostgreSqlTypes.TEXT))
+                .parameter(stmt -> stmt.setInt(repository.id())
+                        .setString(tag.meta().tag())
+                        .setString(tag.meta().tag())
+                        .setArray(tag.splitText(), PostgreSqlTypes.TEXT))
                 .readRow(this::buildTag)
                 .firstSync();
     }
