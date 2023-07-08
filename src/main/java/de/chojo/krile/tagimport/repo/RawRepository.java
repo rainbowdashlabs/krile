@@ -78,12 +78,12 @@ public class RawRepository {
         try {
             cloneCommand.call();
         } catch (GitAPIException e) {
-            throw new ParsingException(e.getMessage());
+            throw new ParsingException(e.getMessage(),e);
         }
         try {
             return new RemoteRepository(url, identifier, git, Git.open(git.toFile()));
         } catch (IOException e) {
-            throw new ParsingException(e.getMessage());
+            throw new ParsingException(e.getMessage(),e);
         }
     }
 
@@ -99,7 +99,7 @@ public class RawRepository {
             configuration = MAPPER.readValue(path.toFile(), RepoConfig.class);
         } catch (IOException e) {
             log.error("Could not parse config file", e);
-            throw new ParsingException("Could not parse configuration file.\n" + e.getMessage());
+            throw new ParsingException("Could not parse configuration file.\n" + e.getMessage(),e);
         }
         return configuration;
     }
@@ -115,10 +115,10 @@ public class RawRepository {
             for (Path tagPath : list) {
                 TagParser parse = TagParser.parse(this, tagPath);
                 try {
-
                     tags.add(parse.tag());
                 } catch (ParsingException e) {
-                    throw new ParsingException("Failed to parse file %s%n%s".formatted(tagPath.getFileName(), e.getMessage()));
+                    log.error("Error while parsing file {}", tagPath.getFileName(), e);
+                    throw new ParsingException("Failed to parse file %s%n%s".formatted(tagPath.getFileName(), e.getMessage()),e);
                 }
             }
             return tags;

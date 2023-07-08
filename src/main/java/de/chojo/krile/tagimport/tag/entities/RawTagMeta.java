@@ -38,8 +38,8 @@ public record RawTagMeta(String id,
                                     @JsonProperty("alias") List<String> alias,
                                     @JsonProperty("category") List<String> category,
                                     @JsonProperty("image") String image) {
-        return new RawTagMeta(requireNonNull(id),
-                requireNonNull(tag),
+        return new RawTagMeta(id,
+                tag,
                 requireNonNullElse(alias, Collections.emptyList()),
                 requireNonNullElse(category, Collections.emptyList()),
                 image);

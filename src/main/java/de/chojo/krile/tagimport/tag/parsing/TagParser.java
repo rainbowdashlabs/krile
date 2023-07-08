@@ -90,7 +90,7 @@ public class TagParser {
                 return MAPPER.readValue(file.meta().get(), RawTagMeta.class)
                         .inject(id, id);
             } catch (JsonProcessingException e) {
-                throw new ParsingException("Failed to parse tag meta.%n%s".formatted(e.getMessage()));
+                throw new ParsingException("Failed to parse tag meta.%n%s".formatted(e.getMessage()), e);
             }
         }
         return RawTagMeta.createDefault(id);

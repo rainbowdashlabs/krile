@@ -44,6 +44,7 @@ public abstract class BaseAdd implements SlashHandler {
             repository = repositoryData.getOrCreateByIdentifier(identifier, context, event);
         } catch (ParsingException e) {
             event.getHook().editOriginal(context.guildLocale("error.repository.parsing", Replacement.create("error", e.getMessage()))).queue();
+            log.error("Error while parsing", e);
             return;
         } catch (ImportException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Could not import repository", e);
