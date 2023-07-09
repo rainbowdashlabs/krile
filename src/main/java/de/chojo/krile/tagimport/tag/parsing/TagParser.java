@@ -75,7 +75,7 @@ public class TagParser {
     }
 
     public FileMeta fileMeta() throws ImportException {
-        return new FileMeta(filePath.toFile().getName(), getAuthors(), getTimeModified(), getTimeCreated());
+        return new FileMeta(filePath.toFile().getName(), getAuthors(), getTimeCreated(), getTimeModified());
     }
 
     public String tagContent() throws ImportException {
