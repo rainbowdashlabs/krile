@@ -123,7 +123,7 @@ public final class Tag {
 
         Identifier identifier = repository.identifier();
         EmbedBuilder builder = new LocalizedEmbedBuilder(context.guildLocalizer())
-                .setAuthor("embeds.tag.author", link(), Replacement.create("id", id), Replacement.create("identifier", identifier))
+                .setAuthor("embeds.tag.author", link(), Replacement.create("id", tagId), Replacement.create("identifier", identifier))
                 .setTitle(tag);
         List<String> aliases = meta.aliases().all();
         if (!aliases.isEmpty()) builder.addField("words.aliases", String.join(", ", aliases), true);
