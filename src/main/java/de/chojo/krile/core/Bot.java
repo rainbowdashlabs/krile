@@ -89,7 +89,7 @@ public class Bot {
                 .withGuildCommandMapper(cmd -> Collections.singletonList(configuration.config().baseSettings()
                         .botGuild()))
                 .withDefaultMenuService()
-                .withPagination(builder -> builder.previousText("Previous").nextText("Next"))
+                .withPagination(builder -> builder.previousText("").nextText(""))
                 .withDefaultModalService()
                 .withLocalizer(localizer)
                 .withCommands(

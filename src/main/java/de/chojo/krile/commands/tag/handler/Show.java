@@ -18,7 +18,6 @@ import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -33,11 +32,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import static net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class Show implements SlashHandler {
-    public static final Button delete = Button.danger("delete", "delete").withEmoji(Emoji.fromUnicode("🗑️"));
-    public static final Button info = Button.primary("info", "info").withEmoji(Emoji.fromUnicode("❓"));
+    public static final Button delete = Button.secondary("delete", fromUnicode("🗑️"));
+    public static final Button info = Button.secondary("info", fromUnicode("❔"));
     private static final Logger log = getLogger(Show.class);
     private final GuildData guilds;
 
