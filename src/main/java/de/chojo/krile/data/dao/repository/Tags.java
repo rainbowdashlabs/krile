@@ -6,8 +6,11 @@
 
 package de.chojo.krile.data.dao.repository;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
+import de.chojo.krile.data.dao.Author;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.krile.tagimport.exception.ImportException;
@@ -21,6 +24,7 @@ import org.intellij.lang.annotations.Language;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 

@@ -14,9 +14,10 @@ import java.util.List;
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class TagAliases {
-    private final TagMeta meta;
+    private final Meta meta;
+    private List<String> aliases;
 
-    public TagAliases(TagMeta meta) {
+    public TagAliases(Meta meta) {
         this.meta = meta;
     }
 
@@ -27,6 +28,7 @@ public class TagAliases {
         for (String alias : tag.meta().alias()) {
             assign(alias);
         }
+        aliases = tag.meta().alias();
     }
 
     public void assign(String alias) {
@@ -47,14 +49,18 @@ public class TagAliases {
     }
 
     public List<String> all() {
-        @Language("postgresql")
-        var select = """
-                SELECT alias FROM tag_alias WHERE tag_id = ?""";
+        if (aliases == null) {
 
-        return builder(String.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(meta.tag().id()))
-                .readRow(row -> row.getString("alias"))
-                .allSync();
+            @Language("postgresql")
+            var select = """
+                    SELECT alias FROM tag_alias WHERE tag_id = ?""";
+
+            aliases = builder(String.class)
+                    .query(select)
+                    .parameter(stmt -> stmt.setInt(meta.tag().id()))
+                    .readRow(row -> row.getString("alias"))
+                    .allSync();
+        }
+        return aliases;
     }
 }

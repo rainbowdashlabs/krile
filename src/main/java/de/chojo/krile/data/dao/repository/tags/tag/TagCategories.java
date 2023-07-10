@@ -17,12 +17,13 @@ import java.util.Optional;
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class TagCategories {
-    private final TagMeta meta;
-    private final CategoryData categories;
+    private final Meta meta;
+    private final CategoryData categoryData;
+    private List<Category> categories;
 
-    public TagCategories(TagMeta meta, CategoryData categories) {
+    public TagCategories(Meta meta, CategoryData categoryData) {
         this.meta = meta;
-        this.categories = categories;
+        this.categoryData = categoryData;
     }
 
     public void update(RawTag tag) {
@@ -30,7 +31,7 @@ public class TagCategories {
         clear();
 
         for (String name : tag.meta().category()) {
-            Optional<Category> category = categories.getOrCreate(name);
+            Optional<Category> category = categoryData.getOrCreate(name);
             if (category.isEmpty()) continue;
             assign(category.get());
         }
@@ -54,16 +55,19 @@ public class TagCategories {
     }
 
     public List<Category> all() {
-        @Language("postgresql")
-        var select = """
-                SELECT id, category
-                FROM tag_category
-                         LEFT JOIN category c ON c.id = tag_category.category_id
-                WHERE tag_id = ?""";
-        return builder(Category.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(meta.tag().id()))
-                .readRow(Category::build)
-                .allSync();
+        if (categories == null) {
+            @Language("postgresql")
+            var select = """
+                    SELECT id, category
+                    FROM tag_category
+                             LEFT JOIN category c ON c.id = tag_category.category_id
+                    WHERE tag_id = ?""";
+            categories =  builder(Category.class)
+                    .query(select)
+                    .parameter(stmt -> stmt.setInt(meta.tag().id()))
+                    .readRow(row -> categoryData.get(row.getInt("id")).get())
+                    .allSync();
+        }
+        return categories;
     }
 }

@@ -12,6 +12,7 @@ import java.sql.SQLException;
 
 // TODO: Add profile link?
 public record Author(int id, String name, String mail) {
+    public static final Author NONE = new Author(-1, "none", "none");
 
     public static Author build(Row row) throws SQLException {
         return build(row, "id", "name", "mail");

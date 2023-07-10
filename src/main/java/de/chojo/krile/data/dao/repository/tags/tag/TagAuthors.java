@@ -18,19 +18,20 @@ import java.util.Optional;
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
 public class TagAuthors {
-    private final TagMeta meta;
-    private final AuthorData authors;
+    private final Meta meta;
+    private final AuthorData authorData;
+    private List<Author> authors;
 
-    public TagAuthors(TagMeta meta, AuthorData authors) {
+    public TagAuthors(Meta meta, AuthorData authorData) {
         this.meta = meta;
-        this.authors = authors;
+        this.authorData = authorData;
     }
 
     public void update(RawTag tag) {
         clear();
 
         for (RawAuthor raw : tag.fileMeta().authors()) {
-            Optional<Author> author = authors.getOrCreate(raw);
+            Optional<Author> author = authorData.getOrCreate(raw);
             if (author.isEmpty()) continue;
             assign(author.get());
         }
@@ -54,16 +55,19 @@ public class TagAuthors {
     }
 
     public List<Author> all() {
-        @Language("postgresql")
-        var select = """
-                SELECT id, name, mail
-                FROM tag_author
-                         LEFT JOIN author a ON a.id = tag_author.author_id
-                WHERE tag_id = ?""";
-        return builder(Author.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(meta.tag().id()))
-                .readRow(Author::build)
-                .allSync();
+        if (authors == null) {
+            @Language("postgresql")
+            var select = """
+                    SELECT id, name, mail
+                    FROM tag_author
+                             LEFT JOIN author a ON a.id = tag_author.author_id
+                    WHERE tag_id = ?""";
+            authors = builder(Author.class)
+                    .query(select)
+                    .parameter(stmt -> stmt.setInt(meta.tag().id()))
+                    .readRow(row -> authorData.get(row.getInt("id")).get())
+                    .allSync();
+        }
+        return authors;
     }
 }

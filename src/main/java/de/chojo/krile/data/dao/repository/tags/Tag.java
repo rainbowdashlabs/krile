@@ -9,15 +9,14 @@ package de.chojo.krile.data.dao.repository.tags;
 import de.chojo.jdautil.localization.LocalizationContext;
 import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
 import de.chojo.jdautil.localization.util.Replacement;
-import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Author;
 import de.chojo.krile.data.dao.Category;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
-import de.chojo.krile.data.dao.repository.tags.tag.TagMeta;
-import de.chojo.krile.data.dao.repository.tags.tag.tagmeta.FileMeta;
+import de.chojo.krile.data.dao.repository.tags.tag.Meta;
+import de.chojo.krile.data.dao.repository.tags.tag.meta.FileMeta;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.sadu.types.PostgreSqlTypes;
 import de.chojo.sadu.wrapper.util.Row;
@@ -39,10 +38,10 @@ public final class Tag {
     private static final Logger log = getLogger(Tag.class);
     private final int id;
     private final String tagId;
-    private final String tag;
-    private final List<String> text;
+    private String tag;
+    private List<String> text;
     private final Repository repository;
-    private final TagMeta meta;
+    private final Meta meta;
 
     public Tag(int id, String tagId, String tag, List<String> text, Repository repository, CategoryData categories, AuthorData authors) {
         this.id = id;
@@ -50,7 +49,7 @@ public final class Tag {
         this.tag = tag;
         this.text = text;
         this.repository = repository;
-        this.meta = new TagMeta(this, categories, authors);
+        this.meta = new Meta(this, categories, authors);
     }
 
     public static Tag build(Row row, Repository repository, CategoryData categories, AuthorData authors) throws SQLException {
@@ -102,7 +101,7 @@ public final class Tag {
         return text.size() != 1;
     }
 
-    public TagMeta meta() {
+    public Meta meta() {
         return meta;
     }
 
@@ -115,18 +114,28 @@ public final class Tag {
         log.trace("Updating tag {} in {}", tagId, repository);
         @Language("postgresql")
         var insert = """
-                UPDATE tag SET content = ? WHERE id = ?""";
+                UPDATE tag
+                SET
+                    content = ?,
+                    tag = ?
+                WHERE id = ?""";
+
+        List<String> text = switch (raw.meta().type()) {
+            case TEXT -> raw.splitText();
+            case EMBED -> List.of(raw.text());
+        };
 
         builder()
                 .query(insert)
-                .parameter(stmt -> stmt.setArray(raw.splitText(), PostgreSqlTypes.TEXT).setInt(id()))
+                .parameter(stmt -> stmt.setArray(text, PostgreSqlTypes.TEXT).setString(raw.meta().tag()).setInt(id()))
                 .update()
                 .sendSync();
+        this.text = text;
+        this.tag = raw.meta().tag();
         meta.update(raw);
     }
 
     public MessageEmbed infoEmbed(LocalizationContext context) {
-
         Identifier identifier = repository.identifier();
         EmbedBuilder builder = new LocalizedEmbedBuilder(context)
                 .setAuthor("embeds.tag.author", link(), Replacement.create("id", tagId), Replacement.create("identifier", identifier))

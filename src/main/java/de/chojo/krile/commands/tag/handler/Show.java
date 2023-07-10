@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -58,7 +59,7 @@ public class Show implements SlashHandler {
                 @Override
                 public CompletableFuture<MessageEditData> buildPage() {
                     MessageEditBuilder builder = new MessageEditBuilder().setContent(currentElement());
-                    tag.meta().image().ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
+                    Optional.ofNullable(tag.meta().tagMeta().image()).ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
                     return CompletableFuture.completedFuture(builder.build());
                 }
 
@@ -72,8 +73,14 @@ public class Show implements SlashHandler {
             return;
         }
 
-        MessageCreateBuilder builder = new MessageCreateBuilder().setContent(tag.text());
-        tag.meta().image().ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
+        MessageCreateBuilder builder = new MessageCreateBuilder();
+        switch (tag.meta().tagMeta().type()) {
+            case TEXT -> {
+                builder.setContent(tag.text());
+                Optional.ofNullable(tag.meta().tagMeta().image()).ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
+            }
+            case EMBED -> builder.setEmbeds(EmbedBuilder.fromData(DataObject.fromJson(tag.text())).build());
+        }
         MenuActionBuilder menu = MenuAction.forCallback(builder.build(), event);
         if (delete) menu.addComponent(MenuEntry.of(deleteButton(event.getUser()), Consumers.empty()));
         menu.addComponent(MenuEntry.of(infoButton(tag), Consumers.empty()));

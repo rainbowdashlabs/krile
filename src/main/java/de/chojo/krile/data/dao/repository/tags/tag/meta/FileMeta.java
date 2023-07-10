@@ -4,7 +4,7 @@
  *     Copyright (C) RainbowDashLabs and Contributor
  */
 
-package de.chojo.krile.data.dao.repository.tags.tag.tagmeta;
+package de.chojo.krile.data.dao.repository.tags.tag.meta;
 
 import de.chojo.krile.data.dao.Author;
 
