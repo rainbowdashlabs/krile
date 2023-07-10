@@ -17,18 +17,21 @@ import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.repository.tags.tag.Meta;
 import de.chojo.krile.data.dao.repository.tags.tag.meta.FileMeta;
+import de.chojo.krile.data.dao.repository.tags.tag.meta.TagType;
 import de.chojo.krile.tagimport.tag.RawTag;
 import de.chojo.sadu.types.PostgreSqlTypes;
 import de.chojo.sadu.wrapper.util.Row;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.TimeFormat;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
@@ -90,7 +93,28 @@ public final class Tag {
     }
 
     public String text() {
+        if (meta.tagMeta().type() == TagType.EMBED) {
+            DataObject dataObject = DataObject.fromJson(text.get(0));
+            if (dataObject.hasKey("content")) {
+                return dataObject.getString("content");
+            }
+            return "";
+        }
         return text.get(0);
+    }
+
+    public List<MessageEmbed> embeds() {
+        List<MessageEmbed> embeds = new ArrayList<>();
+        DataObject dataObject = DataObject.fromJson(text.get(0));
+        if (dataObject.hasKey("embeds")) {
+            var array = dataObject.getArray("embeds");
+            for (int i = 0; i < array.length(); i++) {
+                embeds.add(EmbedBuilder.fromData(array.getObject(i)).build());
+            }
+        } else {
+            embeds.add(EmbedBuilder.fromData(dataObject).build());
+        }
+        return embeds;
     }
 
     public List<String> paged() {

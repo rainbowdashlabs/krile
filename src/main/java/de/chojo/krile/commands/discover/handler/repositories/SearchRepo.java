@@ -58,7 +58,6 @@ public class SearchRepo implements SlashHandler {
             return;
         }
 
-
         List<Repository> search = repositoryData.search(new RepositoryFilter(resolve.map(Category::id).orElse(null), language, name, platform, user, repo, tags));
         IPageBag page = PageBuilder.list(search)
                 .syncPage(p -> MessageEditData.fromEmbeds(p.currentElement().infoEmbed(context)))

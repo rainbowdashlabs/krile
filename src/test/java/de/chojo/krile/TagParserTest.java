@@ -6,6 +6,7 @@
 
 package de.chojo.krile;
 
+import de.chojo.krile.data.dao.repository.tags.tag.meta.TagType;
 import de.chojo.krile.tagimport.exception.ImportException;
 import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
@@ -13,6 +14,7 @@ import de.chojo.krile.tagimport.tag.entities.FileMeta;
 import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import de.chojo.krile.tagimport.tag.entities.RawTagMeta;
 import de.chojo.krile.tagimport.tag.parsing.TagParser;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -32,6 +34,7 @@ class TagParserTest {
     private static TagParser testTag;
     private static TagParser longTag;
     private static TagParser devmarkt;
+    private static TagParser embed;
 
     @BeforeAll
     static void beforeAll() throws GitAPIException, IOException, ParsingException {
@@ -39,6 +42,7 @@ class TagParserTest {
         testTag = TagParser.parse(repo, repo.tagPath().resolve("test_tag.md"));
         longTag = TagParser.parse(repo, repo.tagPath().resolve("long tag.md"));
         devmarkt = TagParser.parse(repo, repo.tagPath().resolve("devmarkt.md"));
+        embed = TagParser.parse(repo, repo.tagPath().resolve("embed_tag.md"));
     }
 
     @Test
@@ -92,6 +96,11 @@ class TagParserTest {
         Assertions.assertEquals(List.of("test1", "test2"), meta.alias());
         Assertions.assertEquals(List.of("test"), meta.category());
         Assertions.assertEquals("https://avatars.githubusercontent.com/u/46890129?s=48&v=4", meta.image());
+    }
+    @Test
+    void type() throws ImportException, ParsingException {
+        Assertions.assertEquals(TagType.EMBED, embed.tagMeta().type());
+        Assertions.assertEquals(TagType.TEXT, testTag.tagMeta().type());
     }
 
     @Test

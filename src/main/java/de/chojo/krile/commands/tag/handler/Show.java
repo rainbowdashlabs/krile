@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -79,7 +78,10 @@ public class Show implements SlashHandler {
                 builder.setContent(tag.text());
                 Optional.ofNullable(tag.meta().tagMeta().image()).ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
             }
-            case EMBED -> builder.setEmbeds(EmbedBuilder.fromData(DataObject.fromJson(tag.text())).build());
+            case EMBED -> {
+                if (!tag.text().isBlank()) builder.setContent(tag.text());
+                builder.setEmbeds(tag.embeds());
+            }
         }
         MenuActionBuilder menu = MenuAction.forCallback(builder.build(), event);
         if (delete) menu.addComponent(MenuEntry.of(deleteButton(event.getUser()), Consumers.empty()));

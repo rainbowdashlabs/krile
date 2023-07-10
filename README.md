@@ -124,6 +124,17 @@ Note: You can also use json in the header as well if you like json more. A schem
 }
 ```
 
+### Embed Tags
+
+Instead of using normal markdown you can use an embed editor like the one from [glitchii](https://glitchii.github.io/embedbuilder/) to create an embed.
+Once you get the json code just paste it where you would normally paste the markdown.
+Set the type key in your tag meta to `EMBED` and let the magic happen.
+
+Please note that pagination is currently not supported for embeds.
+You are limited to 6k characters total and 10 embeds max.
+
+You can find an example embed tag [here](https://github.com/rainbowdashlabs/krile/blob/main/tags/embed_tag.md)
+
 ### Paginated Tags
 If a tag exceeds the 2000 characters limit set by discord it will be automatically split into 2000 characters chunks.
 You can define your own pages by adding `<new_page>` in your text when a new page should star. 

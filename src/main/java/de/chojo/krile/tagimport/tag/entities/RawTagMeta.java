@@ -50,6 +50,6 @@ public record RawTagMeta(String id,
     }
 
     public RawTagMeta inject(String id, String tag) {
-        return new RawTagMeta(requireNonNullElse(this.id, id), requireNonNullElse(this.tag, tag), alias, category, image, TagType.TEXT);
+        return new RawTagMeta(requireNonNullElse(this.id, id), requireNonNullElse(this.tag, tag), alias, category, image, type);
     }
 }
