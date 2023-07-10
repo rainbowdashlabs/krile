@@ -111,7 +111,7 @@ public class Show implements SlashHandler {
         event.deferReply().queue();
         Optional<Tag> tag = guilds.guild(event.getGuild()).tags().resolveTag(id);
         if (tag.isEmpty()) {
-            event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
+            event.getHook().editOriginal(context.localize("error.tag.notfound")).queue();
             return;
         }
         showTag(event, context, guilds.guild(event), tag.get());
