@@ -58,7 +58,7 @@ class TagParserTest {
     void fileMeta() throws ImportException {
         FileMeta meta = testTag.fileMeta();
         Assertions.assertNotEquals(meta.created().when(), meta.modified().when());
-        Assertions.assertTrue(meta.created().when().isAfter(meta.modified().when()));
+        Assertions.assertTrue(meta.created().when().isBefore(meta.modified().when()));
     }
 
     @Test

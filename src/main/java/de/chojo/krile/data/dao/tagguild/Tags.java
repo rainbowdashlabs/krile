@@ -6,6 +6,7 @@
 
 package de.chojo.krile.data.dao.tagguild;
 
+import de.chojo.jdautil.parsing.ValueParser;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.TagGuild;
@@ -62,13 +63,55 @@ public class Tags {
                 .allSync();
     }
 
+    public Optional<Tag> resolveTag(String tagNameOrId) {
+        Optional<Integer> id = ValueParser.parseInt(tagNameOrId);
+        if (id.isPresent()) {
+            return getById(id.get());
+        }
+        return getByName(tagNameOrId);
+    }
+
+    public Optional<Tag> getByName(String name) {
+        @Language("postgresql")
+        var select = """
+                WITH ranked_tags AS
+                         (SELECT row_number() OVER (PARTITION BY tag ORDER BY gr.priority * rt.global_prio DESC) AS rank,
+                                 gr.repository_id,
+                                 gr.priority                                                                     AS repo_prio,
+                                 global_prio,
+                                 rt.id,
+                                 tag,
+                                 rt.prio                                                                         AS tag_prio,
+                                 r.identifier
+                          FROM guild_repository gr
+                                   LEFT JOIN repo_tags rt ON gr.repository_id = rt.repository_id
+                                   LEFT JOIN repository r ON gr.repository_id = r.id
+                          WHERE global_prio = 1
+                            AND tag = ?
+                            AND gr.guild_id = ?)
+                SELECT t.repository_id, t.id, tag_id, t.tag, content
+                FROM ranked_tags rt
+                LEFT JOIN tag t ON rt.id = t.id
+                LIMIT 1;
+                """;
+        return builder(Tag.class)
+                .query(select)
+                .parameter(stmt -> stmt.setString(name).setLong(guild.id()))
+                .readRow(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .firstSync();
+    }
+
     public Optional<Tag> getById(int tag) {
         @Language("postgresql")
         var select = """
-                SELECT repository_id, id, tag_id, tag, content FROM tag t WHERE id = ?""";
+                SELECT t.repository_id, id, tag_id, tag, content
+                FROM tag t
+                         LEFT JOIN guild_repository gr ON t.repository_id = gr.repository_id
+                WHERE id = ?
+                  AND guild_id = ?""";
         return builder(Tag.class)
                 .query(select)
-                .parameter(stmt -> stmt.setInt(tag))
+                .parameter(stmt -> stmt.setInt(tag).setLong(guild.id()))
                 .readRow(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
                 .firstSync();
     }

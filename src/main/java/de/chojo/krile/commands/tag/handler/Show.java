@@ -107,15 +107,14 @@ public class Show implements SlashHandler {
 
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
-        Integer id = event.getOption("tag", OptionMapping::getAsInt);
+        String id = event.getOption("tag", OptionMapping::getAsString);
         event.deferReply().queue();
-        Optional<Tag> byId = guilds.guild(event.getGuild()).tags().getById(id);
-        if (byId.isEmpty()) {
+        Optional<Tag> tag = guilds.guild(event.getGuild()).tags().resolveTag(id);
+        if (tag.isEmpty()) {
             event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
             return;
         }
-        Tag tag = byId.get();
-        showTag(event, context, guilds.guild(event), tag);
+        showTag(event, context, guilds.guild(event), tag.get());
     }
 
     @Override
