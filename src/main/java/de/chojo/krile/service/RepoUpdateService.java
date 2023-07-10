@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -74,17 +76,20 @@ public class RepoUpdateService implements Runnable {
         } catch (ImportException | IOException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Could not check repository {} for updates", repository, e);
         } catch (ParsingException e) {
-            repository.updateFailed(e.getMessage());
+            CompletableFuture.runAsync( () -> repository.updateFailed(e.getMessage())).orTimeout(5, TimeUnit.MINUTES).join();
         }
         log.info("Repository {} is outdated. Performing update", repository);
         try (var raw = RawRepository.remote(configuration, repository.identifier())) {
+            log.info(LogNotify.STATUS, "Updating {}", repository);
             repository.update(raw);
         } catch (ImportException | IOException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Could not update repository {}", repository, e);
             return;
         } catch (ParsingException e) {
             repository.updateFailed(e.getMessage());
-        }catch (Throwable e){
+        }catch (CancellationException e){
+            log.error(LogNotify.NOTIFY_ADMIN, "Repository {} timed out during update", repository);
+        } catch (Throwable e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Severe error during repository update of {}", repository, e);
         }
         log.info("Updated {}.", repository);

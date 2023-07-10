@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -32,8 +33,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public final class Tag {
+    private static final Logger log = getLogger(Tag.class);
     private final int id;
     private final String tagId;
     private final String tag;
@@ -66,6 +69,7 @@ public final class Tag {
     }
 
     public boolean delete() {
+        log.info("Deleted tag {} from {}", tagId, repository);
         return builder()
                 .query("DELETE FROM tag WHERE id = ?")
                 .parameter(stmt -> stmt.setInt(id()))
