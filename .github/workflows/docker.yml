@@ -34,11 +34,18 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Download Docker image artifact
-        uses: actions/download-artifact@v2
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          workflow_conclusion: success
           name: docker-image
           path: /image/docker-image.tar
+#      - name: Download Docker image artifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: docker-image
+#          path: /image/docker-image.tar
       - name: Load Docker image
         run: docker load -i /image/docker-image.tar
       - name: Push image
