@@ -158,7 +158,7 @@ public class Tags {
                                     coalesce(views, 0)                                             AS views
                              FROM guild_repository gr
                                       LEFT JOIN tag t ON gr.repository_id = t.repository_id
-                                      LEFT JOIN tag_stat s ON t.id = s.tag_id
+                                      LEFT JOIN tag_stat s ON t.id = s.tag_id AND gr.guild_id = s.guild_id
                                       LEFT JOIN repository r ON gr.repository_id = r.id
                              WHERE gr.guild_id = ?
                              ORDER BY views DESC, priority DESC)
