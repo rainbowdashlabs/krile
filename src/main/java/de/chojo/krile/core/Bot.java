@@ -100,7 +100,7 @@ public class Bot {
                         Info.create(configuration),
                         new Tags(data.guilds()),
                         new Repositories(data.guilds()),
-                        new Discover(data.repositories(), data.tags(), configuration))
+                        new Discover(data.repositories(), data.tags(), configuration, data.categories()))
                 .build();
     }
 }

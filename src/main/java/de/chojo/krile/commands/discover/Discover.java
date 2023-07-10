@@ -14,6 +14,7 @@ import de.chojo.krile.commands.discover.handler.repositories.SearchRepo;
 import de.chojo.krile.commands.discover.handler.tags.RandomTag;
 import de.chojo.krile.commands.discover.handler.tags.SearchTag;
 import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.access.TagData;
 
@@ -26,11 +27,13 @@ public class Discover implements SlashProvider<Slash> {
     private final RepositoryData repositoryData;
     private final TagData tagData;
     private final Configuration<ConfigFile> configuration;
+    private final CategoryData categoryData;
 
-    public Discover(RepositoryData repositoryData, TagData tagData, Configuration<ConfigFile> configuration) {
+    public Discover(RepositoryData repositoryData, TagData tagData, Configuration<ConfigFile> configuration, CategoryData categoryData) {
         this.repositoryData = repositoryData;
         this.tagData = tagData;
         this.configuration = configuration;
+        this.categoryData = categoryData;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class Discover implements SlashProvider<Slash> {
         return Slash.slash("discover", "command.discover.description")
                 .group(group("repositories", "command.discover.repositories.description")
                         .subCommand(sub("search", "command.discover.repositories.search.description")
-                                .handler(new SearchRepo(configuration, repositoryData))
+                                .handler(new SearchRepo(configuration, repositoryData, categoryData))
                                 .argument(text("category", "command.discover.repositories.search.options.category.description").withAutoComplete())
                                 .argument(text("language", "command.discover.repositories.search.options.language.description").withAutoComplete())
                                 .argument(text("name", "command.discover.repositories.search.options.name.description"))
@@ -52,7 +55,7 @@ public class Discover implements SlashProvider<Slash> {
                 )
                 .group(group("tags", "command.discover.tags.description")
                         .subCommand(sub("search", "command.discover.tags.search.description")
-                                .handler(new SearchTag(tagData, repositoryData))
+                                .handler(new SearchTag(tagData, repositoryData, categoryData))
                                 .argument(text("category", "command.discover.tags.search.options.category.description").withAutoComplete())
                                 .argument(text("language", "command.discover.tags.search.options.language.description").withAutoComplete())
                                 .argument(text("name", "command.discover.tags.search.options.name.description"))

@@ -11,8 +11,10 @@ import de.chojo.jdautil.pagination.bag.IPageBag;
 import de.chojo.jdautil.pagination.bag.PageBuilder;
 import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.wrapper.EventContext;
+import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.access.TagData;
+import de.chojo.krile.data.dao.Category;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.krile.data.util.TagFilter;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -23,23 +25,33 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SearchTag implements SlashHandler {
     private final TagData tagData;
     private final RepositoryData repositoryData;
+    private final CategoryData categoryData;
 
-    public SearchTag(TagData tagData, RepositoryData repositoryData) {
+    public SearchTag(TagData tagData, RepositoryData repositoryData, CategoryData categoryData) {
         this.tagData = tagData;
         this.repositoryData = repositoryData;
+        this.categoryData = categoryData;
     }
 
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
-        Integer category = event.getOption("category", null, OptionMapping::getAsInt);
+        String category = event.getOption("category", null, OptionMapping::getAsString);
         String language = event.getOption("language", null, OptionMapping::getAsString);
         String name = event.getOption("name", null, OptionMapping::getAsString);
 
-        TagFilter tagFilter = new TagFilter(category, language, name);
+        Optional<Category> resolve = categoryData.resolve(category);
+
+        if (resolve.isEmpty() && category != null) {
+            event.reply(context.localize("error.category.unknown")).setEphemeral(true).queue();
+            return;
+        }
+
+        TagFilter tagFilter = new TagFilter(resolve.map(Category::id).orElse(null), language, name);
         List<Tag> search = tagData.search(tagFilter);
         IPageBag page = PageBuilder.list(search)
                 .syncPage(p -> MessageEditData.fromEmbeds(p.currentElement().infoEmbed(context.guildLocalizer())))

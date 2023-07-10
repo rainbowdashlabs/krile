@@ -6,8 +6,10 @@
 
 package de.chojo.krile.data.access;
 
+import de.chojo.jdautil.parsing.ValueParser;
 import de.chojo.krile.data.dao.Category;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 import java.util.Optional;
@@ -33,6 +35,14 @@ public class CategoryData {
                 .firstSync();
     }
 
+    public Optional<Category> resolve(String idOrName) {
+        Optional<Integer> id = ValueParser.parseInt(idOrName);
+        if (id.isPresent()) {
+            return get(id.get());
+        }
+        return get(idOrName);
+    }
+
     public Optional<Category> get(String name) {
         @Language("postgresql")
         var query = """
@@ -44,7 +54,19 @@ public class CategoryData {
                 .firstSync();
     }
 
-    private String harmonize(String name) {
+    public Optional<Category> get(int id) {
+        @Language("postgresql")
+        var query = """
+                SELECT id, c.category FROM category c WHERE id = ?""";
+        return builder(Category.class)
+                .query(query)
+                .parameter(stmt -> stmt.setInt(id))
+                .readRow(Category::build)
+                .firstSync();
+    }
+
+    private String harmonize(@Nullable String name) {
+        if (name == null) return null;
         return name.replace("_", " ").toLowerCase(Locale.ROOT);
     }
 }
