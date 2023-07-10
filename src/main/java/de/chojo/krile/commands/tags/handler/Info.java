@@ -28,7 +28,7 @@ public class Info implements SlashHandler {
 
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
-        Optional<Tag> byId = guilds.guild(event).tags().getById(event.getOption("tag", -1, OptionMapping::getAsInt));
+        Optional<Tag> byId = guilds.guild(event).tags().resolveTag(event.getOption("tag", OptionMapping::getAsString));
         if (byId.isEmpty()) {
             event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
             return;
