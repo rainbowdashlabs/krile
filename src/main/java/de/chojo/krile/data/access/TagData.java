@@ -108,8 +108,8 @@ public class TagData {
         @Language("postgresql")
         var select = """
                 SELECT
-                    c.id,
-                    category
+                    DISTINCT category,
+                    c.id
                 FROM
                     repository_meta m
                         LEFT JOIN tag t

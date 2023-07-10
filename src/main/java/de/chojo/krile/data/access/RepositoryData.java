@@ -214,7 +214,7 @@ public class RepositoryData {
     public List<CompletedCategory> completeCategories(String value) {
         @Language("postgresql")
         var select = """
-                SELECT id, category
+                SELECT DISTINCT id, category
                 FROM repository_category rc
                          LEFT JOIN category c ON rc.category_id = c.id
                          LEFT JOIN repository_meta rm ON rc.repository_id = rm.repository_id
@@ -248,7 +248,7 @@ public class RepositoryData {
     private List<String> completeMeta(String column, String value) {
         @Language("postgresql")
         var select = """
-                SELECT rm.%s
+                SELECT DISTINCT rm.%s
                 FROM repository r
                          LEFT JOIN repository_meta rm ON r.id = rm.repository_id
                 WHERE rm.%s ILIKE '%%' || ? || '%%'
