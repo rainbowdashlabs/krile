@@ -127,4 +127,18 @@ public class TagData {
                 .readRow(row -> new CompletedCategory(row.getInt("id"), row.getString("category")))
                 .allSync();
     }
+
+    public Optional<Tag> byId(int id) {
+        @Language("postgresql")
+        var select = """
+                SELECT t.repository_id, id, tag_id, tag, content
+                FROM tag t
+                         LEFT JOIN guild_repository gr ON t.repository_id = gr.repository_id
+                WHERE id = ?""";
+        return builder(Tag.class)
+                .query(select)
+                .parameter(stmt -> stmt.setInt(id))
+                .readRow(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
+                .firstSync();
+    }
 }

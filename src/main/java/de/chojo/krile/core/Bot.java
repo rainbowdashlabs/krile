@@ -17,6 +17,7 @@ import de.chojo.krile.commands.tag.Tag;
 import de.chojo.krile.commands.tags.Tags;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.service.RepoUpdateService;
+import de.chojo.krile.service.TagInteractionListener;
 import de.chojo.logutil.marker.LogNotify;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -55,8 +56,8 @@ public class Bot {
     }
 
     private void init() {
-        initShardManager();
         initServices();
+        initShardManager();
         initInteractions();
     }
 
@@ -77,6 +78,7 @@ public class Bot {
                 .setEnableShutdownHook(false)
                 .setThreadFactory(Threading.createThreadFactory(threading.jdaGroup()))
                 .setEventPool(threading.jdaWorker())
+                .addEventListeners(new TagInteractionListener(localizer, data.tags()))
                 .build();
     }
 

@@ -33,7 +33,7 @@ public class Info implements SlashHandler {
             event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
             return;
         }
-        MessageEmbed messageEmbed = byId.get().infoEmbed(context);
+        MessageEmbed messageEmbed = byId.get().infoEmbed(context.guildLocalizer());
         event.replyEmbeds(messageEmbed).setEphemeral(true).queue();
     }
 

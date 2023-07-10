@@ -6,6 +6,7 @@
 
 package de.chojo.krile.data.dao.repository.tags;
 
+import de.chojo.jdautil.localization.LocalizationContext;
 import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
 import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.jdautil.wrapper.EventContext;
@@ -119,10 +120,10 @@ public final class Tag {
         meta.update(raw);
     }
 
-    public MessageEmbed infoEmbed(EventContext context) {
+    public MessageEmbed infoEmbed(LocalizationContext context) {
 
         Identifier identifier = repository.identifier();
-        EmbedBuilder builder = new LocalizedEmbedBuilder(context.guildLocalizer())
+        EmbedBuilder builder = new LocalizedEmbedBuilder(context)
                 .setAuthor("embeds.tag.author", link(), Replacement.create("id", tagId), Replacement.create("identifier", identifier))
                 .setTitle(tag);
         List<String> aliases = meta.aliases().all();

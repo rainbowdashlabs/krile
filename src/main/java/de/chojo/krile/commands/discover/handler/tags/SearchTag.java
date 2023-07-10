@@ -42,7 +42,7 @@ public class SearchTag implements SlashHandler {
         TagFilter tagFilter = new TagFilter(category, language, name);
         List<Tag> search = tagData.search(tagFilter);
         IPageBag page = PageBuilder.list(search)
-                .syncPage(p -> MessageEditData.fromEmbeds(p.currentElement().infoEmbed(context)))
+                .syncPage(p -> MessageEditData.fromEmbeds(p.currentElement().infoEmbed(context.guildLocalizer())))
                 .syncEmptyPage(p -> MessageEditData.fromContent(context.localize("error.tag.notfound")))
                 .build();
         context.registerPage(page, true);

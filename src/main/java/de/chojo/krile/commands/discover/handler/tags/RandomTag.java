@@ -30,6 +30,6 @@ public class RandomTag implements SlashHandler {
             return;
         }
         Show.showTag(event, context, random.get());
-        event.replyEmbeds(random.get().infoEmbed(context)).setEphemeral(true).queue();
+        event.replyEmbeds(random.get().infoEmbed(context.guildLocalizer())).setEphemeral(true).queue();
     }
 }

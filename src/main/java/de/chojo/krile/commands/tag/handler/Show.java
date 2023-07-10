@@ -12,12 +12,14 @@ import de.chojo.jdautil.menus.MenuActionBuilder;
 import de.chojo.jdautil.menus.entries.MenuEntry;
 import de.chojo.jdautil.pagination.bag.PageButton;
 import de.chojo.jdautil.pagination.bag.PrivateListPageBag;
+import de.chojo.jdautil.util.Consumers;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -31,13 +33,12 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class Show implements SlashHandler {
-    public static final Button delete = Button.secondary("delete", fromUnicode("🗑️"));
-    public static final Button info = Button.secondary("info", fromUnicode("❔"));
     private static final Logger log = getLogger(Show.class);
     private final GuildData guilds;
 
@@ -51,7 +52,7 @@ public class Show implements SlashHandler {
     }
 
     public static void showTag(SlashCommandInteractionEvent event, EventContext context, Tag tag) {
-        boolean view = event.getGuild().getSelfMember().hasPermission(event.getChannel().asGuildMessageChannel(), Permission.VIEW_CHANNEL);
+        boolean delete = event.getGuild().getSelfMember().hasPermission(event.getChannel().asGuildMessageChannel(), Permission.VIEW_CHANNEL);
         if (tag.isPaged()) {
             context.registerPage(new PrivateListPageBag<>(tag.paged(), event.getUser().getIdLong()) {
                 @Override
@@ -63,7 +64,9 @@ public class Show implements SlashHandler {
 
                 @Override
                 public List<PageButton> buttons() {
-                    return Show.buttons(tag, context, view);
+                    PageButton info = PageButton.of(p -> deleteButton(event.getUser()), (p, ctx) -> Consumers.empty());
+                    if (!delete) return List.of(info);
+                    return List.of(PageButton.of(p -> deleteButton(event.getUser()), (p, ctx) -> Consumers.empty()), info);
                 }
             });
             return;
@@ -72,37 +75,17 @@ public class Show implements SlashHandler {
         MessageCreateBuilder builder = new MessageCreateBuilder().setContent(tag.text());
         tag.meta().image().ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
         MenuActionBuilder menu = MenuAction.forCallback(builder.build(), event);
-        if (view) {
-            menu.addComponent(MenuEntry.of(delete, ctx -> {
-                if (ctx.event().getUser().getIdLong() == event.getUser().getIdLong()) {
-                    ctx.event().getMessage().delete().queue();
-                } else {
-                    ctx.event().reply("❌").queue();
-                }
-            }));
-        }
-        menu.addComponent(MenuEntry.of(info, ctx -> ctx.event().replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
+        if (delete) menu.addComponent(MenuEntry.of(deleteButton(event.getUser()), Consumers.empty()));
+        menu.addComponent(MenuEntry.of(infoButton(tag), Consumers.empty()));
         context.registerMenu(menu.build());
     }
 
-    private static List<PageButton> buttons(Tag tag, EventContext context, boolean delete) {
-        // not really a nice solution
-        if (delete) {
-            return List.of(
-                    PageButton.of(
-                            page -> Show.delete,
-                            (page, event) -> {
-                                log.trace("Deleting post");
-                                event.getMessage().delete().complete();
-                            }),
-                    PageButton.of(
-                            page -> info,
-                            (page, button) -> button.replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
-        }
-        return List.of(
-                PageButton.of(
-                        page -> info,
-                        (page, button) -> button.replyEmbeds(tag.infoEmbed(context)).setEphemeral(true).queue()));
+    private static Button deleteButton(User user) {
+        return Button.secondary("delete:" + user.getId(), fromUnicode("🗑️"));
+    }
+
+    private static Button infoButton(Tag tag) {
+        return Button.secondary("tag_info:" + tag.id(), fromUnicode("❔"));
     }
 
     @Override
@@ -112,6 +95,7 @@ public class Show implements SlashHandler {
         Optional<Tag> tag = guilds.guild(event.getGuild()).tags().resolveTag(id);
         if (tag.isEmpty()) {
             event.getHook().editOriginal(context.localize("error.tag.notfound")).queue();
+            event.getHook().deleteOriginal().queueAfter(1, TimeUnit.MINUTES);
             return;
         }
         showTag(event, context, guilds.guild(event), tag.get());
