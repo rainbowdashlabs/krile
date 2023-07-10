@@ -37,7 +37,7 @@ jobs:
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
+          workflow: verify.yml
           workflow_conclusion: success
           name: docker-image
           path: /image/docker-image.tar
