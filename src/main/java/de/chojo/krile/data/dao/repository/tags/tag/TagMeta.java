@@ -58,7 +58,7 @@ public class TagMeta {
                 ON CONFLICT (tag_id)
                     DO UPDATE
                     SET image       = excluded.image,
-                        file_name = excluded.file_name,
+                        file_name   = excluded.file_name,
                         created     = excluded.created,
                         created_by  = excluded.created_by,
                         modified    = excluded.modified,
@@ -67,8 +67,8 @@ public class TagMeta {
         var fileMeta = raw.fileMeta();
         OffsetDateTime created = fileMeta.created().when().atOffset(ZoneOffset.UTC);
         OffsetDateTime modified = fileMeta.modified().when().atOffset(ZoneOffset.UTC);
-        Author createdBy = authors.get(fileMeta.created().who()).get();
-        Author modifiedBy = authors.get(fileMeta.modified().who()).get();
+        Author createdBy = authors.getOrCreate(fileMeta.created().who()).get();
+        Author modifiedBy = authors.getOrCreate(fileMeta.modified().who()).get();
 
         builder()
                 .query(insert)

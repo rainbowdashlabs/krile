@@ -112,6 +112,7 @@ public final class Tag {
     }
 
     public void update(RawTag raw) {
+        log.trace("Updating tag {} in {}", tagId, repository);
         @Language("postgresql")
         var insert = """
                 UPDATE tag SET content = ? WHERE id = ?""";
