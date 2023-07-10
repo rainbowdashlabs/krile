@@ -84,6 +84,8 @@ public class RepoUpdateService implements Runnable {
             return;
         } catch (ParsingException e) {
             repository.updateFailed(e.getMessage());
+        }catch (Throwable e){
+            log.error(LogNotify.NOTIFY_ADMIN, "Severe error during repository update of {}", repository, e);
         }
         log.info("Updated {}.", repository);
     }
