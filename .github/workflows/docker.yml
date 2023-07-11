@@ -10,6 +10,7 @@ on:
 
 jobs:
   docker-build:
+    name: 'Docker bot push'
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -58,6 +59,7 @@ jobs:
             ghcr.io/${{ github.repository }}:latest
 
   docs-build:
+    name: 'Docker docs push'
     runs-on: ubuntu-latest
 
     steps:
