@@ -111,9 +111,9 @@ public class Default implements SlashHandler {
     private String getLinks(EventContext context) {
         var links = List.of(
                 getLink(context.localize("phrases.inviteme"), configuration.config().links().invite()),
-                getLink(context.localize("words.support"), configuration.config().links().support())
+                getLink(context.localize("words.support"), configuration.config().links().support()),
                 //getLink("TOS", configuration.config().tos()),
-                //getLink( "Website", configuration.config().website()),
+                getLink( "words.website", configuration.config().links().website())
                 //getLink("FAQ", configuration.config().faq())
         );
         return String.join(" ᠅ ", links);
