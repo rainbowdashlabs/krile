@@ -43,7 +43,15 @@
                         ".mp4",
                         ".webp"
                     ]
+                },
+                "type": {
+                    "description": "Type of the tag",
+                    "type": "string",
+                    "enum": ["EMBED", "TEXT"]
                 }
+            },
+            "default": {
+                "type": "TEXT"
             },
             "required": [
             ],

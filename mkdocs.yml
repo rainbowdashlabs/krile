@@ -1,0 +1,81 @@
+site_name: Krile
+site_url: https://krile.chojo.dev/
+site_description: Welcome to my portfolio page.
+repo_url: https://github.com/rainbowdashlabs/krile/
+repo_name: Krile
+docs_dir: docs
+site_dir: site
+plugins:
+  - git-revision-date-localized:
+      type: date
+      fallback_to_build_date: true
+      enable_creation_date: true
+nav:
+  - Home: index.md
+  - 'Repositories':
+      - repositories/index.md
+      - 'Create a Repository': repositories/create.md
+      - 'Add a Repository': repositories/add.md
+      - 'Update a Repository': repositories/update.md
+  - 'Tags':
+      - tags/index.md
+      - 'Meta': tags/meta.md
+      - 'Markdown': tags/markdown.md
+      - 'Paginated': tags/paginated.md
+      - 'Embed': tags/embed.md
+
+theme:
+  features:
+    - navigation.instant
+    - navigation.tracking
+    # - navigation.expand
+    - navigation.tabs
+    - navigation.tabs.sticky
+    # - navigation.sections
+    # - navigation.indexes
+    - navigation.top
+    - content.code.annotate
+    - navigation.indexes
+    - toc.follow
+  language: en
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: pink
+      accent: light blue
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: pink
+      accent: light blue
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+
+extra:
+  social:
+    - name: Patreon
+      icon: fontawesome/brands/patreon
+      link: https://www.patreon.com/eldoriaplugins
+    - name: Spigot
+      icon: material/minecraft
+      link: https://www.spigotmc.org/resources/authors/585216/
+    - name: Github
+      icon: fontawesome/brands/github
+      link: https://github.com/rainbowdashlabs
+    - name: Discord
+      icon: fontawesome/brands/discord
+      link: https://discord.gg/7Z74AjhRXg
