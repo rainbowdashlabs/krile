@@ -14,8 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public record RepositoryLocation(String name, String template, String tld, String filePath, String dirPath) {
-    @RegExp
-    private static final String PATH = "(?<user>.+?)/(?<repo>.+?)";
 
     public String url(String user, String repo) {
         return template.replace("{user}", user).replace("{repo}", repo);

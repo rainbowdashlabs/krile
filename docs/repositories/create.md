@@ -12,35 +12,8 @@ This file can be located at:
 - .gitlab
 - .krile
 
-This file then may contain the following keys. 
-You can also leave the file empty.
-
-```yaml
-# The pretty name of the repository. Otherwise, the identifier is used.
-name: "My repository"
-# The repository description to describe what the tags contain
-description: "Cool repository"
-# A list of categories, which describe this repository
-category: ["tips", "java", "discord"]
-# Mark this repository as public.
-# This will make it appear in the search.
-# People can still import your repository via the identifier or url.
-# To appear in the search you also need to define a name, description and set a language
-public: true
-# Set the language of the repo
-language: en
-# Change the directory where the tags are located
-# Default is root
-# This allows you to include your tags in your project instead of an extra repository.
-# Our tags are contained in a directory called "tags"
-directory: tags
-# This is a list of included tags from the defined directory.
-# You may only set include or exclude
-include: ["included_tag"]
-# This is a list of excluded tags from the defined directory.
-# You may only set include or exclude
-exclude: ["excluded_tag"]
-```
+You can also leave the file empty if you just want the basic functionality.
+For the available values see the [repository meta](meta.md) page.
 
 Note: You can also use `krile.json` if you like json more. A schema is also available.
 ```json

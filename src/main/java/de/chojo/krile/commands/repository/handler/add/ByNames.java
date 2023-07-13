@@ -33,8 +33,8 @@ public class ByNames extends BaseAdd {
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         String platform = event.getOption("platform", OptionMapping::getAsString);
-        String name = event.getOption("name", OptionMapping::getAsString);
-        String repo = event.getOption("repo", OptionMapping::getAsString);
+        String name = event.getOption("user", OptionMapping::getAsString);
+        String repo = event.getOption("repository", OptionMapping::getAsString);
         String path = event.getOption("path", OptionMapping::getAsString);
         Identifier identifier = Identifier.of(platform, name, repo, path);
         Optional<RepositoryLocation> optLocation = configuration().config().repositories().find(identifier);

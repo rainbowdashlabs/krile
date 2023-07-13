@@ -8,19 +8,23 @@ package de.chojo.krile.data.dao;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.IllegalFormatException;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 public record Identifier(String platform, String user, String repo, String path) {
     public static Identifier of(String platform, String user, String repo, @Nullable String path) {
-        return new Identifier(platform.toLowerCase(), user, repo, path != null ? path.replaceAll("^/", "") : null);
+        return new Identifier(platform.toLowerCase(), requireNonNull(user), requireNonNull(repo), path != null ? path.replaceAll("^/", "") : null);
     }
 
     public static Identifier of(String platform, String user, String repo) {
         return of(platform.toLowerCase(), user, repo, null);
     }
 
-    public static Optional<Identifier> parse(String identifier) {
+    public static Optional<Identifier> parse(String identifier) throws IllegalFormatException {
         String[] split = identifier.split("[:/]", 4);
         return switch (split.length) {
             case 3 -> Optional.of(Identifier.of(split[0], split[1], split[2]));

@@ -14,14 +14,18 @@ nav:
   - Home: index.md
   - 'Repositories':
       - repositories/index.md
-      - 'Create a Repository': repositories/create.md
-      - 'Add a Repository': repositories/add.md
-      - 'Update a Repository': repositories/update.md
+      - 'Meta': repositories/meta.md
+      - 'Create': repositories/create.md
+      - 'Add': repositories/add.md
+      - 'Update': repositories/update.md
   - 'Tags':
       - tags/index.md
       - 'Meta': tags/meta.md
       - 'Markdown': tags/markdown.md
       - 'Paginated': tags/paginated.md
+      - 'Embed': tags/embed.md
+  - 'Features':
+      - features/index.md
       - 'Embed': tags/embed.md
 
 theme:
@@ -70,9 +74,6 @@ extra:
     - name: Patreon
       icon: fontawesome/brands/patreon
       link: https://www.patreon.com/eldoriaplugins
-    - name: Spigot
-      icon: material/minecraft
-      link: https://www.spigotmc.org/resources/authors/585216/
     - name: Github
       icon: fontawesome/brands/github
       link: https://github.com/rainbowdashlabs

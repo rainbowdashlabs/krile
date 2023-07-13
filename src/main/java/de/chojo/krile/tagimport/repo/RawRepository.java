@@ -78,7 +78,7 @@ public class RawRepository {
         try {
             cloneCommand.call();
         } catch (GitAPIException e) {
-            throw new ParsingException(e.getMessage(),e);
+            throw new ParsingException("Repository url is invalid " + url);
         }
         try {
             return new RemoteRepository(url, identifier, git, Git.open(git.toFile()));

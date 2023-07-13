@@ -110,8 +110,8 @@ public class Default implements SlashHandler {
 
     private String getLinks(EventContext context) {
         var links = List.of(
-                getLink(context.localize("phrases.inviteme"), configuration.config().links().invite()),
-                getLink(context.localize("words.support"), configuration.config().links().support()),
+                getLink("phrases.inviteme", configuration.config().links().invite()),
+                getLink("words.support", configuration.config().links().support()),
                 //getLink("TOS", configuration.config().tos()),
                 getLink( "words.website", configuration.config().links().website())
                 //getLink("FAQ", configuration.config().faq())
@@ -120,7 +120,7 @@ public class Default implements SlashHandler {
     }
 
     private String getLink(String target, String url) {
-        return "[%s](%s)".formatted(target, url);
+        return "[$%s$](%s)".formatted(target, url);
     }
 
     @SuppressWarnings("unused")
