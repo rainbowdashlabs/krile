@@ -14,6 +14,10 @@ include: ["included_tag"]
 exclude: ["excluded_tag"]
 ```
 
+An explanation for those is on the next page
+
+<new_page>
+
 ## Options
 
 ### name
@@ -39,7 +43,7 @@ A list of categories of the tags this repository contains
 **type:** `boolean`
 
 Mark this repository as public.
-This will make it appear in the [discovery](../features/discovery.md).
+This will make it appear in the [discovery](https://krile.chojo.dev/features/discovery/).
 To appear in the discovery you also need to define a name, description and set a language.
 
 People can still import your repository via the identifier or url even if your repository is not marked as public.
@@ -58,7 +62,7 @@ Please use a [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) 
 Change the directory where the tags are located
 Default is root
 This allows you to include your tags in your project instead of an extra repository.
-If this is a [sub repository](create.md#setting-up-a-sub-repository) the path needs to be relative to the repository directory.
+If this is a [sub repository](https://krile.chojo.dev/repositories/create/#setting-up-a-sub-repository) the path needs to be relative to the repository directory.
 
 ### include
 

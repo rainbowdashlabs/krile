@@ -4,11 +4,8 @@ The tag meta is at the top of the file.
 It is optional, but provides further configuration of a tag.
 It starts and end with `---`.
 
-After that the [content](index.md#content) follows.
+After that the [content](https://krile.chojo.dev/tags/#content) follows.
 If you do not set a meta you can directly start with the content.
-
-
-## Options
 
 A complete meta looks like this:
 
@@ -22,6 +19,12 @@ image: https://krile.dev/my_image.png
 type: TEXT
 ---
 ```
+
+An explanation of the options can be found on the next page.
+
+<new_page>
+
+## Options
 
 ### id
 
