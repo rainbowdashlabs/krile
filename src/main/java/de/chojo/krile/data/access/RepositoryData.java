@@ -31,10 +31,10 @@ import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class RepositoryData {
+    private static final Logger log = getLogger(RepositoryData.class);
     private final Configuration<ConfigFile> configuration;
     private final CategoryData categories;
     private final AuthorData authors;
-    private static final Logger log = getLogger(RepositoryData.class);
 
     public RepositoryData(Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
         this.configuration = configuration;
@@ -42,6 +42,12 @@ public class RepositoryData {
         this.authors = authors;
     }
 
+    /**
+     * Retrieves a repository by its identifier.
+     *
+     * @param identifier The identifier of the repository.
+     * @return Optional containing a repository if found, or an empty Optional if not found.
+     */
     public Optional<Repository> byIdentifier(String identifier) {
         @Language("postgresql")
         var query = """
@@ -53,6 +59,12 @@ public class RepositoryData {
                 .firstSync();
     }
 
+    /**
+     * Retrieves a repository by its ID.
+     *
+     * @param id The ID of the repository to retrieve.
+     * @return An Optional containing the repository if found, or an empty Optional if not found.
+     */
     public Optional<Repository> byId(int id) {
         @Language("postgresql")
         var query = """
@@ -64,6 +76,13 @@ public class RepositoryData {
                 .firstSync();
     }
 
+    /**
+     * Retrieves a repository by its URL.
+     *
+     * @param url The URL of the repository.
+     * @return An {@link Optional} containing the repository matching the specified URL,
+     * or an empty {@link Optional} if no match was found.
+     */
     public Optional<Repository> byUrl(String url) {
         @Language("postgresql")
         var query = """
@@ -75,6 +94,12 @@ public class RepositoryData {
                 .firstSync();
     }
 
+    /**
+     * Finds a repository by its identifier.
+     *
+     * @param identifier The identifier of the repository.
+     * @return An Optional containing the matching Repository, or an empty Optional if no repository is found.
+     */
     public Optional<Repository> byIdentifier(Identifier identifier) {
         @Language("postgresql")
         var query = """
@@ -86,6 +111,16 @@ public class RepositoryData {
                 .firstSync();
     }
 
+    /**
+     * Retrieves an existing repository by its identifier or creates a new one if it doesn't exist.
+     *
+     * @param identifier The identifier of the repository.
+     * @param context    The event context.
+     * @param callback   The deferrable callback for handling the process.
+     * @return An Optional containing the retrieved or created repository.
+     * @throws ImportException  If an error occurs during the import process.
+     * @throws ParsingException If an error occurs during the parsing process.
+     */
     public Optional<Repository> getOrCreateByIdentifier(Identifier identifier, EventContext context, IDeferrableCallback callback) throws ImportException, ParsingException {
         Optional<Repository> repository = byIdentifier(identifier);
         if (repository.isPresent()) return repository;
@@ -103,6 +138,13 @@ public class RepositoryData {
         return repo;
     }
 
+    /**
+     * Create a new {@link Repository} with the given {@link RawRepository}.
+     *
+     * @param repository the {@link RawRepository} object to create the repository from
+     * @return an {@link Optional} containing the created {@link Repository} if successful, empty otherwise
+     * @throws ParsingException if there is an error parsing the repository data
+     */
     public Optional<Repository> create(RawRepository repository) throws ParsingException {
         Identifier id = repository.identifier();
         RepoConfig conf = repository.configuration();
@@ -125,26 +167,64 @@ public class RepositoryData {
                 .firstSync();
     }
 
-    public List<String> completeName(String value) {
+    /**
+     * Completes the name based on the given value.
+     *
+     * @param value the value to be completed
+     * @return a list of strings containing the completed names
+     */
+    public List<String> completeUser(String value) {
         return completeBase("name", value);
     }
 
-    public List<String> completeRepo(String value) {
+    /**
+     * Completes the repository based on the given value.
+     *
+     * @param value the value to complete the repository with
+     * @return a list of strings representing completed repositories
+     */
+    public List<String> completeRepository(String value) {
         return completeBase("repo", value);
     }
 
+    /**
+     * Completes the given path based on the provided value.
+     *
+     * @param value the value to be used for completion
+     * @return a list of completed paths
+     */
     public List<String> completePath(String value) {
         return completeBase("path", value);
     }
 
+    /**
+     * Completes the given identifier based on the provided value.
+     *
+     * @param value the value to be used for completion
+     * @return a list of completed identifiers
+     */
     public List<String> completeIdentifier(String value) {
         return completeBase("identifier", value);
     }
 
+    /**
+     * Completes the given value by searching for language values in the repository meta.
+     *
+     * @param value The value to complete.
+     * @return A list of completed language values.
+     */
     public List<String> completeLanguage(String value) {
         return completeMeta("language", value);
     }
 
+    /**
+     * Retrieves a list of least recently updated repositories.
+     *
+     * @param check The number of minutes to check against the "checked" timestamp. Only repositories that have not been
+     *              updated in the last "check" number of minutes will be included in the result.
+     * @param limit The maximum number of repositories to be returned.
+     * @return A list of Repository objects representing the least recently updated repositories.
+     */
     public List<Repository> leastUpdated(int check, int limit) {
         @Language("postgresql")
         var select = """
@@ -161,6 +241,11 @@ public class RepositoryData {
                 .allSync();
     }
 
+    /**
+     * Returns a random repository from the database.
+     *
+     * @return an Optional containing the randomly selected Repository, if available. If no repositories are found, an empty Optional is returned.
+     */
     public Optional<Repository> random() {
         @Language("postgresql")
         var select = """
@@ -176,6 +261,19 @@ public class RepositoryData {
                 .firstSync();
     }
 
+    /**
+     * Search for repositories based on the provided filter.
+     *
+     * @param filter the filter used to search for repositories
+     *               - category: the category ID to filter by (can be null)
+     *               - platform: the platform name to filter by (can be null)
+     *               - user: the username to filter by (can be null)
+     *               - repo: the repository name to filter by (can be null)
+     *               - name: the repository name to filter by (can be null)
+     *               - language: the language to filter by (can be null)
+     *               - tags: the minimum number of tags required (can be null)
+     * @return a list of repositories that match the provided filter
+     */
     public List<Repository> search(RepositoryFilter filter) {
         @Language("postgresql")
         var select = """
@@ -211,6 +309,12 @@ public class RepositoryData {
                 .allSync();
     }
 
+    /**
+     * Completes categories based on the given value.
+     *
+     * @param value the value to be used for completion
+     * @return a list of completed categories
+     */
     public List<CompletedCategory> completeCategories(String value) {
         @Language("postgresql")
         var select = """

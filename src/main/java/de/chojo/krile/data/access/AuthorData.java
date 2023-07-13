@@ -24,6 +24,12 @@ public class AuthorData {
         return get(author).or(() -> create(author));
     }
 
+    /**
+     * Create a new author in the database.
+     *
+     * @param author the raw author object containing the name and mail of the author
+     * @return an Optional object containing the created Author, if successful; otherwise empty
+     */
     public Optional<Author> create(RawAuthor author) {
         @Language("postgresql")
         var query = """
@@ -39,6 +45,12 @@ public class AuthorData {
                 .firstSync());
     }
 
+    /**
+     * Retrieve an existing author from the database based on their name and mail.
+     *
+     * @param author the raw author object containing the name and mail of the author
+     * @return an Optional object containing the retrieved Author if it exists; otherwise empty
+     */
     public Optional<Author> get(RawAuthor author) {
         @Language("postgresql")
         var query = """
@@ -50,6 +62,13 @@ public class AuthorData {
                 .firstSync());
     }
 
+    /**
+     * Retrieve an existing author from the cache based on their ID. If the author is not found in the cache,
+     * it will be retrieved from the database and then cached.
+     *
+     * @param id the ID of the author
+     * @return an Optional object containing the retrieved Author if it exists in the cache or database; otherwise empty
+     */
     public Optional<Author> get(int id) {
         Author author = authorCache.getIfPresent(id);
         if (author == null) retrieveById(id).ifPresent(this::cache);

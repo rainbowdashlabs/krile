@@ -33,6 +33,13 @@ public class Tags {
         this.authors = authors;
     }
 
+    /**
+     * Completes a given value by searching for tags in the database.
+     * The search is case-insensitive and will return up to 25 results.
+     *
+     * @param value The value to search for tags.
+     * @return A list of completed tags, with each tag being represented by the {@link CompletedTag} class.
+     */
     public List<CompletedTag> complete(String value) {
         @Language("postgresql")
         var select = """
@@ -63,6 +70,12 @@ public class Tags {
                 .allSync();
     }
 
+    /**
+     * Resolves a tag by either its name or ID.
+     *
+     * @param tagNameOrId The name or ID of the tag to resolve.
+     * @return An optional containing the resolved tag if it exists, or an empty optional if the tag does not exist.
+     */
     public Optional<Tag> resolveTag(String tagNameOrId) {
         Optional<Integer> id = ValueParser.parseInt(tagNameOrId);
         if (id.isPresent()) {
@@ -71,6 +84,12 @@ public class Tags {
         return getByName(tagNameOrId);
     }
 
+    /**
+     * Retrieves a tag by its name.
+     *
+     * @param name The name of the tag.
+     * @return An optional containing the retrieved tag if it exists, or an empty optional if the tag does not exist.
+     */
     public Optional<Tag> getByName(String name) {
         @Language("postgresql")
         var select = """
@@ -101,6 +120,12 @@ public class Tags {
                 .firstSync();
     }
 
+    /**
+     * Retrieves a tag by its ID.
+     *
+     * @param tag The ID of the tag.
+     * @return An optional containing the retrieved tag if it exists, or an empty optional if the tag does not exist.
+     */
     public Optional<Tag> getById(int tag) {
         @Language("postgresql")
         var select = """
@@ -116,6 +141,11 @@ public class Tags {
                 .firstSync();
     }
 
+    /**
+     * Records the usage of a tag.
+     *
+     * @param tag The tag that is being used.
+     */
     public void used(Tag tag) {
         @Language("postgresql")
         var insert = """
@@ -130,6 +160,11 @@ public class Tags {
                 .send();
     }
 
+    /**
+     * Counts the number of tags associated with a guild.
+     *
+     * @return The count of tags associated with the guild.
+     */
     public int count() {
         @Language("postgresql")
         var select = """
@@ -145,6 +180,13 @@ public class Tags {
                 .orElse(0);
     }
 
+    /**
+     * Retrieves a page of ranked tags associated with a guild.
+     *
+     * @param page The page number to retrieve (starting from 0).
+     * @param size The number of tags to retrieve per page.
+     * @return A list of RankedTag objects representing the ranked tags on the specified page.
+     */
     public List<RankedTag> rankingPage(int page, int size) {
         @Language("postgresql")
         var select = """
@@ -172,6 +214,11 @@ public class Tags {
                 .allSync();
     }
 
+    /**
+     * Retrieves a random tag associated with a guild.
+     *
+     * @return An Optional object containing a Tag object representing the random tag, or an empty Optional if no tags are found.
+     */
     public Optional<Tag> random() {
         @Language("postgresql")
         var select = """

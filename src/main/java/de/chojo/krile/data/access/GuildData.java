@@ -23,10 +23,22 @@ public class GuildData {
         this.categories = categories;
     }
 
+    /**
+     * Creates a TagGuild object.
+     *
+     * @param guild The Guild object to be associated with the TagGuild.
+     * @return A new TagGuild object.
+     */
     public TagGuild guild(Guild guild) {
         return new TagGuild(guild, configuration, categories, authors);
     }
 
+    /**
+     * Creates a TagGuild instance based on the specified GenericInteractionCreateEvent.
+     *
+     * @param event The GenericInteractionCreateEvent that triggered the guild creation.
+     * @return A new TagGuild instance.
+     */
     public TagGuild guild(GenericInteractionCreateEvent event) {
         return new TagGuild(event.getGuild(), configuration, categories, authors);
     }

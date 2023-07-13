@@ -41,10 +41,10 @@ public final class Tag {
     private static final Logger log = getLogger(Tag.class);
     private final int id;
     private final String tagId;
-    private String tag;
-    private List<String> text;
     private final Repository repository;
     private final Meta meta;
+    private String tag;
+    private List<String> text;
 
     public Tag(int id, String tagId, String tag, List<String> text, Repository repository, CategoryData categories, AuthorData authors) {
         this.id = id;
@@ -70,6 +70,11 @@ public final class Tag {
         return repository;
     }
 
+    /**
+     * Deletes the tag from the repository.
+     *
+     * @return true if the deletion is successful, false otherwise.
+     */
     public boolean delete() {
         log.info("Deleted tag {} from {}", tagId, repository);
         return builder()
@@ -92,6 +97,11 @@ public final class Tag {
         return tag;
     }
 
+    /**
+     * Gets the text of the tag.
+     *
+     * @return The text of the tag as a string.
+     */
     public String text() {
         if (meta.tagMeta().type() == TagType.EMBED) {
             DataObject dataObject = DataObject.fromJson(text.get(0));
@@ -103,6 +113,11 @@ public final class Tag {
         return text.get(0);
     }
 
+    /**
+     * Retrieves the list of message embeds from the text.
+     *
+     * @return A list of message embeds. If there are no embeds, the list will be empty.
+     */
     public List<MessageEmbed> embeds() {
         List<MessageEmbed> embeds = new ArrayList<>();
         DataObject dataObject = DataObject.fromJson(text.get(0));
@@ -117,10 +132,20 @@ public final class Tag {
         return embeds;
     }
 
+    /**
+     * Retrieves the paged text.
+     *
+     * @return A list of paged text. If there is no paged text, the list will be empty.
+     */
     public List<String> paged() {
         return text;
     }
 
+    /**
+     * Checks if the text is paged.
+     *
+     * @return True if the text is paged, false otherwise.
+     */
     public boolean isPaged() {
         return text.size() != 1;
     }
@@ -129,11 +154,21 @@ public final class Tag {
         return meta;
     }
 
+    /**
+     * Generates a link for the file.
+     *
+     * @return The link for the file as a string.
+     */
     public String link() {
         // TODO proper string encoding. Something which does not replace space with a +
         return repository.fileLink(URLEncoder.encode(meta.fileMeta().fileName(), Charset.defaultCharset()).replace("+", "%20"));
     }
 
+    /**
+     * Updates a tag in the repository with new content.
+     *
+     * @param raw The RawTag object containing the new content and metadata for the tag.
+     */
     public void update(RawTag raw) {
         log.trace("Updating tag {} in {}", tagId, repository);
         @Language("postgresql")
@@ -159,6 +194,12 @@ public final class Tag {
         meta.update(raw);
     }
 
+    /**
+     * Generates a MessageEmbed containing information about the tag.
+     *
+     * @param context The LocalizationContext used for localization.
+     * @return A MessageEmbed object containing the tag information.
+     */
     public MessageEmbed infoEmbed(LocalizationContext context) {
         Identifier identifier = repository.identifier();
         EmbedBuilder builder = new LocalizedEmbedBuilder(context)

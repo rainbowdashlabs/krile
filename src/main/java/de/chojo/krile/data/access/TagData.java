@@ -27,6 +27,11 @@ public class TagData {
         this.authorData = authorData;
     }
 
+    /**
+     * Returns a random Tag from the database.
+     *
+     * @return An Optional object representing a Tag. The optional value may be empty if no Tag is found.
+     */
     public Optional<Tag> random() {
         @Language("postgresql")
         var select = """
@@ -49,6 +54,16 @@ public class TagData {
                 .firstSync();
     }
 
+    /**
+     * Searches for tags based on the given filter criteria.
+     *
+     * @param filter The filter criteria used to search for tags.
+     *               The filter criteria include:
+     *               - name: The name of the tag to search for (optional).
+     *               - language: The language of the tag to search for (optional).
+     *               - category: The category ID of the tag to search for (optional).
+     * @return A list of Tag objects matching the given filter criteria.
+     */
     public List<Tag> search(TagFilter filter) {
         @Language("postgresql")
         var select = """
@@ -104,6 +119,12 @@ public class TagData {
 
     }
 
+    /**
+     * Returns a list of completed categories based on the provided value.
+     *
+     * @param value the value to search for categories (case-insensitive)
+     * @return a list of CompletedCategory objects representing the completed categories
+     */
     public List<CompletedCategory> completeCategories(String value) {
         @Language("postgresql")
         var select = """
@@ -128,6 +149,12 @@ public class TagData {
                 .allSync();
     }
 
+    /**
+     * Retrieves a {@link Tag} based on its ID.
+     *
+     * @param id The ID of the tag to retrieve.
+     * @return An {@link Optional} containing the {@link Tag} if found, or an empty {@link Optional} if not found.
+     */
     public Optional<Tag> byId(int id) {
         @Language("postgresql")
         var select = """

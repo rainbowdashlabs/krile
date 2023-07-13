@@ -21,6 +21,11 @@ public class TagAliases {
         this.meta = meta;
     }
 
+    /**
+     * Updates a RawTag object in the repository.
+     *
+     * @param tag the RawTag object to be updated
+     */
     public void update(RawTag tag) {
         // Clear repository aliases
         clear();
@@ -31,6 +36,11 @@ public class TagAliases {
         aliases = tag.meta().alias();
     }
 
+    /**
+     * Assigns an alias to a tag.
+     *
+     * @param alias the alias to be assigned to the tag
+     */
     public void assign(String alias) {
         @Language("postgresql")
         var insert = """
@@ -41,6 +51,11 @@ public class TagAliases {
                 .sendSync();
     }
 
+    /**
+     * Clears the tag aliases associated with the current tag.
+     * This method deletes all tag aliases from the "tag_alias" table
+     * that have the same tag_id as the current tag.
+     */
     public void clear() {
         builder().query("DELETE FROM tag_alias WHERE tag_id = ?")
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
@@ -48,6 +63,11 @@ public class TagAliases {
                 .sendSync();
     }
 
+    /**
+     * Retrieves all aliases for the given tag.
+     *
+     * @return a {@link List} of {@link String} representing the aliases for the tag.
+     */
     public List<String> all() {
         if (aliases == null) {
 

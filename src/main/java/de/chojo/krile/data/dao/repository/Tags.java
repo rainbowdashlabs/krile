@@ -6,11 +6,8 @@
 
 package de.chojo.krile.data.dao.repository;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
-import de.chojo.krile.data.dao.Author;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.krile.tagimport.exception.ImportException;
@@ -24,7 +21,6 @@ import org.intellij.lang.annotations.Language;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
@@ -39,6 +35,11 @@ public class Tags {
         this.authors = authors;
     }
 
+    /**
+     * Retrieves all tags from the repository.
+     *
+     * @return A list of {@link Tag} objects representing the tags retrieved.
+     */
     public List<Tag> all() {
         @Language("postgresql")
         var select = """
@@ -50,6 +51,13 @@ public class Tags {
                 .allSync();
     }
 
+    /**
+     * Updates the tags in the given repository.
+     *
+     * @param repository the repository containing the tags to be updated
+     * @throws ImportException  if there is an error importing the tags
+     * @throws ParsingException if there is an error parsing the tags
+     */
     public void update(RawRepository repository) throws ImportException, ParsingException {
         List<RawTag> tags;
         tags = repository.tags();
@@ -68,6 +76,12 @@ public class Tags {
         all.forEach(Tag::delete);
     }
 
+    /**
+     * Creates a new tag in the repository.
+     *
+     * @param tag the raw tag information
+     * @return an Optional containing the created Tag entity, or empty if the creation was unsuccessful
+     */
     public Optional<Tag> create(RawTag tag) {
         @Language("postgresql")
         var insert = """
@@ -95,10 +109,22 @@ public class Tags {
                 .firstSync();
     }
 
+    /**
+     * Retrieves a Tag object based on the given RawTag.
+     *
+     * @param tag The RawTag to search for.
+     * @return An Optional containing the Tag object if found, otherwise an empty Optional.
+     */
     public Optional<Tag> byRawTag(RawTag tag) {
         return byTagId(tag.meta().id());
     }
 
+    /**
+     * Retrieves a tag with the given tag id.
+     *
+     * @param tagId The tag id to search for.
+     * @return Optional containing the tag with the given tag id if found, otherwise empty.
+     */
     public Optional<Tag> byTagId(String tagId) {
         @Language("postgresql")
         var select = """
@@ -113,6 +139,11 @@ public class Tags {
                 .firstSync();
     }
 
+    /**
+     * Counts the number of records in the 'tag' table with a specific repository ID.
+     *
+     * @return The count of records in the table, or 0 if no records are found.
+     */
     public int count() {
         return builder(Integer.class)
                 .query("SELECT count(1) FROM tag WHERE repository_id = ?")

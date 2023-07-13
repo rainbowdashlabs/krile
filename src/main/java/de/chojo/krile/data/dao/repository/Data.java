@@ -23,6 +23,12 @@ public class Data {
         this.repository = repository;
     }
 
+    /**
+     * Updates the given repository with the current commit and branch information.
+     *
+     * @param repository the repository to update
+     * @throws ImportException if an error occurs during the update process
+     */
     public void update(RawRepository repository) throws ImportException {
         String currentCommit = repository.currentCommit();
         String currentBranch = repository.currentBranch();
@@ -45,6 +51,11 @@ public class Data {
                 .sendSync();
     }
 
+    /**
+     * Retrieves the most recent information about the repository.
+     *
+     * @return the most recent repository data
+     */
     public RepositoryData get() {
         @Language("postgresql")
         var select = """
@@ -65,6 +76,9 @@ public class Data {
 
     }
 
+    /**
+     * Updates the 'checked' timestamp and clears the 'status' for the repository.
+     */
     public void checked() {
         @Language("postgresql")
         var update = """
@@ -79,6 +93,11 @@ public class Data {
                 .sendSync();
     }
 
+    /**
+     * Updates the 'status' of the repository with the given reason.
+     *
+     * @param reason The reason for the update failure.
+     */
     public void updateFailed(String reason) {
         @Language("postgresql")
         var update = """

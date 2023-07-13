@@ -27,6 +27,11 @@ public class TagAuthors {
         this.authorData = authorData;
     }
 
+    /**
+     * Updates the current tag with new data.
+     *
+     * @param tag the RawTag object containing the new data
+     */
     public void update(RawTag tag) {
         clear();
 
@@ -37,6 +42,12 @@ public class TagAuthors {
         }
     }
 
+    /**
+     * Assigns the given Author to a Tag.
+     *
+     * @param author The Author to assign to the Tag.
+     * @see Author
+     */
     public void assign(Author author) {
         @Language("postgresql")
         var insert = """
@@ -47,6 +58,9 @@ public class TagAuthors {
                 .sendSync();
     }
 
+    /**
+     * Clears the tag_author table by deleting all records with the given tag ID.
+     */
     public void clear() {
         builder().query("DELETE FROM tag_author WHERE tag_id = ?")
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
@@ -54,6 +68,11 @@ public class TagAuthors {
                 .sendSync();
     }
 
+    /**
+     * Retrieves a list of all authors associated with a specific tag.
+     *
+     * @return A list of Author objects representing the authors associated with the tag.
+     */
     public List<Author> all() {
         if (authors == null) {
             @Language("postgresql")

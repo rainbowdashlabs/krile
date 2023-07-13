@@ -41,10 +41,20 @@ public class GuildRepository extends Repository {
                 authors);
     }
 
+    /**
+     * Returns the priority of the repository.
+     *
+     * @return the priority value of the repository.
+     */
     public int priority() {
         return priority;
     }
 
+    /**
+     * Unsubscribes the guild from the repository.
+     *
+     * @return {@code true} if the subscription was successfully unsubscribed, {@code false} otherwise.
+     */
     public boolean unsubscribe() {
         @Language("postgresql")
         var delete = """

@@ -32,6 +32,11 @@ public class Repositories {
         this.categories = categories;
     }
 
+    /**
+     * Retrieves all guild repositories associated with the given guild.
+     *
+     * @return A list of GuildRepository objects representing the guild repositories.
+     */
     public List<GuildRepository> all() {
         @Language("postgresql")
         var select = """
@@ -48,6 +53,13 @@ public class Repositories {
                 .allSync();
     }
 
+    /**
+     * Retrieves a guild repository by its ID.
+     *
+     * @param id The ID of the guild repository to retrieve.
+     * @return An Optional containing the GuildRepository object representing the guild repository,
+     * or an empty Optional if no matching repository was found.
+     */
     public Optional<GuildRepository> byId(int id) {
         @Language("postgresql")
         var select = """
@@ -64,6 +76,11 @@ public class Repositories {
                 .firstSync();
     }
 
+    /**
+     * Adds a repository to the guild's repository list.
+     *
+     * @param repository The repository to add.
+     */
     public void add(Repository repository) {
         @Language("postgresql")
         var insert = """
@@ -78,6 +95,12 @@ public class Repositories {
                 .sendSync();
     }
 
+    /**
+     * Retrieves a list of completed repositories based on the provided search value.
+     *
+     * @param value The search value to match against repository identifiers.
+     * @return A list of completed repositories.
+     */
     public List<CompletedRepository> complete(String value) {
         @Language("postgresql")
         var select = """
@@ -96,6 +119,11 @@ public class Repositories {
                 .allSync();
     }
 
+    /**
+     * Retrieves the count of guild repositories.
+     *
+     * @return The count of guild repositories.
+     */
     public int count() {
         @Language("postgresql")
         var select = """
@@ -108,6 +136,13 @@ public class Repositories {
                 .orElse(0);
     }
 
+    /**
+     * Retrieves a page of guild repositories.
+     *
+     * @param page     The page number.
+     * @param pageSize The number of repositories per page.
+     * @return A list of strings representing the repositories.
+     */
     public List<String> page(int page, int pageSize) {
         @Language("postgresql")
         var select = """

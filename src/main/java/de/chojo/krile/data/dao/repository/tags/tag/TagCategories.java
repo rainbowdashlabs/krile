@@ -26,6 +26,11 @@ public class TagCategories {
         this.categoryData = categoryData;
     }
 
+    /**
+     * Updates the given RawTag by clearing the repository category links and assigning it to the respective categories.
+     *
+     * @param tag the RawTag to update
+     */
     public void update(RawTag tag) {
         // Clear repository category links
         clear();
@@ -37,6 +42,11 @@ public class TagCategories {
         }
     }
 
+    /**
+     * Assigns the given category to the tag.
+     *
+     * @param category the category to be assigned
+     */
     public void assign(Category category) {
         @Language("postgresql")
         var insert = """
@@ -47,6 +57,10 @@ public class TagCategories {
                 .sendSync();
     }
 
+    /**
+     * Clears the tag category.
+     * Removes all records from the "tag_category" table where the tag id matches the given tag id.
+     */
     public void clear() {
         builder().query("DELETE FROM tag_category WHERE tag_id = ?")
                 .parameter(stmt -> stmt.setInt(meta.tag().id()))
@@ -54,6 +68,11 @@ public class TagCategories {
                 .sendSync();
     }
 
+    /**
+     * Retrieves all categories.
+     *
+     * @return A list of categories.
+     */
     public List<Category> all() {
         if (categories == null) {
             @Language("postgresql")
@@ -62,7 +81,7 @@ public class TagCategories {
                     FROM tag_category
                              LEFT JOIN category c ON c.id = tag_category.category_id
                     WHERE tag_id = ?""";
-            categories =  builder(Category.class)
+            categories = builder(Category.class)
                     .query(select)
                     .parameter(stmt -> stmt.setInt(meta.tag().id()))
                     .readRow(row -> categoryData.get(row.getInt("id")).get())

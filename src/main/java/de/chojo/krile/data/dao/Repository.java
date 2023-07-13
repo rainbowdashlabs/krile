@@ -55,6 +55,13 @@ public class Repository {
         return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), row.getString("directory"), configuration, categories, authors);
     }
 
+    /**
+     * Updates the repository by calling the update methods for meta, data, and tags.
+     *
+     * @param repository the RawRepository to be updated
+     * @throws ParsingException if there is an error in parsing the repository data
+     * @throws ImportException  if there is an error in importing the updated data
+     */
     public void update(RawRepository repository) throws ParsingException, ImportException {
         meta.update(repository);
         data.update(repository);
@@ -74,6 +81,13 @@ public class Repository {
         return identifier;
     }
 
+    /**
+     * Generates a directory link for the given path by appending the directory, identifier path, and
+     * repositoryLocation dir path.
+     *
+     * @param path the path to generate a directory link for
+     * @return the generated directory link
+     */
     public String directoryLink(String path) {
         if (directory != null && !directory.isBlank()) path = directory + "/" + path;
         if (identifier.path() != null) path = identifier.path() + "/" + path;
@@ -81,6 +95,13 @@ public class Repository {
         return repositoryLocation.dirPath(identifier.user(), identifier.repo(), data.get().branch(), path);
     }
 
+    /**
+     * Generates a file link for the given path by appending the directory, identifier path, and
+     * repositoryLocation file path.
+     *
+     * @param path the path to generate a file link for
+     * @return the generated file link
+     */
     public String fileLink(String path) {
         if (directory != null && !directory.isBlank()) path = directory + "/" + path;
         if (identifier.path() != null) path = identifier.path() + "/" + path;
@@ -114,6 +135,12 @@ public class Repository {
         return identifier.equals(that.identifier);
     }
 
+    /**
+     * Generates an embed message with information about a repository.
+     *
+     * @param context the event context
+     * @return the generated embed message
+     */
     public MessageEmbed infoEmbed(EventContext context) {
         List<String> categories = meta.categories().all().stream().map(Category::name).toList();
         RepositoryMeta meta = this.meta.get();
@@ -144,10 +171,19 @@ public class Repository {
         return identifier.toString();
     }
 
+    /**
+     * Marks the repository as checked.
+     * The checked time will be updated to the current time.
+     */
     public void checked() {
         data.checked();
     }
 
+    /**
+     * Updates the repository status to indicate a failed update with the given reason.
+     *
+     * @param reason the reason for the update failure
+     */
     public void updateFailed(String reason) {
         data.updateFailed(reason);
     }

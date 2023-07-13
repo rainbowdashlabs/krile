@@ -51,6 +51,11 @@ public class Meta {
         return aliases;
     }
 
+    /**
+     * Updates the tag with the specified information.
+     *
+     * @param raw the raw tag object containing the updated information
+     */
     public void update(RawTag raw) {
         categories.update(raw);
         tagAuthors.update(raw);
@@ -91,6 +96,11 @@ public class Meta {
         tagMeta = null;
     }
 
+    /**
+     * Retrieves the file metadata for the tag.
+     *
+     * @return the file metadata for the tag, or default values if not found
+     */
     public FileMeta fileMeta() {
         if (fileMeta == null) {
             @Language("postgresql")
@@ -127,6 +137,11 @@ public class Meta {
         return tag;
     }
 
+    /**
+     * Retrieves the tag metadata for the tag.
+     *
+     * @return the tag metadata for the tag, or default values if not found
+     */
     public TagMeta tagMeta() {
         if (tagMeta == null) {
             @Language("postgresql")

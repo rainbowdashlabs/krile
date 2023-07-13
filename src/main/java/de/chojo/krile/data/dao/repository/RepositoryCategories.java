@@ -26,6 +26,12 @@ public class RepositoryCategories {
         this.categories = categories;
     }
 
+    /**
+     * Updates the categories in the given repository based on the category names specified in the repository's configuration.
+     *
+     * @param repository The repository to update the categories in.
+     * @throws ParsingException if there is an error parsing the repository's configuration.
+     */
     public void updateCategories(RawRepository repository) throws ParsingException {
         // Clear repository category links
         clearCategories();
@@ -37,6 +43,11 @@ public class RepositoryCategories {
         }
     }
 
+    /**
+     * Assigns a category to a repository.
+     *
+     * @param category The category to be assigned.
+     */
     public void assignCategory(Category category) {
         @Language("postgresql")
         var insert = """
@@ -47,6 +58,12 @@ public class RepositoryCategories {
                 .sendSync();
     }
 
+    /**
+     * Clears the categories associated with the repository.
+     * <p>
+     * The method clears the categories associated with the repository by deleting the corresponding records
+     * from the 'repository_category' table in the database.
+     */
     public void clearCategories() {
         builder().query("DELETE FROM repository_category WHERE repository_id = ?")
                 .parameter(stmt -> stmt.setInt(meta.repository().id()))
@@ -54,6 +71,11 @@ public class RepositoryCategories {
                 .sendSync();
     }
 
+    /**
+     * Retrieves all categories for the specified repository.
+     *
+     * @return A list of Category objects representing the categories.
+     */
     public List<Category> all() {
         @Language("postgresql")
         var select = """

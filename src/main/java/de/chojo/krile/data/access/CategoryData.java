@@ -26,6 +26,12 @@ public class CategoryData {
         return get(name).or(() -> create(name));
     }
 
+    /**
+     * Creates a new category with the given name.
+     *
+     * @param name the name of the category to create
+     * @return an Optional object which may contain the created Category, or empty if the creation fails
+     */
     public Optional<Category> create(String name) {
         @Language("postgresql")
         var query = """
@@ -50,6 +56,12 @@ public class CategoryData {
         return category;
     }
 
+    /**
+     * Resolves a category based on the given ID or name.
+     *
+     * @param idOrName the ID or name of the category to resolve
+     * @return an Optional object which may contain the resolved Category, or empty if the resolution fails
+     */
     public Optional<Category> resolve(String idOrName) {
         Optional<Integer> id = ValueParser.parseInt(idOrName);
         if (id.isPresent()) {
@@ -58,6 +70,12 @@ public class CategoryData {
         return get(idOrName);
     }
 
+    /**
+     * Retrieves a category with the given name.
+     *
+     * @param name the name of the category to retrieve
+     * @return an Optional object which may contain the retrieved Category, or empty if the category does not exist
+     */
     public Optional<Category> get(String name) {
         @Language("postgresql")
         var query = """
@@ -69,6 +87,12 @@ public class CategoryData {
                 .firstSync());
     }
 
+    /**
+     * Retrieves a category from the database with the specified ID.
+     *
+     * @param id the ID of the category to retrieve
+     * @return an Optional object which may contain the retrieved Category, or empty if no category is found with the specified ID
+     */
     public Optional<Category> get(int id) {
         @Language("postgresql")
         var query = """

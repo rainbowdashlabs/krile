@@ -24,6 +24,12 @@ public class Meta {
         this.categories = new RepositoryCategories(this, categories);
     }
 
+    /**
+     * Updates the repository metadata in the database.
+     *
+     * @param repository the RawRepository object containing the repository data
+     * @throws ParsingException if there is an error in parsing the repository data
+     */
     public void update(RawRepository repository) throws ParsingException {
         RepoConfig configuration = repository.configuration();
         @Language("postgresql")
@@ -50,6 +56,11 @@ public class Meta {
         categories.updateCategories(repository);
     }
 
+    /**
+     * Retrieves the repository metadata from the database.
+     *
+     * @return the RepositoryMeta object containing the repository metadata
+     */
     public RepositoryMeta get() {
         @Language("postgresql")
         var select = """
