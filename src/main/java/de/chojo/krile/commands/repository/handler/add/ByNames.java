@@ -54,11 +54,11 @@ public class ByNames extends BaseAdd {
             return;
         }
         if (option.getName().equals("name")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData().completeName(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData().completeUser(option.getValue()))).queue();
             return;
         }
         if (option.getName().equals("repo")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData().completeRepo(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData().completeRepository(option.getValue()))).queue();
             return;
         }
         if (option.getName().equals("path")) {
