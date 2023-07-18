@@ -2,14 +2,14 @@ services:
   app:
     image: ghcr.io/rainbowdashlabs/krile:latest
     networks:
-      - lyna
+      - krile
     depends_on:
       - postgres
     volumes:
       - ./config/:/app/config/
   postgres:
     networks:
-      - lyna
+      - krile
     image: postgres:15.3
     expose:
       - 5432

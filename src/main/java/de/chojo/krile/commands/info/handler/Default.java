@@ -64,7 +64,7 @@ public class Default implements SlashHandler {
             var request = HttpRequest.newBuilder().GET()
                     .uri(URI.create("https://api.github.com/repos/rainbowdashlabs/krile/contributors?anon=1"))
                     .header("accept", "application/vnd.github.v3+json")
-                    .header("User-Agent", "reputation-bot")
+                    .header("User-Agent", "krile")
                     .build();
 
             List<Contributor> contributors;
@@ -83,7 +83,7 @@ public class Default implements SlashHandler {
                 var profile = HttpRequest.newBuilder().GET()
                         .uri(URI.create(contributor.url))
                         .header("accept", "application/vnd.github.v3+json")
-                        .header("User-Agent", "lyna")
+                        .header("User-Agent", "krile")
                         .build();
 
                 try {
