@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.slf4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -57,7 +58,7 @@ public class Show implements SlashHandler {
             context.registerPage(new PrivateListPageBag<>(tag.paged(), event.getUser().getIdLong()) {
                 @Override
                 public CompletableFuture<MessageEditData> buildPage() {
-                    MessageEditBuilder builder = new MessageEditBuilder().setContent(currentElement());
+                    MessageEditBuilder builder = new MessageEditBuilder().setContent(currentElement()).setAllowedMentions(Collections.emptyList());
                     Optional.ofNullable(tag.meta().tagMeta().image()).ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
                     return CompletableFuture.completedFuture(builder.build());
                 }
@@ -72,7 +73,8 @@ public class Show implements SlashHandler {
             return;
         }
 
-        MessageCreateBuilder builder = new MessageCreateBuilder();
+        MessageCreateBuilder builder = new MessageCreateBuilder()
+                .setAllowedMentions(Collections.emptyList());
         switch (tag.meta().tagMeta().type()) {
             case TEXT -> {
                 builder.setContent(tag.text());
