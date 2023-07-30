@@ -65,7 +65,7 @@ public class Show implements SlashHandler {
 
                 @Override
                 public List<PageButton> buttons() {
-                    PageButton info = PageButton.of(p -> deleteButton(event.getUser()), (p, ctx) -> Consumers.empty());
+                    PageButton info = PageButton.of(p -> infoButton(tag), (p, ctx) -> Consumers.empty());
                     if (!delete) return List.of(info);
                     return List.of(PageButton.of(p -> deleteButton(event.getUser()), (p, ctx) -> Consumers.empty()), info);
                 }
