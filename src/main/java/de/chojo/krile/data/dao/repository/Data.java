@@ -10,14 +10,17 @@ import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.tagimport.exception.ImportException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import org.intellij.lang.annotations.Language;
+import org.slf4j.Logger;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class Data {
     private final Repository repository;
+    private static final Logger log = getLogger(Data.class);
 
     public Data(Repository repository) {
         this.repository = repository;
@@ -85,7 +88,7 @@ public class Data {
                 UPDATE repository_data
                 SET checked = now() AT TIME ZONE 'UTC', status = NULL
                 WHERE repository_id = ?""";
-
+        log.debug("Checked {} for updates", repository.identifier());
         builder()
                 .query(update)
                 .parameter(stmt -> stmt.setInt(repository.id()))
@@ -102,6 +105,7 @@ public class Data {
         @Language("postgresql")
         var update = """
                 UPDATE repository_data SET status = ? WHERE repository_id = ?""";
+        log.debug("Update for {} failed. Cause: {}", repository.identifier(), reason);
         builder()
                 .query(update)
                 .parameter(stmt -> stmt.setString(reason).setInt(repository.id()))
