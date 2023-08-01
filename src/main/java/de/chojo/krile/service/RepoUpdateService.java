@@ -19,10 +19,13 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -30,8 +33,8 @@ public class RepoUpdateService implements Runnable {
     private static final Logger log = getLogger(RepoUpdateService.class);
     private final Configuration<ConfigFile> configuration;
     private final RepositoryData repositoryData;
-    private final Queue<Repository> priorityQueue = new ArrayDeque<>();
-    private final Queue<Repository> repositoryQueue = new ArrayDeque<>();
+    private final Queue<String> priorityQueue = new ArrayDeque<>();
+    private final Queue<String> repositoryQueue = new ArrayDeque<>();
 
     RepoUpdateService(Configuration<ConfigFile> configuration, RepositoryData repositoryData) {
         this.configuration = configuration;
@@ -46,9 +49,9 @@ public class RepoUpdateService implements Runnable {
     }
 
     public void schedule(Repository repository) {
-        if (priorityQueue.contains(repository)) return;
-        repositoryQueue.remove(repository);
-        priorityQueue.add(repository);
+        if (priorityQueue.contains(repository.url())) return;
+        repositoryQueue.remove(repository.url());
+        priorityQueue.add(repository.url());
     }
 
     @Override
@@ -65,29 +68,33 @@ public class RepoUpdateService implements Runnable {
         }
     }
 
-    public void update(Repository repository) {
+    public void update(String repository) {
+        List<Repository> repositories = repositoryData.byUrl(repository);
+
+        Repository first = repositories.get(0);
         log.info("Checking {} for updates", repository);
-        try (var flat = RawRepository.remote(configuration, repository.identifier(), true)) {
-            if (flat.currentCommit().equals(repository.data().get().commit())) {
+        try (var flat = RawRepository.remote(configuration, first.identifier(), true)) {
+            if (flat.currentCommit().equals(first.data().get().commit())) {
                 log.info("Repository {} is up to date", repository);
-                repository.checked();
+                for (Repository repo : repositories) repo.checked();
                 return;
             }
         } catch (ImportException | IOException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Could not check repository {} for updates", repository, e);
         } catch (ParsingException e) {
-            CompletableFuture.runAsync( () -> repository.updateFailed(e.getMessage())).orTimeout(5, TimeUnit.MINUTES).join();
+            for (Repository repo : repositories) repo.updateFailed(e.getMessage());
+            return;
         }
-        log.info("Repository {} is outdated. Performing update", repository);
-        try (var raw = RawRepository.remote(configuration, repository.identifier())) {
-            log.info(LogNotify.STATUS, "Updating {}", repository);
-            repository.update(raw);
-        } catch (ImportException | IOException e) {
+
+        log.info("Repository {} is outdated. Performing update for {} outdated repositories", first.url(), repositories.size());
+        try (var raw = RawRepository.remote(configuration, first.identifier())) {
+            for (Repository repo : repositories) {
+                updateRepository(raw.updateIdentifier(repo.identifier()), repo);
+            }
+        } catch (IOException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Could not update repository {}", repository, e);
             return;
-        } catch (ParsingException e) {
-            repository.updateFailed(e.getMessage());
-        }catch (CancellationException e){
+        } catch (CancellationException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Repository {} timed out during update", repository);
         } catch (Throwable e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Severe error during repository update of {}", repository, e);
@@ -97,5 +104,24 @@ public class RepoUpdateService implements Runnable {
 
     void schedule() {
         repositoryQueue.addAll(repositoryData.leastUpdated(configuration.config().repositories().check(), 10));
+    }
+
+    private void updateRepository(RawRepository raw, Repository repo) {
+        var update = CompletableFuture.runAsync(() -> {
+            try {
+                log.info(LogNotify.STATUS, "Updating {}", repo);
+                repo.update(raw);
+            } catch (ImportException e) {
+                log.error(LogNotify.NOTIFY_ADMIN, "Could not update repository {}", repo, e);
+            } catch (ParsingException e) {
+                repo.updateFailed(e.getMessage());
+            }
+        });
+        try {
+            update.orTimeout(1, TimeUnit.MINUTES).join();
+        } catch (CompletionException e) {
+            if (e.getCause() instanceof TimeoutException) repo.updateFailed("Update took too long.");
+            else repo.updateFailed(e.getCause().getMessage());
+        }
     }
 }
