@@ -143,10 +143,7 @@ public class RawRepository {
     }
 
     private Stream<Path> listFiles(Path path, boolean deep) throws IOException {
-        if(deep) {
-            return Files.walk(path);
-        }
-        return Files.list(path);
+        return deep ? Files.walk(path) : Files.list(path);
     }
 
     public Path tagPath() throws ParsingException {
