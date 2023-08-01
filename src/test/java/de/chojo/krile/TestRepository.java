@@ -28,6 +28,6 @@ public class TestRepository {
     }
 
     public static RawRepository sub() throws GitAPIException, IOException {
-        return RawRepository.local(root, location, Identifier.of("github", user, repo, path));
+        return RawRepository.local(root, location, Identifier.of(location.name(), user, repo, path));
     }
 }
