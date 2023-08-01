@@ -30,5 +30,4 @@ public class RemoteRepository extends RawRepository implements Closeable {
                     .forEach(File::delete);
         }
     }
-
 }

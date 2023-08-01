@@ -83,7 +83,7 @@ public class RepositoryData {
      * @return An {@link Optional} containing the repository matching the specified URL,
      * or an empty {@link Optional} if no match was found.
      */
-    public Optional<Repository> byUrl(String url) {
+    public List<Repository> byUrl(String url) {
         @Language("postgresql")
         var query = """
                 SELECT id, url, identifier, directory FROM repository WHERE url = ?""";
@@ -91,7 +91,7 @@ public class RepositoryData {
                 .query(query)
                 .parameter(stmt -> stmt.setString(url))
                 .readRow(this::buildRepository)
-                .firstSync();
+                .allSync();
     }
 
     /**
@@ -225,19 +225,18 @@ public class RepositoryData {
      * @param limit The maximum number of repositories to be returned.
      * @return A list of Repository objects representing the least recently updated repositories.
      */
-    public List<Repository> leastUpdated(int check, int limit) {
+    public List<String> leastUpdated(int check, int limit) {
         @Language("postgresql")
         var select = """
-                SELECT id, url, identifier, directory
-                FROM repository r
-                         LEFT JOIN repository_data rd ON r.id = rd.repository_id
+                SELECT url
+                FROM repository_updates r
                 WHERE checked < now() AT TIME ZONE 'UTC' - (?::TEXT || ' MINUTES')::INTERVAL
                 ORDER BY checked
                 LIMIT ?""";
-        return builder(Repository.class)
+        return builder(String.class)
                 .query(select)
                 .parameter(stmt -> stmt.setInt(check).setInt(limit))
-                .readRow(this::buildRepository)
+                .readRow(r ->  r.getString("url"))
                 .allSync();
     }
 

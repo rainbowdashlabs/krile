@@ -53,6 +53,20 @@ public class RawRepository {
         this.git = git;
     }
 
+    /**
+     * Returns the same repository but with a new identifier set.
+     *
+     * @param identifier new identifier
+     * @return new repository instance
+     * @throws IllegalArgumentException when the old and new identifier are not of the same url
+     */
+    public RawRepository updateIdentifier(Identifier identifier) {
+        if (!this.identifier.equalsRepository(identifier)) {
+            throw new IllegalArgumentException("Identifier %s and %s do not share the same url".formatted(this.identifier, identifier));
+        }
+        return new RawRepository(url, identifier, root, git);
+    }
+
     public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier) throws ImportException, ParsingException {
         return remote(configuration, identifier, false);
     }
@@ -83,7 +97,7 @@ public class RawRepository {
         try {
             return new RemoteRepository(url, identifier, git, Git.open(git.toFile()));
         } catch (IOException e) {
-            throw new ParsingException(e.getMessage(),e);
+            throw new ParsingException(e.getMessage(), e);
         }
     }
 
@@ -99,7 +113,7 @@ public class RawRepository {
             configuration = MAPPER.readValue(path.toFile(), RepoConfig.class);
         } catch (IOException e) {
             log.error("Could not parse config file", e);
-            throw new ParsingException("Could not parse configuration file.\n" + e.getMessage(),e);
+            throw new ParsingException("Could not parse configuration file.\n" + e.getMessage(), e);
         }
         return configuration;
     }
@@ -118,7 +132,7 @@ public class RawRepository {
                     tags.add(parse.tag());
                 } catch (ParsingException e) {
                     log.error("Error while parsing file {}", tagPath.getFileName(), e);
-                    throw new ParsingException("Failed to parse file %s%n%s".formatted(tagPath.getFileName(), e.getMessage()),e);
+                    throw new ParsingException("Failed to parse file %s%n%s".formatted(tagPath.getFileName(), e.getMessage()), e);
                 }
             }
             return tags;
@@ -177,9 +191,9 @@ public class RawRepository {
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (RawRepository) obj;
         return Objects.equals(this.url, that.url) &&
-                Objects.equals(this.identifier, that.identifier) &&
-                Objects.equals(this.root, that.root) &&
-                Objects.equals(this.git, that.git);
+               Objects.equals(this.identifier, that.identifier) &&
+               Objects.equals(this.root, that.root) &&
+               Objects.equals(this.git, that.git);
     }
 
     @Override
@@ -190,10 +204,10 @@ public class RawRepository {
     @Override
     public String toString() {
         return "RawRepository[" +
-                "url=" + url + ", " +
-                "identifier=" + identifier + ", " +
-                "path=" + root + ", " +
-                "git=" + git + ']';
+               "url=" + url + ", " +
+               "identifier=" + identifier + ", " +
+               "path=" + root + ", " +
+               "git=" + git + ']';
     }
 
     private Path findConfigPath() throws ParsingException {
