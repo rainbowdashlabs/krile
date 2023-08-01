@@ -59,4 +59,10 @@ public record Identifier(String platform, String user, String repo, String path)
     public String name() {
         return "%s/%s".formatted(user, repo);
     }
+
+    public boolean equalsRepository(Identifier o) {
+        if (!o.platform.equals(platform)) return false;
+        if (!o.user.equals(user)) return false;
+        return o.repo.equals(repo);
+    }
 }
