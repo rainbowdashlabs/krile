@@ -34,6 +34,7 @@ An explanation of the options can be found on the next page.
 Change the tag id.
 By default, the tag id will be the file name without .md
 Setting the id here is helpful if you rename the file, but want to stick with the id.
+It is not recommended to override this when using the deep option in the `krile.yaml`.
 The id is used for e.g. counting statistics.
 
 ### tag

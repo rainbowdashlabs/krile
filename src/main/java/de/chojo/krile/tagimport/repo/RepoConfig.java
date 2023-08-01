@@ -25,9 +25,10 @@ public record RepoConfig(@Nullable String name,
                          boolean publicRepo,
                          @Nullable String language,
                          List<String> include,
-                         List<String> exclude
+                         List<String> exclude,
+                         boolean deep
 ) {
-    public static final RepoConfig DEFAULT = new RepoConfig(null, null, "", emptyList(), false, null, emptyList(), emptyList());
+    public static final RepoConfig DEFAULT = new RepoConfig(null, null, "", emptyList(), false, null, emptyList(), emptyList(), false);
 
     @JsonCreator
     public static RepoConfig create(@JsonProperty("name") String name,
@@ -37,7 +38,8 @@ public record RepoConfig(@Nullable String name,
                                     @JsonProperty("language") String language,
                                     @JsonProperty("directory") String directory,
                                     @JsonProperty("include") List<String> include,
-                                    @JsonProperty("exclude") List<String> exclude) {
+                                    @JsonProperty("exclude") List<String> exclude,
+                                    @JsonProperty("deep") Boolean deep) {
         return new RepoConfig(name,
                 description,
                 requireNonNullElse(directory, ""),
@@ -45,7 +47,8 @@ public record RepoConfig(@Nullable String name,
                 requireNonNullElse(publicRepo, false),
                 language,
                 requireNonNullElse(include, emptyList()),
-                requireNonNullElse(exclude, emptyList()));
+                requireNonNullElse(exclude, emptyList()),
+                requireNonNullElse(deep, false));
     }
 
     public boolean included(Path p) {

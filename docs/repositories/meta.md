@@ -12,6 +12,7 @@ language: en
 directory: tags
 include: ["included_tag"]
 exclude: ["excluded_tag"]
+deep: true
 ```
 
 ## Options
@@ -74,4 +75,9 @@ You may only set include or exclude
 This is a list of excluded tags from the defined directory.
 You may only set include or exclude
 
+### deep
 
+**type:** `boolean`
+
+This changes if files in subdirectories of [`directory`](#directory) are processed.
+The default is `false`.

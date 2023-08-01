@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -120,7 +121,7 @@ public class RawRepository {
 
     public List<RawTag> tags() throws ParsingException, ImportException {
         RepoConfig configuration = configuration();
-        try (var files = Files.list(tagPath())) {
+        try (var files = listFiles(tagPath(), configuration.deep())) {
             List<Path> list = files.filter(p -> p.toFile().isFile())
                     .filter(p -> p.toFile().getName().endsWith(".md"))
                     .filter(configuration::included)
@@ -139,6 +140,13 @@ public class RawRepository {
         } catch (IOException e) {
             throw new ImportException(e);
         }
+    }
+
+    private Stream<Path> listFiles(Path path, boolean deep) throws IOException {
+        if(deep) {
+            return Files.walk(path);
+        }
+        return Files.list(path);
     }
 
     public Path tagPath() throws ParsingException {
