@@ -55,6 +55,10 @@ include: ["included_tag"]
 # This is a list of excluded tags from the defined directory.
 # You may only set include or exclude
 exclude: ["excluded_tag"]
+# Change if files in subdirectories are included in this repository.
+# Default is false
+# When setting to true, all files in the directory hierarchy are processed.
+deep: true
 ```
 
 Note: You can also use krile.json if you like json more. A schema is available.
@@ -96,6 +100,7 @@ The tag itself supports any kind of markdown, that is supported by [discord](htt
 # Change the tag id.
 # By default the tag id will be the file name without .md
 # Setting the id here is helpful if you rename the file, but want to stick with the id.
+# It is not recommended to override this when using the deep option in the `krile.yaml`.
 # The id is used for e.g. counting statistics.
 id: my tag
 # The actual tag name

@@ -84,7 +84,7 @@ public class TagParser {
 
     public RawTagMeta tagMeta() throws ParsingException, ImportException {
         TagFile file = tagFile();
-        String id = filePath.toFile().getName().replace(".md", "");
+        String id = tagRepository.tagPath().relativize(filePath).toString().replace(".md", "");
         if (file.meta().isPresent()) {
             try {
                 return MAPPER.readValue(file.meta().get(), RawTagMeta.class)

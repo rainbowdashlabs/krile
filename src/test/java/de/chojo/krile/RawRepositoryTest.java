@@ -21,6 +21,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,6 +53,22 @@ class RawRepositoryTest {
     void tags() throws ImportException, ParsingException {
         List<RawTag> tags = sub.tags();
         Assertions.assertEquals(2, tags.size());
+    }
+    @Test
+    void tagsDeep() throws ImportException, ParsingException, NoSuchFieldException, IllegalAccessException {
+        // Change tags to deep
+        Field configuration = RawRepository.class.getDeclaredField("configuration");
+        RepoConfig oldConf = sub.configuration();
+        RepoConfig newConf = RepoConfig.create(oldConf.name(), oldConf.description(), oldConf.category(), oldConf.publicRepo(), oldConf.language(), oldConf.directory(), oldConf.include(), oldConf.exclude(), true);
+        configuration.setAccessible(true);
+        configuration.set(sub, newConf);
+        List<RawTag> tags = sub.tags();
+        Assertions.assertEquals(3, tags.size());
+        Assertions.assertTrue(tags.stream().anyMatch(t -> t.meta().id().equals("sub/sub_tag")));
+        Assertions.assertTrue(tags.stream().anyMatch(t -> t.meta().id().equals("default_tag")));
+        Assertions.assertTrue(tags.stream().anyMatch(t -> t.meta().id().equals("test tag")));
+        configuration.set(sub, oldConf);
+
     }
 
     @AfterAll
