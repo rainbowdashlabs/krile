@@ -21,7 +21,7 @@ class IdentifierTest {
         Identifier of = Identifier.of("platform", "user", "repo");
         assertEquals("platform:user/repo", of.toString());
         of = Identifier.of("platform", "user", "repo", "/path/to/repo");
-        assertEquals("platform:user/repo/path/to/repo", of.toString());
+        assertEquals("platform:user/repo//path/to/repo", of.toString());
     }
 
     @Test
@@ -36,7 +36,7 @@ class IdentifierTest {
 
     @Test
     void parseSub() {
-        Optional<Identifier> parse = Identifier.parse("platform:user/repo/path/to/repo");
+        Optional<Identifier> parse = Identifier.parse("platform:user/repo//path/to/repo");
         assertTrue(parse.isPresent());
         assertEquals("platform", parse.get().platform());
         assertEquals("user", parse.get().user());

@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Objects.toIdentityString;
 
 public record Identifier(String platform, String user, String repo, String path) {
     /**
@@ -40,18 +41,25 @@ public record Identifier(String platform, String user, String repo, String path)
      * @throws IllegalFormatException if the identifier string is null or empty
      */
     public static Optional<Identifier> parse(String identifier) throws IllegalFormatException {
-        String[] split = identifier.split("[:/]", 4);
-        return switch (split.length) {
-            case 3 -> Optional.of(Identifier.of(split[0], split[1], split[2]));
-            case 4 -> Optional.of(Identifier.of(split[0], split[1], split[2], split[3]));
-            default -> Optional.empty();
-        };
+        String identity = identifier;
+        String path = null;
+        if (identifier.contains("//")) {
+            var split = identifier.split("//", 2);
+            identity = split[0];
+            path = split[1];
+        }
+        String[] split = identity.split("[:/]", 3);
+        if (split.length == 3) {
+            if (path != null) return Optional.of(Identifier.of(split[0], split[1], split[2], path));
+            return Optional.of(Identifier.of(split[0], split[1], split[2]));
+        }
+        return Optional.empty();
     }
 
     @Override
     public String toString() {
         if (path != null) {
-            return "%s:%s/%s/%s".formatted(platform.toLowerCase(Locale.ROOT), user, repo, path);
+            return "%s:%s/%s//%s".formatted(platform.toLowerCase(Locale.ROOT), user, repo, path);
         }
         return "%s:%s/%s".formatted(platform.toLowerCase(Locale.ROOT), user, repo);
     }
