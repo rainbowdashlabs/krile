@@ -15,6 +15,12 @@ import java.util.Collection;
 import java.util.List;
 
 public record RawTag(RawTagMeta meta, FileMeta fileMeta, String text) {
+    /**
+     * Splits the given text by the "<new_page>" delimiter and breaks each substring into smaller chunks,
+     * each having a maximum length of 1850 characters.
+     *
+     * @return A list of strings, where each string represents a chunk of the original text.
+     */
     public List<String> splitText() {
         return Arrays.stream(text.split("<new_page>")).map(t -> Text.splitByLength(t, 1850)).flatMap(Collection::stream).toList();
     }

@@ -29,6 +29,10 @@ import java.util.concurrent.TimeoutException;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * The RepoUpdateService class represents a service for scheduling and performing updates for repositories.
+ * It implements the Runnable interface, allowing it to be scheduled and executed by a separate thread.
+ */
 public class RepoUpdateService implements Runnable {
     private static final Logger log = getLogger(RepoUpdateService.class);
     private final Configuration<ConfigFile> configuration;
@@ -41,6 +45,14 @@ public class RepoUpdateService implements Runnable {
         this.repositoryData = repositoryData;
     }
 
+    /**
+     * Creates a new instance of RepoUpdateService.
+     *
+     * @param threading the Threading object to be used for scheduling repository updates
+     * @param configuration the Configuration object containing the configuration details
+     * @param repositoryData the RepositoryData object containing the repository data
+     * @return a new instance of RepoUpdateService
+     */
     public static RepoUpdateService create(Threading threading, Configuration<ConfigFile> configuration, RepositoryData repositoryData) {
         log.info("Starting repository update service");
         RepoUpdateService repoUpdateService = new RepoUpdateService(configuration, repositoryData);
@@ -48,6 +60,11 @@ public class RepoUpdateService implements Runnable {
         return repoUpdateService;
     }
 
+    /**
+     * Schedules a repository for update.
+     *
+     * @param repository the repository to be scheduled for update
+     */
     public void schedule(Repository repository) {
         if (priorityQueue.contains(repository.url())) return;
         repositoryQueue.remove(repository.url());
@@ -68,7 +85,12 @@ public class RepoUpdateService implements Runnable {
         }
     }
 
-    public void update(String repository) {
+    /**
+     * Updates the specified repository and its associated repositories.
+     *
+     * @param repository the URL of the repository to be updated
+     */
+    private void update(String repository) {
         List<Repository> repositories = repositoryData.byUrl(repository);
 
         Repository first = repositories.get(0);
@@ -102,10 +124,22 @@ public class RepoUpdateService implements Runnable {
         log.info("Updated {}.", repository);
     }
 
+    /**
+     * Schedules the update of repositories.
+     * The method adds the least updated repositories to the repository queue for further processing.
+     */
     void schedule() {
         repositoryQueue.addAll(repositoryData.leastUpdated(configuration.config().repositories().check(), 10));
     }
 
+    /**
+     * Updates a repository.
+     * The method runs the update process for the given repository asynchronously.
+     * If the update takes longer than 1 minute, it is considered failed.
+     *
+     * @param raw The raw repository data used for update.
+     * @param repo The repository to be updated.
+     */
     private void updateRepository(RawRepository raw, Repository repo) {
         var update = CompletableFuture.runAsync(() -> {
             try {

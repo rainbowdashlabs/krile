@@ -37,25 +37,41 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class TagParser {
-    @RegExp
-    public static final String TAG = "^---$\\n(?<meta>.+?)^---$\\n(?<tag>.+)";
     private static final ObjectMapper MAPPER = YAMLMapper.builder()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .build();
-    private static final Pattern TAG_PATTERN = Pattern.compile(TAG, Pattern.DOTALL);
     private final RawRepository tagRepository;
     private final Path filePath;
 
-    public TagParser(RawRepository tagRepository, Path filePath) {
+    /**
+     * Initializes a new instance of the TagParser class.
+     *
+     * @param tagRepository The RawRepository to use for tag information.
+     * @param filePath The path of the file to parse.
+     */
+    private TagParser(RawRepository tagRepository, Path filePath) {
         this.tagRepository = tagRepository;
         this.filePath = filePath;
     }
 
+    /**
+     * Parses the given file using the RawRepository for tag information.
+     *
+     * @param tagRepository The RawRepository to use for tag information.
+     * @param path The path of the file to parse.
+     * @return A new instance of the TagParser class.
+     */
     public static TagParser parse(RawRepository tagRepository, Path path) {
         return new TagParser(tagRepository, path);
     }
 
+    /**
+     * Retrieves the authors of the file.
+     *
+     * @return A collection of RawAuthor objects representing the authors of the file.
+     * @throws ImportException If an error occurs while retrieving the authors.
+     */
     public Collection<RawAuthor> getAuthors() throws ImportException {
         Set<RawAuthor> rawAuthors = new HashSet<>();
         BlameResult blameResult = null;
@@ -74,14 +90,33 @@ public class TagParser {
         return rawAuthors;
     }
 
+    /**
+     * Retrieves the FileMeta object containing metadata about the file.
+     *
+     * @return The FileMeta object containing metadata about the file.
+     * @throws ImportException If an error occurs while retrieving the file metadata.
+     */
     public FileMeta fileMeta() throws ImportException {
         return new FileMeta(filePath.toFile().getName(), getAuthors(), getTimeCreated(), getTimeModified());
     }
 
+    /**
+     * Retrieves the content of the file's tag.
+     *
+     * @return The content of the file's tag.
+     * @throws ImportException If an error occurs while retrieving the tag content.
+     */
     public String tagContent() throws ImportException {
         return tagFile().content();
     }
 
+    /**
+     * Retrieves the metadata of the file's tag.
+     *
+     * @return The metadata of the file's tag.
+     * @throws ParsingException If an error occurs while parsing the metadata.
+     * @throws ImportException If an error occurs while retrieving the tag metadata.
+     */
     public RawTagMeta tagMeta() throws ParsingException, ImportException {
         TagFile file = tagFile();
         String id = tagRepository.tagPath().relativize(filePath).toString().replace(".md", "");
@@ -96,10 +131,23 @@ public class TagParser {
         return RawTagMeta.createDefault(id);
     }
 
+    /**
+     * Retrieves the complete information of the file's tag.
+     *
+     * @return A RawTag object containing the tag metadata, file metadata, and tag content.
+     * @throws ParsingException If an error occurs while parsing the tag metadata or tag content.
+     * @throws ImportException If an error occurs while retrieving the tag metadata or file metadata.
+     */
     public RawTag tag() throws ParsingException, ImportException {
         return new RawTag(tagMeta(), fileMeta(), tagContent());
     }
 
+    /**
+     * Retrieves the information of the file's tag.
+     *
+     * @return A TagFile object containing the file content and optional tag metadata and tag content.
+     * @throws ImportException If an error occurs while retrieving the file content.
+     */
     private TagFile tagFile() throws ImportException {
         String fileContent = getFileContent();
         if (fileContent.startsWith("---")) {
@@ -109,6 +157,12 @@ public class TagParser {
         return new TagFile(Optional.empty(), fileContent);
     }
 
+    /**
+     * Retrieves the time when the file was last modified.
+     *
+     * @return A FileEvent object containing the time of the last modification and the author who made the modification.
+     * @throws ImportException If an error occurs while retrieving the commit information.
+     */
     private FileEvent getTimeModified() throws ImportException {
         Iterable<RevCommit> commits;
         try {
@@ -125,6 +179,12 @@ public class TagParser {
         return new FileEvent(firstcommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(firstcommit.getAuthorIdent()));
     }
 
+    /**
+     * Retrieves the time when the file was created.
+     *
+     * @return A FileEvent object containing the time of creation and the author who made the initial commit.
+     * @throws ImportException If an error occurs while retrieving the commit information.
+     */
     private FileEvent getTimeCreated() throws ImportException {
         Iterable<RevCommit> commits;
         try {
@@ -145,6 +205,12 @@ public class TagParser {
         return tagRepository.git().getRepository();
     }
 
+    /**
+     * Retrieves the content of the file.
+     *
+     * @return The content of the file as a string.
+     * @throws ImportException If an error occurs while reading the file.
+     */
     private String getFileContent() throws ImportException {
         try {
             return Files.readString(filePath);
@@ -153,6 +219,11 @@ public class TagParser {
         }
     }
 
+    /**
+     * Retrieves the relative path of the file.
+     *
+     * @return The relative path of the file as a Path object.
+     */
     private Path relativePath() {
         return tagRepository.relativize(filePath);
     }

@@ -16,6 +16,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
+/**
+ * A listener for tag button interactions.
+ */
 public class TagInteractionListener extends ListenerAdapter {
     private final ILocalizer localizer;
     private final TagData tags;

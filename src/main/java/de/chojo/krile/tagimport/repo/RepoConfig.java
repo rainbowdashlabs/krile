@@ -28,8 +28,21 @@ public record RepoConfig(@Nullable String name,
                          List<String> exclude,
                          boolean deep
 ) {
-    public static final RepoConfig DEFAULT = new RepoConfig(null, null, "", emptyList(), false, null, emptyList(), emptyList(), false);
 
+    /**
+     * Creates a new {@code RepoConfig} object with the given parameters.
+     *
+     * @param name        the name of the repository
+     * @param description the description of the repository
+     * @param category    the category of the repository
+     * @param publicRepo  the visibility of the repository
+     * @param language    the language of the repository
+     * @param directory   the directory of the repository
+     * @param include     the list of files to include in the repository
+     * @param exclude     the list of files to exclude from the repository
+     * @param deep        whether to include subdirectories in the repository
+     * @return a new {@code RepoConfig} object with the given parameters
+     */
     @JsonCreator
     public static RepoConfig create(@JsonProperty("name") String name,
                                     @JsonProperty("description") String description,
@@ -51,8 +64,14 @@ public record RepoConfig(@Nullable String name,
                 requireNonNullElse(deep, false));
     }
 
-    public boolean included(Path p) {
-        String name = p.toFile().getName();
+    /**
+     * Checks if the given file path is included in the repository.
+     *
+     * @param path the path of the file to check
+     * @return true if the file is included in the repository, false otherwise
+     */
+    public boolean included(Path path) {
+        String name = path.toFile().getName();
         if (!name.endsWith(".md")) return false;
         name = name.replace(".md", "");
         if (!include.isEmpty()) return include.contains(name);

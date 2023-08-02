@@ -6,6 +6,11 @@
 
 package de.chojo.krile.tagimport.exception;
 
+/**
+ * Exception class for parsing errors during string parsing.
+ * <p>
+ * This exception is thrown when there are errors in parsing tag content.
+ */
 public class ParsingException extends Exception {
     public ParsingException(String message) {
         super(message);

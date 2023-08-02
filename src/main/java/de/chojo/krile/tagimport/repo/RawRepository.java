@@ -33,6 +33,10 @@ import java.util.stream.Stream;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * The RawRepository class represents a repository with raw data.
+ * It allows retrieval of repository information and manipulation of its identifier.
+ */
 public class RawRepository {
     private static final ObjectMapper MAPPER = YAMLMapper.builder()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -68,10 +72,29 @@ public class RawRepository {
         return new RawRepository(url, identifier, root, git);
     }
 
+    /**
+     * Creates a remote repository with the specified configuration and identifier.
+     *
+     * @param configuration the configuration of the remote repository
+     * @param identifier the identifier of the remote repository
+     * @return a RemoteRepository instance representing the remote repository
+     * @throws ImportException if there is an error importing the remote repository
+     * @throws ParsingException if there is an error parsing the remote repository
+     */
     public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier) throws ImportException, ParsingException {
         return remote(configuration, identifier, false);
     }
 
+    /**
+     * Creates a remote repository with the specified configuration and identifier.
+     *
+     * @param configuration the configuration of the remote repository
+     * @param identifier the identifier of the remote repository
+     * @param flat indicating if a flat repository should be created
+     * @return a RemoteRepository instance representing the remote repository
+     * @throws ImportException if there is an error importing the remote repository
+     * @throws ParsingException if there is an error parsing the remote repository
+     */
     public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier, boolean flat) throws ImportException, ParsingException {
         RepositoryLocation location = configuration.config().repositories().find(identifier).get();
         String url = location.url(identifier);
@@ -102,6 +125,15 @@ public class RawRepository {
         }
     }
 
+    /**
+     * Creates a local repository with the specified git path, repository location, and identifier.
+     *
+     * @param git the path to the local git repository
+     * @param loc the location of the repository
+     * @param identifier the identifier of the local repository
+     * @return a RawRepository instance representing the local repository
+     * @throws IOException if there is an error opening the local git repository
+     */
     public static RawRepository local(Path git, RepositoryLocation loc, Identifier identifier) throws IOException {
         String url = loc.url(identifier.user(), identifier.repo());
         return new RawRepository(url, identifier, git, Git.open(git.toFile()));
@@ -119,6 +151,13 @@ public class RawRepository {
         return configuration;
     }
 
+    /**
+     * Retrieves a list of RawTags for the repository.
+     *
+     * @return a List of RawTag instances representing the tags in the repository
+     * @throws ParsingException if there is an error parsing the tag files
+     * @throws ImportException if there is an error importing the tag files
+     */
     public List<RawTag> tags() throws ParsingException, ImportException {
         RepoConfig configuration = configuration();
         try (var files = listFiles(tagPath(), configuration.deep())) {
@@ -142,18 +181,44 @@ public class RawRepository {
         }
     }
 
+    /**
+     * Returns a stream of file paths for the specified directory.
+     *
+     * @param path the directory path
+     * @param deep indicates whether subdirectories should be included in the search
+     * @return a stream of Path instances representing the files in the directory
+     * @throws IOException if an I/O error occurs while listing the files
+     */
     private Stream<Path> listFiles(Path path, boolean deep) throws IOException {
         return deep ? Files.walk(path) : Files.list(path);
     }
 
+    /**
+     * Resolves the path of the specified directory using the configuration directory value.
+     *
+     * @return the resolved path of the directory
+     * @throws ParsingException if an error occurs while parsing the directory configuration
+     */
     public Path tagPath() throws ParsingException {
         return path.resolve(configuration().directory());
     }
 
+    /**
+     * Relativizes the specified path relative to the root path.
+     *
+     * @param path the path to relativize
+     * @return the relative path of the specified path
+     */
     public Path relativize(Path path) {
         return this.root.relativize(path);
     }
 
+    /**
+     * Returns the name of the current commit in the Git repository.
+     *
+     * @return the name of the current commit
+     * @throws ImportException if an error occurs while determining the commit
+     */
     public String currentCommit() throws ImportException {
         try {
             return git().getRepository().resolve("HEAD").getName();
@@ -162,6 +227,12 @@ public class RawRepository {
         }
     }
 
+    /**
+     * Returns the name of the current branch in the Git repository.
+     *
+     * @return the name of the current branch
+     * @throws ImportException if an error occurs while determining the branch
+     */
     public String currentBranch() throws ImportException {
         try {
             return git().getRepository().getBranch();
@@ -170,22 +241,47 @@ public class RawRepository {
         }
     }
 
+    /**
+     * Returns the URL of the Git repository.
+     *
+     * @return the URL of the Git repository
+     */
     public String url() {
         return url;
     }
 
+    /**
+     * Returns the identifier of the method.
+     *
+     * @return the identifier of the method
+     */
     public Identifier identifier() {
         return identifier;
     }
 
+    /**
+     * Returns the root path of the repository.
+     *
+     * @return the root path of the repository
+     */
     public Path root() {
         return root;
     }
 
+    /**
+     * Returns the current path of the repository.
+     *
+     * @return the current path of the repository
+     */
     public Path path() {
         return path;
     }
 
+    /**
+     * Returns the Git object associated with the repository.
+     *
+     * @return the Git object associated with the repository
+     */
     public Git git() {
         return git;
     }
@@ -215,6 +311,12 @@ public class RawRepository {
                "git=" + git + ']';
     }
 
+    /**
+     * Finds the path of the configuration file for the repository.
+     *
+     * @return the path of the configuration file
+     * @throws ParsingException if no configuration file is found
+     */
     private Path findConfigPath() throws ParsingException {
         // TODO: Probably a bot config value
         final String[] paths = new String[]{".krile", ".github", ".gitlab", ""};

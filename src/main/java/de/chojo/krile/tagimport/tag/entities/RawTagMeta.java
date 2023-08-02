@@ -49,6 +49,14 @@ public record RawTagMeta(String id,
                 requireNonNullElse(type, TagType.TEXT));
     }
 
+
+    /**
+     * Injects values for id and tag into a RawTagMeta object.
+     *
+     * @param id   the value for the id property of the RawTagMeta object
+     * @param tag  the value for the tag property of the RawTagMeta object
+     * @return a new RawTagMeta object with injected values for id and tag
+     */
     public RawTagMeta inject(String id, String tag) {
         return new RawTagMeta(requireNonNullElse(this.id, id), requireNonNullElse(this.tag, tag), alias, category, image, type);
     }
