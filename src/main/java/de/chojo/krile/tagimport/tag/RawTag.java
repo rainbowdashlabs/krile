@@ -22,6 +22,6 @@ public record RawTag(RawTagMeta meta, FileMeta fileMeta, String text) {
      * @return A list of strings, where each string represents a chunk of the original text.
      */
     public List<String> splitText() {
-        return Arrays.stream(text.split("<new_page>")).map(t -> Text.splitByLength(t, 1850)).flatMap(Collection::stream).toList();
+        return Arrays.stream(text.split("<new_page>")).map(t -> Text.toDiscordMarkdownAndSplit(t, 1850)).flatMap(Collection::stream).toList();
     }
 }
