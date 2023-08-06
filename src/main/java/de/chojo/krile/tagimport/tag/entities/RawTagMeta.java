@@ -29,9 +29,10 @@ public record RawTagMeta(String id,
                          List<String> alias,
                          List<String> category,
                          String image,
-                         TagType type) {
+                         TagType type,
+                         boolean enhanceMarkdown) {
     public static RawTagMeta createDefault(String id) {
-        return new RawTagMeta(id, id, Collections.emptyList(), Collections.emptyList(), null, TagType.TEXT);
+        return new RawTagMeta(id, id, Collections.emptyList(), Collections.emptyList(), null, TagType.TEXT, true);
     }
 
     @JsonCreator
@@ -40,13 +41,15 @@ public record RawTagMeta(String id,
                                     @JsonProperty("alias") List<String> alias,
                                     @JsonProperty("category") List<String> category,
                                     @JsonProperty("image") String image,
-                                    @JsonProperty("type") TagType type) {
+                                    @JsonProperty("type") TagType type,
+                                    @JsonProperty("enhanceMarkdown") Boolean enhanceMarkdown) {
         return new RawTagMeta(id,
                 tag,
                 requireNonNullElse(alias, Collections.emptyList()),
                 requireNonNullElse(category, Collections.emptyList()),
                 image,
-                requireNonNullElse(type, TagType.TEXT));
+                requireNonNullElse(type, TagType.TEXT),
+                requireNonNullElse(enhanceMarkdown, true));
     }
 
 
@@ -58,6 +61,6 @@ public record RawTagMeta(String id,
      * @return a new RawTagMeta object with injected values for id and tag
      */
     public RawTagMeta inject(String id, String tag) {
-        return new RawTagMeta(requireNonNullElse(this.id, id), requireNonNullElse(this.tag, tag), alias, category, image, type);
+        return new RawTagMeta(requireNonNullElse(this.id, id), requireNonNullElse(this.tag, tag), alias, category, image, type, enhanceMarkdown);
     }
 }

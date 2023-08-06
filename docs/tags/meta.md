@@ -20,6 +20,7 @@ alias: ["my tag", "another tag"]
 category: ["tutorial", "tags"]
 image: https://krile.dev/my_image.png
 type: TEXT
+enhanceMarkdown: true
 ---
 ```
 
@@ -71,6 +72,16 @@ This will have no effect on embed tags, you need to set your image in the embed 
 
 The embed type, this type describes the content type of the embed.
 Paginated and markdown are both of type text which is the default value.
+
+### enhanceMarkdown
+
+**type:** `boolean`  
+**default:** `true`
+
+This will attempt to parse the GitHub markdown to a more pleasant discord markdown representation.
+It results in a more compressed view for code blocks and also keeps them together.
+Additionally, it restores the line break behavior of GitHub markdown, where an explicit linebreak has to be marked with two spaces or a backslash `\`.
+A new paragraph is done with two new lines.
 
 ## JSON
 
