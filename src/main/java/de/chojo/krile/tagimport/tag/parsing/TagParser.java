@@ -120,10 +120,11 @@ public class TagParser {
     public RawTagMeta tagMeta() throws ParsingException, ImportException {
         TagFile file = tagFile();
         String id = tagRepository.tagPath().relativize(filePath).toString().replace(".md", "");
+        String tag = tagRepository.tagPath().relativize(filePath).getFileName().toString().replace(".md", "");
         if (file.meta().isPresent()) {
             try {
                 return MAPPER.readValue(file.meta().get(), RawTagMeta.class)
-                        .inject(id, id);
+                        .inject(id, tag);
             } catch (JsonProcessingException e) {
                 throw new ParsingException("Failed to parse tag meta.%n%s".formatted(e.getMessage()), e);
             }
