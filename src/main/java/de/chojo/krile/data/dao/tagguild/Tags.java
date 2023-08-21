@@ -44,22 +44,29 @@ public class Tags {
         @Language("postgresql")
         var select = """
                 WITH ranked_tags AS
-                         (SELECT row_number() OVER (PARTITION BY tag ORDER BY gr.priority * rt.global_prio DESC) AS rank,
+                         (SELECT count(1) OVER (PARTITION BY tag ORDER BY gr.priority * rt.global_prio DESC) > 1 AS repo_duplicate,
+                                 row_number() OVER (PARTITION BY tag_id) > 1                                     AS tag_duplicate,
                                  gr.repository_id,
                                  gr.priority                                                                     AS repo_prio,
                                  global_prio,
                                  rt.id,
                                  tag,
-                                 rt.prio                                                                     AS tag_prio,
+                                 rt.prio                                                                         AS tag_prio,
                                  r.identifier
                           FROM guild_repository gr
                                    LEFT JOIN repo_tags rt ON gr.repository_id = rt.repository_id
                                    LEFT JOIN repository r ON gr.repository_id = r.id
+                                   LEFT JOIN tag_stat ts ON gr.guild_id = ts.guild_id AND rt.id = ts.tag_id
                           WHERE global_prio = 1
                             AND tag ILIKE ('%' || ? || '%')
-                            AND gr.guild_id = ?)
-                SELECT id, CASE WHEN rank = 1 THEN tag ELSE tag || ' (' || identifier || ')' END AS name
+                            AND gr.guild_id = ?
+                          ORDER BY ts.views DESC)
+                SELECT id,
+                       CASE WHEN NOT repo_duplicate THEN tag ELSE tag || ' (' || identifier || ')' END AS name,
+                       repo_duplicate,
+                       tag_duplicate
                 FROM ranked_tags
+                WHERE NOT tag_duplicate
                 LIMIT 25;
                 """;
 
