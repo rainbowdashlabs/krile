@@ -73,30 +73,30 @@ class TextTest {
 
         expected = List.of(
                 """
-                        ```java
-                        test
-                        ```""",
+                ```java
+                test
+                ```""",
                 """
                                         
-                        Normal gap after code block
+                Normal gap after code block
 
-                        This has to be one line.
-                        This has to be one line as well.""",
+                This has to be one line.
+                This has to be one line as well.""",
                 """
-                        This line and this line are together.
-                                        
-                        This has to be a new section.
-                        ```java
-                        test```""",
+                This line and this line are together.
+                                
+                This has to be a new section.
+                ```java
+                test```""",
                 """
-                        ```java
-                        test
-                        ```no gap after code block
-                        ```java
-                        test
-                        ```
-                                        
-                        Very wide gap between code block and text"""
+                ```java
+                test
+                ```no gap after code block
+                ```java
+                test
+                ```
+                                
+                Very wide gap between code block and text"""
         );
         Assertions.assertEquals(expected, result);
     }
