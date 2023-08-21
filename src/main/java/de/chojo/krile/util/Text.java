@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 public class Text {
@@ -18,6 +17,7 @@ public class Text {
     private static final Pattern TRAILING_LINE_END = Pattern.compile("(\\\\|\\s\\s)$", Pattern.MULTILINE + Pattern.UNICODE_CASE);
     private static final Pattern FUSE_CODE_BLOCKS = Pattern.compile("```\\R```", Pattern.MULTILINE + Pattern.UNICODE_CASE);
     private static final Pattern PULL_TEXT_TO_CODE = Pattern.compile("```E\\R", Pattern.MULTILINE + Pattern.UNICODE_CASE);
+    private static final Pattern LIST_ENTRY = Pattern.compile("^#*? *?([0-9]+?|[*-])", Pattern.UNICODE_CASE);
 
     /**
      * Splits the given text into chunks of maximum length specified by maxLength parameter.
@@ -35,14 +35,14 @@ public class Text {
         List<String> join = new LinkedList<>();
         List<String> split = new ArrayList<>();
         int length = 0;
-        for (String line : chunks) {
-            if (length + line.length() > maxLength) {
+        for (String chunk : chunks) {
+            if (length + chunk.length() > maxLength) {
                 split.add(String.join(delimiter, join));
                 join.clear();
                 length = 0;
             }
-            length += line.length();
-            join.add(line);
+            length += chunk.length();
+            join.add(chunk);
         }
         split.add(String.join(delimiter, join));
         return split;
@@ -63,7 +63,7 @@ public class Text {
             if (line.startsWith("```") || line.endsWith("```")) {
                 if (codeBlock) {
                     // code block has ended
-                    collect.add(line +"E");
+                    collect.add(line + "E");
                     blocks.addAll(process(collect, codeBlock, maxLength));
                     collect.clear();
                 } else {
@@ -74,20 +74,20 @@ public class Text {
                 }
                 codeBlock = !codeBlock;
             } else {
-                collect.add(line);
+                collect.add(escapeList(line));
             }
         }
 
         blocks.addAll(process(collect, codeBlock, maxLength));
         blocks = blocks.stream().filter(p -> !p.isBlank()).toList();
         blocks = compressChunks(blocks, maxLength, "\n");
-        return blocks.stream().map(Text::compressCodeBlocks).toList();
+        return blocks.stream().map(Text::compressCodeBlocks).map(Text::unescapeList).toList();
     }
 
     private static List<String> process(List<String> text, boolean codeBlock, int maxLength) {
         // preserve codeblocks
         // split and strip text
-        return codeBlock ? Collections.singletonList(String.join("\n", text)) : stripTextLineBreaks(String.join("\n",text), maxLength);
+        return codeBlock ? Collections.singletonList(String.join("\n", text)) : stripTextLineBreaks(String.join("\n", text), maxLength);
     }
 
     public static List<String> stripTextLineBreaks(String text, int maxLength) {
@@ -106,9 +106,19 @@ public class Text {
 
         String cleaned = NEW_LINE.matcher(text).replaceAll(" ");
         // Super nice edge case of the regex
-        if(cleaned.startsWith(" ")) cleaned = cleaned.replaceAll("^ ", "\n");
+        if (cleaned.startsWith(" ")) cleaned = cleaned.replaceAll("^ ", "\n");
         cleaned = TRAILING_LINE_END.matcher(cleaned).replaceAll("");
 
         return splitByLength(cleaned, maxLength);
+    }
+
+    private static String escapeList(String line) {
+        if(LIST_ENTRY.matcher(line).find()){
+            return "{{ li }}%s".formatted(line);
+        }
+        return line;
+    }
+    private static String unescapeList(String line) {
+        return line.replaceAll(" ?\\{\\{ li \\}\\}", "\n");
     }
 }
