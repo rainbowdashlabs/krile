@@ -6,6 +6,6 @@ services:
       - "./docs/:/docs/docs"
       - "./mkdocs.yml:/docs/mkdocs.yml"
     build:
-      dockerfile: dev.docs.Dockerfile
+      dockerfile: docs.dev.Dockerfile
     ports:
       - "80:80"
