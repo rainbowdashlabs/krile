@@ -52,11 +52,12 @@ public class TagInteractionListener extends ListenerAdapter {
     }
 
     public void info(ButtonInteractionEvent event, String id) {
+        event.deferReply().setEphemeral(true).queue();
         Optional<Tag> byId = tags.byId(Integer.parseInt(id));
         if (byId.isEmpty()) {
-            event.reply(localizer.localize("error.tag.notfound", event.getGuild())).setEphemeral(true).queue();
+            event.getHook().editOriginal(localizer.localize("error.tag.notfound", event.getGuild())).queue();
             return;
         }
-        event.replyEmbeds(byId.get().infoEmbed(localizer.context(LocaleProvider.guild(event.getGuild())))).setEphemeral(true).queue();
+        event.getHook().editOriginalEmbeds(byId.get().infoEmbed(localizer.context(LocaleProvider.guild(event.getGuild())))).queue();
     }
 }
