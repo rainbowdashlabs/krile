@@ -70,9 +70,9 @@ public class AuthorData {
      * @return an Optional object containing the retrieved Author if it exists in the cache or database; otherwise empty
      */
     public Optional<Author> get(int id) {
-        Author author = authorCache.getIfPresent(id);
-        if (author == null) retrieveById(id).ifPresent(this::cache);
-        return Optional.ofNullable(author);
+        return Optional.ofNullable(authorCache.getIfPresent(id))
+                .or(() ->retrieveById(id))
+                .map(this::cache);
     }
 
     private Author cache(Author author) {
