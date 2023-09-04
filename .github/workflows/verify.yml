@@ -8,7 +8,7 @@ jobs:
     name: Gradle build
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
         with:
           fetch-depth: 0
       - uses: gradle/wrapper-validation-action@v1
@@ -27,7 +27,7 @@ jobs:
     name: Encoding check
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
       - name: Remove allowed us-ascii files before check
         run: rm src/main/resources/locale.properties src/main/resources/locale_en_US.properties # This needs improvement
       - name: Check UTF-8 for resource bundles
@@ -40,6 +40,6 @@ jobs:
     name: Docker build
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
       - name: Build as Docker image
         run: docker build .
