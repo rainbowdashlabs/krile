@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+
 plugins {
     id("java")
     alias(libs.plugins.spotless)
@@ -74,6 +76,7 @@ tasks {
     }
 
     shadowJar {
+        transform(Log4j2PluginsCacheFileTransformer::class.java)
         mergeServiceFiles()
         manifest {
             attributes(mapOf("Main-Class" to "de.chojo.krile.Krile"))
