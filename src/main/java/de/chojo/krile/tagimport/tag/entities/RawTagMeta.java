@@ -8,12 +8,16 @@ package de.chojo.krile.tagimport.tag.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import de.chojo.krile.data.dao.repository.tags.tag.meta.TagType;
+import de.chojo.krile.tagimport.exception.ParsingException;
+import de.chojo.krile.tagimport.tag.parsing.TagFile;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-import static java.util.Objects.requireNonNull;
+import static de.chojo.krile.tagimport.tag.parsing.TagParser.MAPPER;
 import static java.util.Objects.requireNonNullElse;
 
 /**
@@ -56,11 +60,23 @@ public record RawTagMeta(String id,
     /**
      * Injects values for id and tag into a RawTagMeta object.
      *
-     * @param id   the value for the id property of the RawTagMeta object
-     * @param tag  the value for the tag property of the RawTagMeta object
+     * @param id  the value for the id property of the RawTagMeta object
+     * @param tag the value for the tag property of the RawTagMeta object
      * @return a new RawTagMeta object with injected values for id and tag
      */
     public RawTagMeta inject(String id, String tag) {
         return new RawTagMeta(requireNonNullElse(this.id, id), requireNonNullElse(this.tag, tag), alias, category, image, type, enhanceMarkdown);
+    }
+
+    public static RawTagMeta parse(TagFile file, String defaultId, String defaultTag) throws ParsingException {
+        if (file.meta().isPresent()) {
+            try {
+                return MAPPER.readValue(file.meta().get(), RawTagMeta.class)
+                        .inject(defaultId, defaultTag);
+            } catch (JsonProcessingException e) {
+                throw new ParsingException("Failed to parse tag meta.%n%s".formatted(e.getMessage()), e);
+            }
+        }
+        return RawTagMeta.createDefault(defaultId);
     }
 }

@@ -8,6 +8,7 @@ package de.chojo.krile.data.dao.repository.tags.tag;
 
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
+import de.chojo.krile.data.base.BaseMeta;
 import de.chojo.krile.data.dao.Author;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import de.chojo.krile.data.dao.repository.tags.tag.meta.FileMeta;
@@ -22,13 +23,12 @@ import java.time.ZoneOffset;
 
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 
-public class Meta {
+public class Meta extends BaseMeta {
     private final Tag tag;
     private final TagCategories categories;
     private final TagAuthors tagAuthors;
     private final AuthorData authors;
     private final TagAliases aliases;
-    private TagMeta tagMeta;
     private FileMeta fileMeta;
 
     public Meta(Tag tag, CategoryData categories, AuthorData authors) {
@@ -142,6 +142,7 @@ public class Meta {
      *
      * @return the tag metadata for the tag, or default values if not found
      */
+    @Override
     public TagMeta tagMeta() {
         if (tagMeta == null) {
             @Language("postgresql")

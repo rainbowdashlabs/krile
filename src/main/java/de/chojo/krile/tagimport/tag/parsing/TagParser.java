@@ -25,7 +25,6 @@ import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.intellij.lang.annotations.RegExp;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,7 +36,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class TagParser {
-    private static final ObjectMapper MAPPER = YAMLMapper.builder()
+    public static final ObjectMapper MAPPER = YAMLMapper.builder()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
             .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
             .build();
@@ -48,7 +47,7 @@ public class TagParser {
      * Initializes a new instance of the TagParser class.
      *
      * @param tagRepository The RawRepository to use for tag information.
-     * @param filePath The path of the file to parse.
+     * @param filePath      The path of the file to parse.
      */
     private TagParser(RawRepository tagRepository, Path filePath) {
         this.tagRepository = tagRepository;
@@ -59,7 +58,7 @@ public class TagParser {
      * Parses the given file using the RawRepository for tag information.
      *
      * @param tagRepository The RawRepository to use for tag information.
-     * @param path The path of the file to parse.
+     * @param path          The path of the file to parse.
      * @return A new instance of the TagParser class.
      */
     public static TagParser parse(RawRepository tagRepository, Path path) {
@@ -115,21 +114,13 @@ public class TagParser {
      *
      * @return The metadata of the file's tag.
      * @throws ParsingException If an error occurs while parsing the metadata.
-     * @throws ImportException If an error occurs while retrieving the tag metadata.
+     * @throws ImportException  If an error occurs while retrieving the tag metadata.
      */
     public RawTagMeta tagMeta() throws ParsingException, ImportException {
         TagFile file = tagFile();
         String id = tagRepository.tagPath().relativize(filePath).toString().replace(".md", "");
         String tag = tagRepository.tagPath().relativize(filePath).getFileName().toString().replace(".md", "");
-        if (file.meta().isPresent()) {
-            try {
-                return MAPPER.readValue(file.meta().get(), RawTagMeta.class)
-                        .inject(id, tag);
-            } catch (JsonProcessingException e) {
-                throw new ParsingException("Failed to parse tag meta.%n%s".formatted(e.getMessage()), e);
-            }
-        }
-        return RawTagMeta.createDefault(id);
+        return RawTagMeta.parse(file, id, tag);
     }
 
     /**
@@ -137,7 +128,7 @@ public class TagParser {
      *
      * @return A RawTag object containing the tag metadata, file metadata, and tag content.
      * @throws ParsingException If an error occurs while parsing the tag metadata or tag content.
-     * @throws ImportException If an error occurs while retrieving the tag metadata or file metadata.
+     * @throws ImportException  If an error occurs while retrieving the tag metadata or file metadata.
      */
     public RawTag tag() throws ParsingException, ImportException {
         return new RawTag(tagMeta(), fileMeta(), tagContent());
@@ -150,7 +141,10 @@ public class TagParser {
      * @throws ImportException If an error occurs while retrieving the file content.
      */
     private TagFile tagFile() throws ImportException {
-        String fileContent = getFileContent();
+        return parseTagFile(getFileContent());
+    }
+
+    public static TagFile parseTagFile(String fileContent) {
         if (fileContent.startsWith("---")) {
             var split = Pattern.compile("^---$", Pattern.MULTILINE).split(fileContent);
             return new TagFile(Optional.of(split[1]), split[2].trim());

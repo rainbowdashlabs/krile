@@ -25,7 +25,11 @@ public record RawTag(RawTagMeta meta, FileMeta fileMeta, String text) {
      * @return A list of strings, where each string represents a chunk of the original text.
      */
     public List<String> splitText() {
-        return Arrays.stream(text.split("<new_page>"))
+        return splitText(text, meta);
+    }
+
+    public static List<String> splitText(String text, RawTagMeta meta){
+                return Arrays.stream(text.split("<new_page>"))
                 .map(t -> meta.enhanceMarkdown() ? toDiscordMarkdownAndSplit(t, MAX_LENGTH) : splitByLength(t, MAX_LENGTH))
                 .flatMap(Collection::stream)
                 .toList();
