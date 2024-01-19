@@ -30,7 +30,7 @@ spotless {
 
 dependencies {
     implementation("org.eclipse.jgit:org.eclipse.jgit:6.8.0.202311291450-r")
-    implementation("de.chojo", "cjda-util", "2.9.5+beta.19-SNAPSHOT") {
+    implementation("de.chojo", "cjda-util", "2.9.5+beta.19") {
         exclude(group = "club.minnced", module = "opus-java")
     }
 
