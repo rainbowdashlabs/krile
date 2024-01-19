@@ -10,13 +10,12 @@ import de.chojo.krile.commands.preview.handler.ByUrl;
 public class Preview implements SlashProvider<Slash> {
     @Override
     public Slash slash() {
-        return Slash.of("preview", "Preview a tag")
-                .unlocalized()
-                .subCommand(SubCommand.of("modal", "Create a preview by using a modal as input")
+        return Slash.of("preview", "command.preview.description")
+                .subCommand(SubCommand.of("modal", "command.preview.modal.description")
                         .handler(new ByModal()))
-                .subCommand(SubCommand.of("url", "Use a file from an url")
+                .subCommand(SubCommand.of("url", "command.preview.url.description")
                         .handler(new ByUrl())
-                        .argument(Argument.text("url", "Url to download").asRequired()))
+                        .argument(Argument.text("url", "command.preview.url.options.url.description").asRequired()))
                 .build();
     }
 }

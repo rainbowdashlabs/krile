@@ -21,7 +21,7 @@ public class ByUrl extends PreviewBase {
         try {
             uri = URI.create(url);
         } catch (IllegalArgumentException e) {
-            event.reply("Invalid url").setEphemeral(true).queue();
+            event.reply(context.localize("error.url.invalidsource")).setEphemeral(true).queue();
             return;
         }
         HttpRequest build = HttpRequest.newBuilder(uri).GET().build();
@@ -31,7 +31,7 @@ public class ByUrl extends PreviewBase {
             String body = send.body();
             showTag(body, event, context);
         } catch (Exception e) {
-            event.reply("Could not download").setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.import")).setEphemeral(true).queue();
         }
     }
 }

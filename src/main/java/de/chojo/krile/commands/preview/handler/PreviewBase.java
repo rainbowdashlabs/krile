@@ -1,6 +1,7 @@
 package de.chojo.krile.commands.preview.handler;
 
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
+import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.jdautil.pagination.bag.PrivateListPageBag;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.data.base.BaseMeta;
@@ -29,7 +30,7 @@ public abstract class PreviewBase implements SlashHandler {
         try {
             meta = RawTagMeta.parse(tagFile, "preview", "preview");
         } catch (ParsingException e) {
-            event.reply("Invalid tag format.").setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.parsing", Replacement.create("error", e.getMessage()))).setEphemeral(true).queue();
             return;
         }
         BaseTag<BaseMeta> tag = new BaseTag<>("preview", RawTag.splitText(tagFile.content(), meta), new BaseMeta(new TagMeta(meta.image(), meta.type())));
