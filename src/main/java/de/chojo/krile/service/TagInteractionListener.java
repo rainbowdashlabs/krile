@@ -48,6 +48,7 @@ public class TagInteractionListener extends ListenerAdapter {
             event.reply("❌").setEphemeral(true).queue();
             return;
         }
+        event.deferEdit().queue();
         event.getMessage().delete().queue();
     }
 
