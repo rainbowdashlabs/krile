@@ -11,6 +11,7 @@ import de.chojo.jdautil.interactions.dispatching.InteractionHub;
 import de.chojo.jdautil.localization.Localizer;
 import de.chojo.krile.commands.discover.Discover;
 import de.chojo.krile.commands.info.Info;
+import de.chojo.krile.commands.preview.Preview;
 import de.chojo.krile.commands.repositories.Repositories;
 import de.chojo.krile.commands.repository.Repository;
 import de.chojo.krile.commands.tag.Tag;
@@ -100,7 +101,8 @@ public class Bot {
                         Info.create(configuration),
                         new Tags(data.guilds()),
                         new Repositories(data.guilds()),
-                        new Discover(data.repositories(), data.tags(), configuration, data.categories()))
+                        new Discover(data.repositories(), data.tags(), configuration, data.categories()),
+                        new Preview())
                 .build();
     }
 }

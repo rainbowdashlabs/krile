@@ -11,6 +11,7 @@ import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
 import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
+import de.chojo.krile.data.base.BaseTag;
 import de.chojo.krile.data.dao.Author;
 import de.chojo.krile.data.dao.Category;
 import de.chojo.krile.data.dao.Identifier;
@@ -37,22 +38,20 @@ import java.util.List;
 import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public final class Tag {
+public final class Tag extends BaseTag<Meta>  {
     private static final Logger log = getLogger(Tag.class);
     private final int id;
     private final String tagId;
     private final Repository repository;
-    private final Meta meta;
     private String tag;
-    private List<String> text;
 
     public Tag(int id, String tagId, String tag, List<String> text, Repository repository, CategoryData categories, AuthorData authors) {
+        super(tag, text);
+        this.meta =  new Meta(this, categories, authors);
         this.id = id;
         this.tagId = tagId;
         this.tag = tag;
-        this.text = text;
         this.repository = repository;
-        this.meta = new Meta(this, categories, authors);
     }
 
     public static Tag build(Row row, Repository repository, CategoryData categories, AuthorData authors) throws SQLException {
@@ -93,66 +92,6 @@ public final class Tag {
         return tagId;
     }
 
-    public String tag() {
-        return tag;
-    }
-
-    /**
-     * Gets the text of the tag.
-     *
-     * @return The text of the tag as a string.
-     */
-    public String text() {
-        if (meta.tagMeta().type() == TagType.EMBED) {
-            DataObject dataObject = DataObject.fromJson(text.get(0));
-            if (dataObject.hasKey("content")) {
-                return dataObject.getString("content");
-            }
-            return "";
-        }
-        return text.get(0);
-    }
-
-    /**
-     * Retrieves the list of message embeds from the text.
-     *
-     * @return A list of message embeds. If there are no embeds, the list will be empty.
-     */
-    public List<MessageEmbed> embeds() {
-        List<MessageEmbed> embeds = new ArrayList<>();
-        DataObject dataObject = DataObject.fromJson(text.get(0));
-        if (dataObject.hasKey("embeds")) {
-            var array = dataObject.getArray("embeds");
-            for (int i = 0; i < array.length(); i++) {
-                embeds.add(EmbedBuilder.fromData(array.getObject(i)).build());
-            }
-        } else {
-            embeds.add(EmbedBuilder.fromData(dataObject).build());
-        }
-        return embeds;
-    }
-
-    /**
-     * Retrieves the paged text.
-     *
-     * @return A list of paged text. If there is no paged text, the list will be empty.
-     */
-    public List<String> paged() {
-        return text;
-    }
-
-    /**
-     * Checks if the text is paged.
-     *
-     * @return True if the text is paged, false otherwise.
-     */
-    public boolean isPaged() {
-        return text.size() != 1;
-    }
-
-    public Meta meta() {
-        return meta;
-    }
 
     /**
      * Generates a link for the file.
