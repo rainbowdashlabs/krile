@@ -17,10 +17,10 @@ import static de.chojo.krile.util.Text.splitByLength;
 import static de.chojo.krile.util.Text.toDiscordMarkdownAndSplit;
 
 public record RawTag(RawTagMeta meta, FileMeta fileMeta, String text) {
-    private static final int MAX_LENGTH = 1850;
+    private static final int MAX_LENGTH = 1990;
     /**
      * Splits the given text by the "<new_page>" delimiter and breaks each substring into smaller chunks,
-     * each having a maximum length of 1850 characters.
+     * each having a maximum length of 1950 characters.
      *
      * @return A list of strings, where each string represents a chunk of the original text.
      */
