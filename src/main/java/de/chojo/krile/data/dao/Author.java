@@ -6,7 +6,7 @@
 
 package de.chojo.krile.data.dao;
 
-import de.chojo.sadu.wrapper.util.Row;
+import de.chojo.sadu.mapper.wrapper.Row;
 
 import java.sql.SQLException;
 

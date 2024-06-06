@@ -11,14 +11,15 @@ import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.repository.tags.Tag;
-import de.chojo.sadu.wrapper.util.Row;
+import de.chojo.sadu.mapper.wrapper.Row;
 import org.intellij.lang.annotations.Language;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class Tags {
     private final TagGuild guild;
@@ -70,11 +71,10 @@ public class Tags {
                 LIMIT 25;
                 """;
 
-        return builder(CompletedTag.class)
-                .query(select)
-                .parameter(stmt -> stmt.setString(value).setLong(guild.id()))
-                .readRow(CompletedTag::build)
-                .allSync();
+        return query(select)
+                .single(call().bind(value).bind(guild.id()))
+                .map(CompletedTag::build)
+                .all();
     }
 
     /**
@@ -120,11 +120,10 @@ public class Tags {
                 LEFT JOIN tag t ON rt.id = t.id
                 LIMIT 1;
                 """;
-        return builder(Tag.class)
-                .query(select)
-                .parameter(stmt -> stmt.setString(name).setLong(guild.id()))
-                .readRow(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
-                .firstSync();
+        return query(select)
+                .single(call().bind(name).bind(guild.id()))
+                .map(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .first();
     }
 
     /**
@@ -141,11 +140,10 @@ public class Tags {
                          LEFT JOIN guild_repository gr ON t.repository_id = gr.repository_id
                 WHERE id = ?
                   AND guild_id = ?""";
-        return builder(Tag.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(tag).setLong(guild.id()))
-                .readRow(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
-                .firstSync();
+        return query(select)
+                .single(call().bind(tag).bind(guild.id()))
+                .map(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .first();
     }
 
     /**
@@ -160,11 +158,9 @@ public class Tags {
                 VALUES (?, ?)
                 ON CONFLICT (guild_id, tag_id)
                 DO UPDATE SET views = s.views + 1""";
-        builder()
-                .query(insert)
-                .parameter(stmt -> stmt.setLong(guild.id()).setInt(tag.id()))
-                .insert()
-                .send();
+        query(insert)
+                .single(call().bind(guild.id()).bind(tag.id()))
+                .insert();
     }
 
     /**
@@ -179,11 +175,10 @@ public class Tags {
                 FROM guild_repository gr
                          LEFT JOIN tag t ON gr.repository_id = t.repository_id
                 WHERE guild_id = ?""";
-        return builder(Integer.class)
-                .query(select)
-                .parameter(stmt -> stmt.setLong(guild.id()))
-                .map()
-                .firstSync()
+        return query(select)
+                .single(call().bind(guild.id()))
+                .mapAs(Integer.class)
+                .first()
                 .orElse(0);
     }
 
@@ -214,11 +209,10 @@ public class Tags {
                 SELECT id, rank, CASE WHEN duplicate = 1 THEN tag ELSE tag || ' (' || identifier || ')' END AS name, views
                 FROM ranked_tags
                 LIMIT ? OFFSET ?""";
-        return builder(RankedTag.class)
-                .query(select)
-                .parameter(stmt -> stmt.setLong(guild.id()).setInt(size).setInt(size * page))
-                .readRow(row -> new RankedTag(row.getInt("rank"), row.getString("name"), row.getInt("views")))
-                .allSync();
+        return query(select)
+                .single(call().bind(guild.id()).bind(size).bind(size * page))
+                .map(row -> new RankedTag(row.getInt("rank"), row.getString("name"), row.getInt("views")))
+                .all();
     }
 
     /**
@@ -235,11 +229,10 @@ public class Tags {
                 WHERE guild_id = ?
                 ORDER BY random()
                 LIMIT 1""";
-        return builder(Tag.class)
-                .query(select)
-                .parameter(stmt -> stmt.setLong(guild.id()))
-                .readRow(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
-                .firstSync();
+        return query(select)
+                .single(call().bind(guild.id()))
+                .map(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .first();
     }
 
     public record RankedTag(int rank, String tag, int views) {

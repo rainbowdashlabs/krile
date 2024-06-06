@@ -17,7 +17,8 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class CategoryData {
     private final Cache<Integer, Category> categpryCache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
@@ -39,11 +40,10 @@ public class CategoryData {
                     ON CONFLICT(lower(category))
                     DO NOTHING
                     RETURNING id, category""";
-        return cache(builder(Category.class)
-                .query(query)
-                .parameter(stmt -> stmt.setString(harmonize(name)))
-                .readRow(Category::build)
-                .firstSync());
+        return cache(query(query)
+                .single(call().bind(harmonize(name)))
+                .map(Category::build)
+                .first());
     }
 
     private Category cache(Category category) {
@@ -80,11 +80,10 @@ public class CategoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, c.category FROM category c WHERE lower(?) = category""";
-        return cache(builder(Category.class)
-                .query(query)
-                .parameter(stmt -> stmt.setString(harmonize(name)))
-                .readRow(Category::build)
-                .firstSync());
+        return cache(query(query)
+                .single(call().bind(harmonize(name)))
+                .map(Category::build)
+                .first());
     }
 
     /**
@@ -97,11 +96,10 @@ public class CategoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, c.category FROM category c WHERE id = ?""";
-        return cache(builder(Category.class)
-                .query(query)
-                .parameter(stmt -> stmt.setInt(id))
-                .readRow(Category::build)
-                .firstSync());
+        return cache(query(query)
+                .single(call().bind(id))
+                .map(Category::build)
+                .first());
     }
 
     private String harmonize(@Nullable String name) {

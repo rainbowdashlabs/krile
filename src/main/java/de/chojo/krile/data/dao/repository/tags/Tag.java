@@ -18,27 +18,25 @@ import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.repository.tags.tag.Meta;
 import de.chojo.krile.data.dao.repository.tags.tag.meta.FileMeta;
-import de.chojo.krile.data.dao.repository.tags.tag.meta.TagType;
 import de.chojo.krile.tagimport.tag.RawTag;
-import de.chojo.sadu.types.PostgreSqlTypes;
-import de.chojo.sadu.wrapper.util.Row;
+import de.chojo.sadu.mapper.wrapper.Row;
+import de.chojo.sadu.postgresql.types.PostgreSqlTypes;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.TimeFormat;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public final class Tag extends BaseTag<Meta>  {
+public final class Tag extends BaseTag<Meta> {
     private static final Logger log = getLogger(Tag.class);
     private final int id;
     private final String tagId;
@@ -47,7 +45,7 @@ public final class Tag extends BaseTag<Meta>  {
 
     public Tag(int id, String tagId, String tag, List<String> text, Repository repository, CategoryData categories, AuthorData authors) {
         super(tag, text);
-        this.meta =  new Meta(this, categories, authors);
+        this.meta = new Meta(this, categories, authors);
         this.id = id;
         this.tagId = tagId;
         this.tag = tag;
@@ -76,11 +74,10 @@ public final class Tag extends BaseTag<Meta>  {
      */
     public boolean delete() {
         log.info("Deleted tag {} from {}", tagId, repository);
-        return builder()
-                .query("DELETE FROM tag WHERE id = ?")
-                .parameter(stmt -> stmt.setInt(id()))
+        return query("DELETE FROM tag WHERE id = ?")
+                .single(call().bind(id()))
                 .delete()
-                .sendSync()
+
                 .changed();
     }
 
@@ -123,11 +120,9 @@ public final class Tag extends BaseTag<Meta>  {
             case EMBED -> List.of(raw.text());
         };
 
-        builder()
-                .query(insert)
-                .parameter(stmt -> stmt.setArray(text, PostgreSqlTypes.TEXT).setString(raw.meta().tag()).setInt(id()))
-                .update()
-                .sendSync();
+        query(insert)
+                .single(call().bind(text, PostgreSqlTypes.TEXT).bind(raw.meta().tag()).bind(id()))
+                .update();
         this.text = text;
         this.tag = raw.meta().tag();
         meta.update(raw);

@@ -15,7 +15,8 @@ import org.intellij.lang.annotations.Language;
 import java.util.List;
 import java.util.Optional;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class RepositoryCategories {
     private final Meta meta;
@@ -52,10 +53,9 @@ public class RepositoryCategories {
         @Language("postgresql")
         var insert = """
                 INSERT INTO repository_category(repository_id, category_id) VALUES(?,?)""";
-        builder().query(insert)
-                .parameter(stmt -> stmt.setInt(meta.repository().id()).setInt(category.id()))
-                .insert()
-                .sendSync();
+        query(insert)
+                .single(call().bind(meta.repository().id()).bind(category.id()))
+                .insert();
     }
 
     /**
@@ -65,10 +65,9 @@ public class RepositoryCategories {
      * from the 'repository_category' table in the database.
      */
     public void clearCategories() {
-        builder().query("DELETE FROM repository_category WHERE repository_id = ?")
-                .parameter(stmt -> stmt.setInt(meta.repository().id()))
-                .delete()
-                .sendSync();
+        query("DELETE FROM repository_category WHERE repository_id = ?")
+                .single(call().bind(meta.repository().id()))
+                .delete();
     }
 
     /**
@@ -83,10 +82,9 @@ public class RepositoryCategories {
                 FROM repository_category rc
                          LEFT JOIN category c ON c.id = rc.category_id
                 WHERE repository_id = ?""";
-        return builder(Category.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(meta.repository().id()))
-                .readRow(Category::build)
-                .allSync();
+        return query(select)
+                .single(call().bind(meta.repository().id()))
+                .map(Category::build)
+                .all();
     }
 }

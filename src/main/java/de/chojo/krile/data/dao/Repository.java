@@ -20,7 +20,7 @@ import de.chojo.krile.data.dao.repository.Tags;
 import de.chojo.krile.tagimport.exception.ImportException;
 import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
-import de.chojo.sadu.wrapper.util.Row;
+import de.chojo.sadu.mapper.wrapper.Row;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.utils.TimeFormat;

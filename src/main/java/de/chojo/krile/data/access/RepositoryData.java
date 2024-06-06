@@ -17,7 +17,7 @@ import de.chojo.krile.tagimport.exception.ImportException;
 import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.repo.RepoConfig;
-import de.chojo.sadu.wrapper.util.Row;
+import de.chojo.sadu.mapper.wrapper.Row;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class RepositoryData {
@@ -52,11 +53,10 @@ public class RepositoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, url, identifier, directory FROM repository WHERE identifier = ?""";
-        return builder(Repository.class)
-                .query(query)
-                .parameter(stmt -> stmt.setString(identifier))
-                .readRow(this::buildRepository)
-                .firstSync();
+        return query(query)
+                .single(call().bind(identifier))
+                .map(this::buildRepository)
+                .first();
     }
 
     /**
@@ -69,11 +69,10 @@ public class RepositoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, url, identifier, directory FROM repository WHERE id = ?""";
-        return builder(Repository.class)
-                .query(query)
-                .parameter(stmt -> stmt.setInt(id))
-                .readRow(this::buildRepository)
-                .firstSync();
+        return query(query)
+                .single(call().bind(id))
+                .map(this::buildRepository)
+                .first();
     }
 
     /**
@@ -87,11 +86,10 @@ public class RepositoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, url, identifier, directory FROM repository WHERE url = ?""";
-        return builder(Repository.class)
-                .query(query)
-                .parameter(stmt -> stmt.setString(url))
-                .readRow(this::buildRepository)
-                .allSync();
+        return query(query)
+                .single(call().bind(url))
+                .map(this::buildRepository)
+                .all();
     }
 
     /**
@@ -104,11 +102,10 @@ public class RepositoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, url, identifier, directory FROM repository WHERE identifier = ?""";
-        return builder(Repository.class)
-                .query(query)
-                .parameter(stmt -> stmt.setString(identifier.toString()))
-                .readRow(this::buildRepository)
-                .firstSync();
+        return query(query)
+                .single(call().bind(identifier.toString()))
+                .map(this::buildRepository)
+                .first();
     }
 
     /**
@@ -155,16 +152,15 @@ public class RepositoryData {
                     DO NOTHING
                 RETURNING id, url, identifier, directory;
                 """;
-        return builder(Repository.class)
-                .query(query)
-                .parameter(stmt -> stmt.setString(repository.url())
-                        .setString(id.platform())
-                        .setString(id.user())
-                        .setString(id.repo())
-                        .setString(id.path())
-                        .setString(conf.directory()))
-                .readRow(this::buildRepository)
-                .firstSync();
+        return query(query)
+                .single(call().bind(repository.url())
+                        .bind(id.platform())
+                        .bind(id.user())
+                        .bind(id.repo())
+                        .bind(id.path())
+                        .bind(conf.directory()))
+                .map(this::buildRepository)
+                .first();
     }
 
     /**
@@ -233,11 +229,10 @@ public class RepositoryData {
                 WHERE checked < now() AT TIME ZONE 'UTC' - (?::TEXT || ' MINUTES')::INTERVAL
                 ORDER BY checked
                 LIMIT ?""";
-        return builder(String.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(check).setInt(limit))
-                .readRow(r ->  r.getString("url"))
-                .allSync();
+        return query(select)
+                .single(call().bind(check).bind(limit))
+                .map(r -> r.getString("url"))
+                .all();
     }
 
     /**
@@ -253,11 +248,10 @@ public class RepositoryData {
                 ORDER BY random()
                 LIMIT 1""";
 
-        return builder(Repository.class)
-                .query(select)
-                .emptyParams()
-                .readRow(this::buildRepository)
-                .firstSync();
+        return query(select)
+                .single()
+                .map(this::buildRepository)
+                .first();
     }
 
     /**
@@ -294,18 +288,17 @@ public class RepositoryData {
                   AND (tags >= ? OR ? IS NULL)
                   AND rm.public
                 LIMIT 50""";
-        return builder(Repository.class)
-                .query(select)
-                .parameter(stmt -> stmt
-                        .setInt(filter.category()).setInt(filter.category())
-                        .setString(filter.platform()).setString(filter.platform())
-                        .setString(filter.user()).setString(filter.user())
-                        .setString(filter.repo()).setString(filter.repo())
-                        .setString(filter.name()).setString(filter.name())
-                        .setString(filter.language()).setString(filter.language())
-                        .setInt(filter.tags()).setInt(filter.tags())
-                ).readRow(this::buildRepository)
-                .allSync();
+        return query(select)
+                .single(call()
+                        .bind(filter.category()).bind(filter.category())
+                        .bind(filter.platform()).bind(filter.platform())
+                        .bind(filter.user()).bind(filter.user())
+                        .bind(filter.repo()).bind(filter.repo())
+                        .bind(filter.name()).bind(filter.name())
+                        .bind(filter.language()).bind(filter.language())
+                        .bind(filter.tags()).bind(filter.tags())
+                ).map(this::buildRepository)
+                .all();
     }
 
     /**
@@ -324,11 +317,10 @@ public class RepositoryData {
                 WHERE rm.public AND category ILIKE ('%' || ? || '%')
                 LIMIT 25""";
 
-        return builder(CompletedCategory.class)
-                .query(select)
-                .parameter(stmt -> stmt.setString(value))
-                .readRow(row -> new CompletedCategory(row.getInt("id"), row.getString("category")))
-                .allSync();
+        return query(select)
+                .single(call().bind(value))
+                .map(row -> new CompletedCategory(row.getInt("id"), row.getString("category")))
+                .all();
     }
 
     private Repository buildRepository(Row row) throws SQLException {
@@ -364,11 +356,10 @@ public class RepositoryData {
     private List<String> complete(String query, String column, String value) {
         List<String> result = new ArrayList<>();
         if (!value.isBlank()) result.add(value);
-        List<String> name = builder(String.class)
-                .query(query, column, column)
-                .parameter(stmt -> stmt.setString(value))
-                .readRow(row -> row.getString(column))
-                .allSync();
+        List<String> name = query(query, column, column)
+                .single(call().bind(value))
+                .map(row -> row.getString(column))
+                .all();
         result.addAll(name);
         return result;
     }
