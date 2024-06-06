@@ -13,7 +13,8 @@ import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.repo.RepoConfig;
 import org.intellij.lang.annotations.Language;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class Meta {
     private final Repository repository;
@@ -43,15 +44,14 @@ public class Meta {
                         public_repo = excluded.public_repo,
                         language    = excluded.language""";
         // Update meta
-        builder()
-                .query(insert)
-                .parameter(stmt -> stmt.setInt(this.repository.id())
-                        .setString(configuration.name())
-                        .setString(configuration.description())
-                        .setBoolean(configuration.publicRepo())
-                        .setString(configuration.language()))
-                .insert()
-                .sendSync();
+
+        query(insert)
+                .single(call().bind(this.repository.id())
+                        .bind(configuration.name())
+                        .bind(configuration.description())
+                        .bind(configuration.publicRepo())
+                        .bind(configuration.language()))
+                .insert();
 
         categories.updateCategories(repository);
     }
@@ -66,16 +66,15 @@ public class Meta {
         var select = """
                 SELECT name, description, public_repo, language, public FROM repository_meta WHERE repository_id = ?""";
 
-        return builder(RepositoryMeta.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(repository.id()))
-                .readRow(row -> new RepositoryMeta(
+        return query(select)
+                .single(call().bind(repository.id()))
+                .map(row -> new RepositoryMeta(
                         row.getString("name"),
                         row.getString("description"),
                         row.getBoolean("public_repo"),
                         row.getBoolean("public"),
                         row.getString("language")))
-                .firstSync()
+                .first()
                 .get();
     }
 

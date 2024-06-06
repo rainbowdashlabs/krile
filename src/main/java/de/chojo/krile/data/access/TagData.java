@@ -14,7 +14,8 @@ import org.intellij.lang.annotations.Language;
 import java.util.List;
 import java.util.Optional;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class TagData {
     private final RepositoryData repositoryData;
@@ -47,11 +48,10 @@ public class TagData {
                         ON gr.repository_id = t.repository_id
                 ORDER BY random()
                 LIMIT 1""";
-        return builder(Tag.class)
-                .query(select)
-                .emptyParams()
-                .readRow(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
-                .firstSync();
+        return query(select)
+                .single()
+                .map(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
+                .first();
     }
 
     /**
@@ -108,14 +108,13 @@ public class TagData {
                         ON c.id = r.id
                 LIMIT 50;
                                 """;
-        return builder(Tag.class)
-                .query(select)
-                .parameter(stmt -> stmt
-                        .setString(filter.name()).setString(filter.name())
-                        .setString(filter.language()).setString(filter.language())
-                        .setInt(filter.category()).setInt(filter.category())
-                ).readRow(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
-                .allSync();
+        return query(select)
+                .single(call()
+                        .bind(filter.name()).bind(filter.name())
+                        .bind(filter.language()).bind(filter.language())
+                        .bind(filter.category()).bind(filter.category())
+                ).map(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
+                .all();
 
     }
 
@@ -142,11 +141,10 @@ public class TagData {
                 WHERE public
                   AND category ILIKE '%' || ? || '%'
                 LIMIT 25""";
-        return builder(CompletedCategory.class)
-                .query(select)
-                .parameter(stmt -> stmt.setString(value))
-                .readRow(row -> new CompletedCategory(row.getInt("id"), row.getString("category")))
-                .allSync();
+        return query(select)
+                .single(call().bind(value))
+                .map(row -> new CompletedCategory(row.getInt("id"), row.getString("category")))
+                .all();
     }
 
     /**
@@ -162,10 +160,9 @@ public class TagData {
                 FROM tag t
                          LEFT JOIN guild_repository gr ON t.repository_id = gr.repository_id
                 WHERE id = ?""";
-        return builder(Tag.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(id))
-                .readRow(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
-                .firstSync();
+        return query(select)
+                .single(call().bind(id))
+                .map(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
+                .first();
     }
 }

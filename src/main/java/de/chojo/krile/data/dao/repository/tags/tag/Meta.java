@@ -21,7 +21,10 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
+import static de.chojo.sadu.queries.converter.StandardValueConverter.INSTANT_TIMESTAMP;
+import static de.chojo.sadu.queries.converter.StandardValueConverter.OFFSET_DATE_TIME;
 
 public class Meta extends BaseMeta {
     private final Tag tag;
@@ -80,18 +83,16 @@ public class Meta extends BaseMeta {
         Author createdBy = authors.getOrCreate(fileMeta.created().who()).get();
         Author modifiedBy = authors.getOrCreate(fileMeta.modified().who()).get();
 
-        builder()
-                .query(insert)
-                .parameter(stmt -> stmt.setInt(tag.id())
-                        .setString(fileMeta.fileName())
-                        .setString(raw.meta().image())
-                        .setOffsetDateTime(created)
-                        .setInt(createdBy.id())
-                        .setOffsetDateTime(modified)
-                        .setInt(modifiedBy.id())
-                        .setEnum(raw.meta().type()))
-                .insert()
-                .sendSync();
+        query(insert)
+                .single(call().bind(tag.id())
+                        .bind(fileMeta.fileName())
+                        .bind(raw.meta().image())
+                        .bind(created.toInstant(), INSTANT_TIMESTAMP)
+                        .bind(createdBy.id())
+                        .bind(modified.toInstant(), INSTANT_TIMESTAMP)
+                        .bind(modifiedBy.id())
+                        .bind(raw.meta().type()))
+                .insert();
         this.fileMeta = null;
         tagMeta = null;
     }
@@ -118,16 +119,15 @@ public class Meta extends BaseMeta {
                     LEFT JOIN author ma ON tag_meta.modified_by = ma.id
                     LEFT JOIN author ca ON tag_meta.created_by = ca.id
                     WHERE tag_id = ?""";
-            fileMeta = builder(FileMeta.class)
-                    .query(select)
-                    .parameter(stmt -> stmt.setInt(tag.id()))
-                    .readRow(row -> new FileMeta(row.getString("file_name"),
-                            row.getLocalDateTime("created").toInstant(ZoneOffset.UTC),
+            fileMeta = query(select)
+                    .single(call().bind(tag.id()))
+                    .map(row -> new FileMeta(row.getString("file_name"),
+                            row.get("created", INSTANT_TIMESTAMP),
                             Author.build(row, "created_id", "created_name", "created_mail"),
-                            row.getLocalDateTime("modified").toInstant(ZoneOffset.UTC),
+                            row.get("modified", INSTANT_TIMESTAMP),
                             Author.build(row, "modified_id", "modified_name", "modified_mail")
                     ))
-                    .firstSync()
+                    .first()
                     .orElseGet(() -> new FileMeta("none", Instant.EPOCH, Author.NONE, Instant.EPOCH, Author.NONE));
         }
         return fileMeta;
@@ -153,11 +153,10 @@ public class Meta extends BaseMeta {
                     FROM
                         tag_meta
                     WHERE tag_id = ?""";
-            tagMeta = builder(TagMeta.class)
-                    .query(select)
-                    .parameter(stmt -> stmt.setInt(tag().id()))
-                    .readRow(row -> new TagMeta(row.getString("image"), row.getEnum("type", TagType.class)))
-                    .firstSync()
+            tagMeta = query(select)
+                    .single(call().bind(tag().id()))
+                    .map(row -> new TagMeta(row.getString("image"), row.getEnum("type", TagType.class)))
+                    .first()
                     .orElseGet(() -> new TagMeta(null, TagType.TEXT));
         }
         return tagMeta;

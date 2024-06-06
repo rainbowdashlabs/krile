@@ -17,7 +17,8 @@ import org.intellij.lang.annotations.Language;
 import java.util.List;
 import java.util.Optional;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class Repositories {
     private final TagGuild guild;
@@ -46,11 +47,10 @@ public class Repositories {
                 WHERE guild_id = ?
                 ORDER BY priority""";
 
-        return builder(GuildRepository.class)
-                .query(select)
-                .parameter(stmt -> stmt.setLong(guild.guild().getIdLong()))
-                .readRow(row -> GuildRepository.build(row, guild, configuration, categories, authors))
-                .allSync();
+        return query(select)
+                .single(call().bind(guild.guild().getIdLong()))
+                .map(row -> GuildRepository.build(row, guild, configuration, categories, authors))
+                .all();
     }
 
     /**
@@ -69,11 +69,10 @@ public class Repositories {
                 WHERE id = ?
                 ORDER BY priority""";
 
-        return builder(GuildRepository.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(id))
-                .readRow(row -> GuildRepository.build(row, guild, configuration, categories, authors))
-                .firstSync();
+        return query(select)
+                .single(call().bind(id))
+                .map(row -> GuildRepository.build(row, guild, configuration, categories, authors))
+                .first();
     }
 
     /**
@@ -88,11 +87,9 @@ public class Repositories {
                 VALUES (?, ?)
                 ON CONFLICT DO NOTHING""";
 
-        builder()
-                .query(insert)
-                .parameter(stmt -> stmt.setLong(guild.id()).setInt(repository.id()))
-                .insert()
-                .sendSync();
+        query(insert)
+                .single(call().bind(guild.id()).bind(repository.id()))
+                .insert();
     }
 
     /**
@@ -112,11 +109,10 @@ public class Repositories {
                 ORDER BY priority DESC
                 LIMIT 25""";
 
-        return builder(CompletedRepository.class)
-                .query(select)
-                .parameter(stmt -> stmt.setLong(guild.id()).setString(value))
-                .readRow(row -> new CompletedRepository(row.getInt("id"), row.getString("identifier")))
-                .allSync();
+        return query(select)
+                .single(call().bind(guild.id()).bind(value))
+                .map(row -> new CompletedRepository(row.getInt("id"), row.getString("identifier")))
+                .all();
     }
 
     /**
@@ -128,11 +124,10 @@ public class Repositories {
         @Language("postgresql")
         var select = """
                 SELECT count(1) FROM guild_repository WHERE guild_id = ?""";
-        return builder(Integer.class)
-                .query(select)
-                .parameter(stmt -> stmt.setLong(guild.id()))
-                .map()
-                .firstSync()
+        return query(select)
+                .single(call().bind(guild.id()))
+                .mapAs(Integer.class)
+                .first()
                 .orElse(0);
     }
 
@@ -153,16 +148,15 @@ public class Repositories {
                 WHERE guild_id = ?
                 LIMIT ? OFFSET ?""";
 
-        return builder(String.class)
-                .query(select)
-                .parameter(stmt -> stmt.setLong(guild.id()).setInt(pageSize).setInt(page * pageSize))
-                .readRow(row -> {
+        return query(select)
+                .single(call().bind(guild.id()).bind(pageSize).bind(page * pageSize))
+                .map(row -> {
                     String name = row.getString("name");
                     String identifier = row.getString("identifier");
                     if (name == null) return "`%s`".formatted(identifier);
                     return "%s (`%s`)".formatted(name, identifier);
                 })
-                .allSync();
+                .all();
     }
 
     public record CompletedRepository(int id, String identifier) {

@@ -15,7 +15,8 @@ import org.intellij.lang.annotations.Language;
 import java.util.List;
 import java.util.Optional;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class TagAuthors {
     private final Meta meta;
@@ -52,20 +53,18 @@ public class TagAuthors {
         @Language("postgresql")
         var insert = """
                 INSERT INTO tag_author(tag_id, author_id) VALUES(?,?)""";
-        builder().query(insert)
-                .parameter(stmt -> stmt.setInt(meta.tag().id()).setInt(author.id()))
-                .insert()
-                .sendSync();
+        query(insert)
+                .single(call().bind(meta.tag().id()).bind(author.id()))
+                .insert();
     }
 
     /**
      * Clears the tag_author table by deleting all records with the given tag ID.
      */
     public void clear() {
-        builder().query("DELETE FROM tag_author WHERE tag_id = ?")
-                .parameter(stmt -> stmt.setInt(meta.tag().id()))
-                .delete()
-                .sendSync();
+        query("DELETE FROM tag_author WHERE tag_id = ?")
+                .single(call().bind(meta.tag().id()))
+                .delete();
     }
 
     /**
@@ -81,11 +80,10 @@ public class TagAuthors {
                     FROM tag_author
                              LEFT JOIN author a ON a.id = tag_author.author_id
                     WHERE tag_id = ?""";
-            authors = builder(Author.class)
-                    .query(select)
-                    .parameter(stmt -> stmt.setInt(meta.tag().id()))
-                    .readRow(row -> authorData.get(row.getInt("id")).get())
-                    .allSync();
+            authors = query(select)
+                    .single(call().bind(meta.tag().id()))
+                    .map(row -> authorData.get(row.getInt("id")).get())
+                    .all();
         }
         return authors;
     }

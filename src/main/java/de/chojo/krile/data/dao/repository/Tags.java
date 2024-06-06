@@ -14,15 +14,16 @@ import de.chojo.krile.tagimport.exception.ImportException;
 import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.tag.RawTag;
-import de.chojo.sadu.types.PostgreSqlTypes;
-import de.chojo.sadu.wrapper.util.Row;
+import de.chojo.sadu.mapper.wrapper.Row;
+import de.chojo.sadu.postgresql.types.PostgreSqlTypes;
 import org.intellij.lang.annotations.Language;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class Tags {
     private final Repository repository;
@@ -44,11 +45,10 @@ public class Tags {
         @Language("postgresql")
         var select = """
                 SELECT repository_id, id, tag_id, tag, content FROM tag WHERE repository_id = ?""";
-        return builder(Tag.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(repository.id()))
-                .readRow(this::buildTag)
-                .allSync();
+        return query(select)
+                .single(call().bind(repository.id()))
+                .map(this::buildTag)
+                .all();
     }
 
     /**
@@ -99,14 +99,13 @@ public class Tags {
                     tag_id,
                     tag,
                     content""";
-        return builder(Tag.class)
-                .query(insert)
-                .parameter(stmt -> stmt.setInt(repository.id())
-                        .setString(tag.meta().id())
-                        .setString(tag.meta().tag())
-                        .setArray(tag.splitText(), PostgreSqlTypes.TEXT))
-                .readRow(this::buildTag)
-                .firstSync();
+        return query(insert)
+                .single(call().bind(repository.id())
+                        .bind(tag.meta().id())
+                        .bind(tag.meta().tag())
+                        .bind(tag.splitText(), PostgreSqlTypes.TEXT))
+                .map(this::buildTag)
+                .first();
     }
 
     /**
@@ -132,11 +131,10 @@ public class Tags {
                 FROM tag
                 WHERE tag_id = ?
                   AND repository_id = ?""";
-        return builder(Tag.class)
-                .query(select)
-                .parameter(stmt -> stmt.setString(tagId).setInt(repository.id()))
-                .readRow(this::buildTag)
-                .firstSync();
+        return query(select)
+                .single(call().bind(tagId).bind(repository.id()))
+                .map(this::buildTag)
+                .first();
     }
 
     /**
@@ -145,11 +143,10 @@ public class Tags {
      * @return The count of records in the table, or 0 if no records are found.
      */
     public int count() {
-        return builder(Integer.class)
-                .query("SELECT count(1) FROM tag WHERE repository_id = ?")
-                .parameter(stmt -> stmt.setInt(repository.id()))
-                .readRow(row -> row.getInt("count"))
-                .firstSync()
+        return query("SELECT count(1) FROM tag WHERE repository_id = ?")
+                .single(call().bind(repository.id()))
+                .map(row -> row.getInt("count"))
+                .first()
                 .orElse(0);
     }
 

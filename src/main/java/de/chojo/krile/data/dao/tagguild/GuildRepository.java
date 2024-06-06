@@ -12,12 +12,13 @@ import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.TagGuild;
-import de.chojo.sadu.wrapper.util.Row;
+import de.chojo.sadu.mapper.wrapper.Row;
 import org.intellij.lang.annotations.Language;
 
 import java.sql.SQLException;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class GuildRepository extends Repository {
     private final TagGuild guild;
@@ -59,11 +60,9 @@ public class GuildRepository extends Repository {
         @Language("postgresql")
         var delete = """
                 DELETE FROM guild_repository WHERE guild_id = ? AND repository_id = ?""";
-        return builder()
-                .query(delete)
-                .parameter(stmt -> stmt.setLong(guild.id()).setInt(id()))
+        return query(delete)
+                .single(call().bind(guild.id()).bind(id()))
                 .delete()
-                .sendSync()
                 .changed();
     }
 }

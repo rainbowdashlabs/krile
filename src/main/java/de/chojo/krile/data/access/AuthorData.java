@@ -15,7 +15,8 @@ import org.intellij.lang.annotations.Language;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class AuthorData {
     private final Cache<Integer, Author> authorCache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
@@ -38,11 +39,10 @@ public class AuthorData {
                 ON CONFLICT(name, mail)
                     DO NOTHING
                 RETURNING id,name, mail""";
-        return cache(builder(Author.class)
-                .query(query)
-                .parameter(stmt -> stmt.setString(author.name()).setString(author.mail()))
-                .readRow(Author::build)
-                .firstSync());
+        return cache(query(query)
+                .single(call().bind(author.name()).bind(author.mail()))
+                .map(Author::build)
+                .first());
     }
 
     /**
@@ -55,11 +55,10 @@ public class AuthorData {
         @Language("postgresql")
         var query = """
                 SELECT id, name, mail FROM author WHERE name = ? AND mail = ?""";
-        return cache(builder(Author.class)
-                .query(query)
-                .parameter(stmt -> stmt.setString(author.name()).setString(author.mail()))
-                .readRow(Author::build)
-                .firstSync());
+        return cache(query(query)
+                .single(call().bind(author.name()).bind(author.mail()))
+                .map(Author::build)
+                .first());
     }
 
     /**
@@ -71,7 +70,7 @@ public class AuthorData {
      */
     public Optional<Author> get(int id) {
         return Optional.ofNullable(authorCache.getIfPresent(id))
-                .or(() ->retrieveById(id))
+                .or(() -> retrieveById(id))
                 .map(this::cache);
     }
 
@@ -89,10 +88,9 @@ public class AuthorData {
         @Language("postgresql")
         var query = """
                 SELECT id, name, mail FROM author WHERE id = ?""";
-        return builder(Author.class)
-                .query(query)
-                .parameter(stmt -> stmt.setInt(id))
-                .readRow(Author::build)
-                .firstSync();
+        return query(query)
+                .single(call().bind(id))
+                .map(Author::build)
+                .first();
     }
 }

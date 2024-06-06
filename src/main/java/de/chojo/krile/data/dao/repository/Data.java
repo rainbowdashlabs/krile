@@ -13,9 +13,10 @@ import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
+import static de.chojo.sadu.queries.converter.StandardValueConverter.INSTANT_TIMESTAMP;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class Data {
@@ -47,11 +48,9 @@ public class Data {
                         commit  = excluded.commit,
                         branch = excluded.branch,
                         status = NULL""";
-        builder()
-                .query(insert)
-                .parameter(stmt -> stmt.setInt(this.repository.id()).setString(currentCommit).setString(currentBranch))
-                .insert()
-                .sendSync();
+        query(insert)
+                .single(call().bind(this.repository.id()).bind(currentCommit).bind(currentBranch))
+                .insert();
     }
 
     /**
@@ -65,16 +64,15 @@ public class Data {
                 SELECT updated, checked, commit, branch
                 FROM repository_data
                 WHERE repository_id = ?""";
-        return builder(RepositoryData.class)
-                .query(select)
-                .parameter(stmt -> stmt.setInt(repository.id()))
-                .readRow(row -> new RepositoryData(
-                        row.getLocalDateTime("updated").toInstant(ZoneOffset.UTC),
-                        row.getLocalDateTime("checked").toInstant(ZoneOffset.UTC),
+        return query(select)
+                .single(call().bind(repository.id()))
+                .map(row -> new RepositoryData(
+                        row.get("updated", INSTANT_TIMESTAMP),
+                        row.get("checked", INSTANT_TIMESTAMP),
                         row.getString("commit"),
                         row.getString("branch")
                 ))
-                .firstSync()
+                .first()
                 .get();
 
     }
@@ -89,11 +87,11 @@ public class Data {
                 SET checked = now() AT TIME ZONE 'UTC', status = NULL
                 WHERE repository_id = ?""";
         log.debug("Checked {} for updates", repository.identifier());
-        builder()
-                .query(update)
-                .parameter(stmt -> stmt.setInt(repository.id()))
+
+        query(update)
+                .single(call().bind(repository.id()))
                 .update()
-                .sendSync();
+        ;
     }
 
     /**
@@ -106,11 +104,10 @@ public class Data {
         var update = """
                 UPDATE repository_data SET status = ? WHERE repository_id = ?""";
         log.debug("Update for {} failed. Cause: {}", repository.identifier(), reason);
-        builder()
-                .query(update)
-                .parameter(stmt -> stmt.setString(reason).setInt(repository.id()))
-                .update()
-                .sendSync();
+
+        query(update)
+                .single(call().bind(reason).bind(repository.id()))
+                .update();
     }
 
     public record RepositoryData(Instant updated, Instant checked, String commit, String branch) {

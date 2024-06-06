@@ -14,15 +14,14 @@ import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.access.TagData;
-import de.chojo.krile.data.bind.StaticQueryAdapter;
 import de.chojo.logutil.marker.LogNotify;
-import de.chojo.sadu.databases.PostgreSql;
 import de.chojo.sadu.datasource.DataSourceCreator;
-import de.chojo.sadu.mapper.PostgresqlMapper;
 import de.chojo.sadu.mapper.RowMapperRegistry;
+import de.chojo.sadu.postgresql.databases.PostgreSql;
+import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
+import de.chojo.sadu.queries.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.QueryReplacement;
 import de.chojo.sadu.updater.SqlUpdater;
-import de.chojo.sadu.wrapper.QueryBuilderConfig;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -53,10 +52,9 @@ public class Data {
     }
 
     public void init() throws SQLException, IOException, InterruptedException {
-        configure();
         initConnection();
+        configure();
         updateDatabase();
-        initSaduAdapter();
         initDao();
     }
 
@@ -101,10 +99,6 @@ public class Data {
         return tagData;
     }
 
-    private void initSaduAdapter() {
-        StaticQueryAdapter.start(dataSource);
-    }
-
     private void updateDatabase() throws IOException, SQLException {
         var schema = configuration.config().database().schema();
         SqlUpdater.builder(dataSource, PostgreSql.get())
@@ -119,10 +113,9 @@ public class Data {
         var logger = getLogger("DbLogger");
         RowMapperRegistry rowMapperRegistry = new RowMapperRegistry();
         rowMapperRegistry.register(PostgresqlMapper.getDefaultMapper());
-        QueryBuilderConfig.setDefault(QueryBuilderConfig.builder()
-                .withExceptionHandler(err -> logger.error(LogNotify.NOTIFY_ADMIN, "An error occurred during a database request", err))
-                .withExecutor(threading.botWorker())
-                .rowMappers(rowMapperRegistry)
+        QueryConfiguration.setDefault(QueryConfiguration.builder(dataSource)
+                .setExceptionHandler(err -> logger.error(LogNotify.NOTIFY_ADMIN, "An error occurred during a database request", err))
+                .setRowMapperRegistry(rowMapperRegistry)
                 .build());
     }
 

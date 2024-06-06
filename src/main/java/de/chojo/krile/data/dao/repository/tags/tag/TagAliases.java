@@ -11,7 +11,8 @@ import org.intellij.lang.annotations.Language;
 
 import java.util.List;
 
-import static de.chojo.krile.data.bind.StaticQueryAdapter.builder;
+import static de.chojo.sadu.queries.api.call.Call.call;
+import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class TagAliases {
     private final Meta meta;
@@ -45,10 +46,9 @@ public class TagAliases {
         @Language("postgresql")
         var insert = """
                 INSERT INTO tag_alias(tag_id, alias) VALUES(?,?)""";
-        builder().query(insert)
-                .parameter(stmt -> stmt.setInt(meta.tag().id()).setString(alias))
-                .insert()
-                .sendSync();
+        query(insert)
+                .single(call().bind(meta.tag().id()).bind(alias))
+                .insert();
     }
 
     /**
@@ -57,10 +57,9 @@ public class TagAliases {
      * that have the same tag_id as the current tag.
      */
     public void clear() {
-        builder().query("DELETE FROM tag_alias WHERE tag_id = ?")
-                .parameter(stmt -> stmt.setInt(meta.tag().id()))
-                .delete()
-                .sendSync();
+        query("DELETE FROM tag_alias WHERE tag_id = ?")
+                .single(call().bind(meta.tag().id()))
+                .delete();
     }
 
     /**
@@ -75,11 +74,10 @@ public class TagAliases {
             var select = """
                     SELECT alias FROM tag_alias WHERE tag_id = ?""";
 
-            aliases = builder(String.class)
-                    .query(select)
-                    .parameter(stmt -> stmt.setInt(meta.tag().id()))
-                    .readRow(row -> row.getString("alias"))
-                    .allSync();
+            aliases = query(select)
+                    .single(call().bind(meta.tag().id()))
+                    .map(row -> row.getString("alias"))
+                    .all();
         }
         return aliases;
     }
