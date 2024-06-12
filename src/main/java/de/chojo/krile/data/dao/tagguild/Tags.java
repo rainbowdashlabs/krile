@@ -59,7 +59,7 @@ public class Tags {
                                    LEFT JOIN repository r ON gr.repository_id = r.id
                                    LEFT JOIN tag_stat ts ON gr.guild_id = ts.guild_id AND rt.id = ts.tag_id
                           WHERE global_prio = 1
-                            AND tag ILIKE ('%' || ? || '%')
+                            AND tag ILIKE ('%%' || ? || '%%')
                             AND gr.guild_id = ?
                           ORDER BY ts.views DESC)
                 SELECT id,
