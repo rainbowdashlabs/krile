@@ -105,7 +105,7 @@ public class Repositories {
                 FROM guild_repository gr
                          LEFT JOIN repository r ON r.id = gr.repository_id
                 WHERE guild_id = ?
-                  AND identifier ILIKE '%' || ? || '%'
+                  AND identifier ILIKE '%%' || ? || '%%'
                 ORDER BY priority DESC
                 LIMIT 25""";
 

@@ -314,7 +314,7 @@ public class RepositoryData {
                 FROM repository_category rc
                          LEFT JOIN category c ON rc.category_id = c.id
                          LEFT JOIN repository_meta rm ON rc.repository_id = rm.repository_id
-                WHERE rm.public AND category ILIKE ('%' || ? || '%')
+                WHERE rm.public AND category ILIKE ('%%' || ? || '%%')
                 LIMIT 25""";
 
         return query(select)

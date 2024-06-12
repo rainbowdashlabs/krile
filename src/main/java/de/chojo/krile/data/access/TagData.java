@@ -139,7 +139,7 @@ public class TagData {
                         LEFT JOIN category c
                         ON tc.category_id = c.id
                 WHERE public
-                  AND category ILIKE '%' || ? || '%'
+                  AND category ILIKE '%%' || ? || '%%'
                 LIMIT 25""";
         return query(select)
                 .single(call().bind(value))
