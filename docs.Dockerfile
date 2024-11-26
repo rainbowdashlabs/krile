@@ -1,4 +1,4 @@
-FROM python:3.11-bullseye AS base
+FROM python:3.13-bullseye AS base
 
 RUN pip install mkdocs-material && pip install mkdocs-git-revision-date-localized-plugin
 
