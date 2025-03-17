@@ -7,6 +7,8 @@ on:
     branches:
       - main
       - development
+      - feature/*
+      - fix/*
 
 jobs:
   docker-build:
@@ -33,6 +35,19 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: verify.yml
+          workflow_conclusion: success
+          name: docker-image
+#      - name: Download Docker image artifact
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: docker-image
+#          path: /image/docker-image.tar
+      - name: Load Docker image
+        run: docker load -i ./docker-image.tar
       - name: Push image
         uses: docker/build-push-action@v6
         with:
