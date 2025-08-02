@@ -4,7 +4,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             // misc
-            library("jetbrains-annotations", "org.jetbrains:annotations:24.1.0")
+            library("jetbrains-annotations", "org.jetbrains:annotations:26.0.2")
             version("sadu", "2.3.1")
             library("sadu-queries", "de.chojo.sadu", "sadu-queries").versionRef("sadu")
             library("sadu-updater", "de.chojo.sadu", "sadu-updater").versionRef("sadu")
