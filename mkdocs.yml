@@ -27,6 +27,8 @@ nav:
   - 'Features':
       - features/index.md
       - 'Embed': tags/embed.md
+  - 'Terms of Service': tos.md
+  - 'Privacy Policy': privacy.md
 
 theme:
   features:
