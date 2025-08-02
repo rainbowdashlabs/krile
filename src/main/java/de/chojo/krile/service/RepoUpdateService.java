@@ -6,7 +6,7 @@
 
 package de.chojo.krile.service;
 
-import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.core.Threading;
 import de.chojo.krile.data.access.RepositoryData;

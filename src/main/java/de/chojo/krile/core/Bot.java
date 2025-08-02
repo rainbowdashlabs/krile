@@ -6,7 +6,7 @@
 
 package de.chojo.krile.core;
 
-import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.dispatching.InteractionHub;
 import de.chojo.jdautil.localization.Localizer;
 import de.chojo.krile.commands.discover.Discover;

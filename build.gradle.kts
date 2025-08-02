@@ -34,6 +34,8 @@ dependencies {
         exclude(group = "club.minnced", module = "opus-java")
     }
 
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.2")
+
     // database
     implementation("org.postgresql", "postgresql", "42.7.7")
     implementation(libs.bundles.sadu)
