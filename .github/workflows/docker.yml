@@ -26,7 +26,7 @@ jobs:
           allowed-conclusions: success
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: gradle/wrapper-validation-action@v3
+      - uses: gradle/actions/wrapper-validation@v4
       - name: Login to GitHub Packages
         uses: docker/login-action@v3
         with:

@@ -6,7 +6,7 @@
 
 package de.chojo.krile.commands.repository;
 
-import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.slash.Group;
 import de.chojo.jdautil.interactions.slash.Slash;
 import de.chojo.jdautil.interactions.slash.provider.SlashCommand;

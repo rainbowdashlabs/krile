@@ -6,7 +6,7 @@
 
 package de.chojo.krile.data.access;
 
-import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.dao.TagGuild;
 import net.dv8tion.jda.api.entities.Guild;

@@ -6,7 +6,7 @@
 
 package de.chojo.krile.commands.repository.handler.add;
 
-import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.ConfigFile;

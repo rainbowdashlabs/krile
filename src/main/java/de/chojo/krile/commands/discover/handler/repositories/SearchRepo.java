@@ -6,7 +6,7 @@
 
 package de.chojo.krile.commands.discover.handler.repositories;
 
-import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.pagination.bag.IPageBag;
 import de.chojo.jdautil.pagination.bag.PageBuilder;

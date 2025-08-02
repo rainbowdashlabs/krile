@@ -7,7 +7,7 @@
 package de.chojo.krile.core;
 
 import com.zaxxer.hikari.HikariDataSource;
-import de.chojo.jdautil.configuratino.Configuration;
+import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.krile.configuration.ConfigFile;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
@@ -19,7 +19,7 @@ import de.chojo.sadu.datasource.DataSourceCreator;
 import de.chojo.sadu.mapper.RowMapperRegistry;
 import de.chojo.sadu.postgresql.databases.PostgreSql;
 import de.chojo.sadu.postgresql.mapper.PostgresqlMapper;
-import de.chojo.sadu.queries.configuration.QueryConfiguration;
+import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.QueryReplacement;
 import de.chojo.sadu.updater.SqlUpdater;
 import org.slf4j.Logger;
@@ -102,10 +102,10 @@ public class Data {
     private void updateDatabase() throws IOException, SQLException {
         var schema = configuration.config().database().schema();
         SqlUpdater.builder(dataSource, PostgreSql.get())
-                .setReplacements(new QueryReplacement("krile", schema))
-                .setVersionTable(schema + ".krile_version")
-                .setSchemas(schema)
-                .execute();
+                  .setReplacements(new QueryReplacement("krile", schema))
+                  .setVersionTable(schema + ".krile_version")
+                  .setSchemas(schema)
+                  .execute();
     }
 
     private void configure() {
@@ -114,9 +114,9 @@ public class Data {
         RowMapperRegistry rowMapperRegistry = new RowMapperRegistry();
         rowMapperRegistry.register(PostgresqlMapper.getDefaultMapper());
         QueryConfiguration.setDefault(QueryConfiguration.builder(dataSource)
-                .setExceptionHandler(err -> logger.error(LogNotify.NOTIFY_ADMIN, "An error occurred during a database request", err))
-                .setRowMapperRegistry(rowMapperRegistry)
-                .build());
+                                                        .setExceptionHandler(err -> logger.error(LogNotify.NOTIFY_ADMIN, "An error occurred during a database request", err))
+                                                        .setRowMapperRegistry(rowMapperRegistry)
+                                                        .build());
     }
 
     private void initDao() {
@@ -132,16 +132,16 @@ public class Data {
         log.info("Creating connection pool.");
         var data = configuration.config().database();
         return DataSourceCreator.create(PostgreSql.get())
-                .configure(config -> config
-                        .host(data.host())
-                        .port(data.port())
-                        .user(data.user())
-                        .password(data.password())
-                        .database(data.database()))
-                .create()
-                .withMaximumPoolSize(data.poolSize())
-                .withThreadFactory(Threading.createThreadFactory(threading.hikariGroup()))
-                .forSchema(data.schema())
-                .build();
+                                .configure(config -> config
+                                        .host(data.host())
+                                        .port(data.port())
+                                        .user(data.user())
+                                        .password(data.password())
+                                        .database(data.database()))
+                                .create()
+                                .withMaximumPoolSize(data.poolSize())
+                                .withThreadFactory(Threading.createThreadFactory(threading.hikariGroup()))
+                                .forSchema(data.schema())
+                                .build();
     }
 }
