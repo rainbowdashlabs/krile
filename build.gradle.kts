@@ -35,7 +35,7 @@ dependencies {
     }
 
     // database
-    implementation("org.postgresql", "postgresql", "42.7.5")
+    implementation("org.postgresql", "postgresql", "42.7.7")
     implementation(libs.bundles.sadu)
 
     // Logging
