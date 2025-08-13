@@ -42,4 +42,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build as Docker image
-        run: docker build .
+        run: docker build --tag krile:build .
+      - name: Save Docker image
+        run: docker save -o docker-image.tar krile:build
+      - name: Archive Docker image
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image
+          path: ./docker-image.tar
