@@ -25,23 +25,23 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           allowed-conclusions: success
       - name: Checkout
-        uses: actions/checkout@v4
-      - uses: gradle/actions/wrapper-validation@v4
+        uses: actions/checkout@v7
+      - uses: gradle/actions/wrapper-validation@v6
       - name: Login to GitHub Packages
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
           tags: |
             ghcr.io/${{ github.repository }}:${{ github.sha }}
       - name: Tag & Push branch image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
@@ -50,7 +50,7 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ github.ref_name }}
       - name: Tag & Push latest image
         if: github.ref_name == 'main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true
@@ -63,17 +63,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Login to GitHub Packages
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: docs.Dockerfile
@@ -81,7 +81,7 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}-docs:${{ github.sha }}
       - name: Tag & Push branch image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: docs.Dockerfile
@@ -91,7 +91,7 @@ jobs:
             ghcr.io/${{ github.repository }}-docs:${{ github.ref_name }}
       - name: Tag & Push latest image
         if: github.ref_name == 'main'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: docs.Dockerfile

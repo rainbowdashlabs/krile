@@ -8,15 +8,15 @@ jobs:
     name: Gradle build
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: gradle/actions/wrapper-validation@v4
+      - uses: gradle/actions/wrapper-validation@v6
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
       - name: Build with Gradle
         run: ./gradlew --build-cache build
       - name: Test with Gradle
@@ -27,7 +27,7 @@ jobs:
     name: Encoding check
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Remove allowed us-ascii files before check
         run: rm src/main/resources/locale.properties src/main/resources/locale_en_US.properties # This needs improvement
       - name: Check UTF-8 for resource bundles
@@ -40,6 +40,6 @@ jobs:
     name: Docker build
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build as Docker image
         run: docker build .
