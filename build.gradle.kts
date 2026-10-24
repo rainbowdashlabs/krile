@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 
 plugins {
-    id("java")
+    java
     alias(libs.plugins.spotless)
     alias(libs.plugins.shadow)
 }
@@ -10,8 +10,8 @@ group = "de.chojo"
 version = "1.1.2"
 
 repositories {
-    maven("https://eldonexus.de/repository/maven-public")
-    maven("https://eldonexus.de/repository/maven-proxies")
+    mavenCentral()
+    maven("https://eldonexus.de/repository/maven-public/")
 }
 
 java {
@@ -27,28 +27,27 @@ spotless {
     }
 }
 
-
 dependencies {
-    implementation("org.eclipse.jgit:org.eclipse.jgit:7.3.0.202506031305-r")
-    implementation("de.chojo", "cjda-util", "2.10.3+jda-5.1.0") {
+    implementation(libs.jgit)
+    implementation(libs.cjda.util) {
         exclude(group = "club.minnced", module = "opus-java")
     }
 
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.2")
+    implementation(libs.jackson.yaml)
+    compileOnly(libs.jetbrains.annotations)
 
-    // database
-    implementation("org.postgresql", "postgresql", "42.7.7")
+    implementation(libs.postgresql)
     implementation(libs.bundles.sadu)
 
-    // Logging
     implementation(libs.bundles.log4j)
-    implementation("de.chojo", "log-util", "1.0.1") {
+    implementation(libs.log.util) {
         exclude("org.apache.logging.log4j")
     }
 
-    testImplementation(platform("org.junit:junit-bom:5.11.3"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    implementation(kotlin("stdlib-jdk8"))
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.launcher)
+    testCompileOnly(libs.jetbrains.annotations)
 }
 
 tasks {
