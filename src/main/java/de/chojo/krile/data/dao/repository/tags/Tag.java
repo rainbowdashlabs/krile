@@ -43,7 +43,14 @@ public final class Tag extends BaseTag<Meta> {
     private final Repository repository;
     private String tag;
 
-    public Tag(int id, String tagId, String tag, List<String> text, Repository repository, CategoryData categories, AuthorData authors) {
+    public Tag(
+            int id,
+            String tagId,
+            String tag,
+            List<String> text,
+            Repository repository,
+            CategoryData categories,
+            AuthorData authors) {
         super(tag, text);
         this.meta = new Meta(this, categories, authors);
         this.id = id;
@@ -52,7 +59,8 @@ public final class Tag extends BaseTag<Meta> {
         this.repository = repository;
     }
 
-    public static Tag build(Row row, Repository repository, CategoryData categories, AuthorData authors) throws SQLException {
+    public static Tag build(Row row, Repository repository, CategoryData categories, AuthorData authors)
+            throws SQLException {
         return new Tag(
                 row.getInt("id"),
                 row.getString("tag_id"),
@@ -77,7 +85,6 @@ public final class Tag extends BaseTag<Meta> {
         return query("DELETE FROM tag WHERE id = ?")
                 .single(call().bind(id()))
                 .delete()
-
                 .changed();
     }
 
@@ -89,7 +96,6 @@ public final class Tag extends BaseTag<Meta> {
         return tagId;
     }
 
-
     /**
      * Generates a link for the file.
      *
@@ -97,7 +103,8 @@ public final class Tag extends BaseTag<Meta> {
      */
     public String link() {
         // TODO proper string encoding. Something which does not replace space with a +
-        return repository.fileLink(URLEncoder.encode(meta.fileMeta().fileName(), Charset.defaultCharset()).replace("+", "%20"));
+        return repository.fileLink(URLEncoder.encode(meta.fileMeta().fileName(), Charset.defaultCharset())
+                .replace("+", "%20"));
     }
 
     /**
@@ -121,7 +128,9 @@ public final class Tag extends BaseTag<Meta> {
         };
 
         query(insert)
-                .single(call().bind(text, PostgreSqlTypes.TEXT).bind(raw.meta().tag()).bind(id()))
+                .single(call().bind(text, PostgreSqlTypes.TEXT)
+                        .bind(raw.meta().tag())
+                        .bind(id()))
                 .update();
         this.text = text;
         this.tag = raw.meta().tag();
@@ -137,21 +146,42 @@ public final class Tag extends BaseTag<Meta> {
     public MessageEmbed infoEmbed(LocalizationContext context) {
         Identifier identifier = repository.identifier();
         EmbedBuilder builder = new LocalizedEmbedBuilder(context)
-                .setAuthor("embeds.tag.author", link(), Replacement.create("id", tagId), Replacement.create("identifier", identifier))
+                .setAuthor(
+                        "embeds.tag.author",
+                        link(),
+                        Replacement.create("id", tagId),
+                        Replacement.create("identifier", identifier))
                 .setTitle(tag);
         List<String> aliases = meta.aliases().all();
         if (!aliases.isEmpty()) builder.addField("words.aliases", String.join(", ", aliases), true);
-        List<String> categories = meta.categories().all().stream().map(Category::name).toList();
+        List<String> categories =
+                meta.categories().all().stream().map(Category::name).toList();
         if (!categories.isEmpty()) builder.addField("words.categories", String.join(", ", categories), true);
-        List<String> authors = meta.tagAuthors().all().stream().map(Author::name).distinct().toList();
+        List<String> authors =
+                meta.tagAuthors().all().stream().map(Author::name).distinct().toList();
         if (!authors.isEmpty()) builder.addField("words.authors", String.join(", ", authors), true);
 
         FileMeta fileMeta = meta.fileMeta();
         var created = fileMeta.created();
         var modified = fileMeta.modified();
-        builder.addField("words.created", ("%s $words.by$ %s").formatted(TimeFormat.RELATIVE.format(created.when()), created.who().name()), true);
-        builder.addField("words.modified", "%s $words.by$ %s".formatted(TimeFormat.RELATIVE.format(modified.when()), modified.who().name()), true);
-        builder.addField("", "$words.links$: [$words.file$](%s) | [$words.repository$](%s)".formatted(link(), repository.link()), false);
+        builder.addField(
+                "words.created",
+                ("%s $words.by$ %s")
+                        .formatted(
+                                TimeFormat.RELATIVE.format(created.when()),
+                                created.who().name()),
+                true);
+        builder.addField(
+                "words.modified",
+                "%s $words.by$ %s"
+                        .formatted(
+                                TimeFormat.RELATIVE.format(modified.when()),
+                                modified.who().name()),
+                true);
+        builder.addField(
+                "",
+                "$words.links$: [$words.file$](%s) | [$words.repository$](%s)".formatted(link(), repository.link()),
+                false);
         return builder.build();
     }
 }

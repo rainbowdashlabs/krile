@@ -38,29 +38,41 @@ public class Update implements SlashHandler {
 
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
-        Optional<GuildRepository> repository = guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
+        Optional<GuildRepository> repository =
+                guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
         if (repository.isEmpty()) {
-            event.reply(context.localize("error.repository.unknown")).setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.unknown"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
         Instant checked = repository.get().data().get().checked();
         int minCheck = configuration.config().repositories().minCheck();
         if (checked.isAfter(Instant.now().minus(minCheck, ChronoUnit.MINUTES))) {
-            event.reply(context.localize("command.repository.update.message.cooldown", Replacement.create("minutes", minCheck), Replacement.create("relative", TimeFormat.RELATIVE.format(checked)))).setEphemeral(true).queue();
+            event.reply(context.localize(
+                            "command.repository.update.message.cooldown",
+                            Replacement.create("minutes", minCheck),
+                            Replacement.create("relative", TimeFormat.RELATIVE.format(checked))))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
-        event.reply(context.localize("command.repository.update.message.scheduled")).setEphemeral(true).queue();
+        event.reply(context.localize("command.repository.update.message.scheduled"))
+                .setEphemeral(true)
+                .queue();
         updateService.schedule(repository.get());
     }
 
     @Override
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
-        List<Command.Choice> choices = guilds.guild(event)
-                .repositories()
-                .complete(event.getFocusedOption().getValue())
-                .stream()
-                .map(v -> new Command.Choice(v.identifier(), v.id()))
-                .toList();
+        List<Command.Choice> choices =
+                guilds
+                        .guild(event)
+                        .repositories()
+                        .complete(event.getFocusedOption().getValue())
+                        .stream()
+                        .map(v -> new Command.Choice(v.identifier(), v.id()))
+                        .toList();
         event.replyChoices(choices).queue();
     }
 }

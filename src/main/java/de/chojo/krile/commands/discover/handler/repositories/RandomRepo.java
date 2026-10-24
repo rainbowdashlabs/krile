@@ -25,7 +25,9 @@ public class RandomRepo implements SlashHandler {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<Repository> random = repositoryData.random();
         if (random.isEmpty()) {
-            event.reply(context.localize("error.repository.notfound")).setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.notfound"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
         event.replyEmbeds(random.get().infoEmbed(context)).setEphemeral(true).queue();

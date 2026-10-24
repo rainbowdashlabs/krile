@@ -14,12 +14,10 @@ import de.chojo.krile.tagimport.tag.entities.FileMeta;
 import de.chojo.krile.tagimport.tag.entities.RawAuthor;
 import de.chojo.krile.tagimport.tag.entities.RawTagMeta;
 import de.chojo.krile.tagimport.tag.parsing.TagParser;
-import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
@@ -97,6 +95,7 @@ class TagParserTest {
         Assertions.assertEquals(List.of("test"), meta.category());
         Assertions.assertEquals("https://avatars.githubusercontent.com/u/46890129?s=48&v=4", meta.image());
     }
+
     @Test
     void type() throws ImportException, ParsingException {
         Assertions.assertEquals(TagType.EMBED, embed.tagMeta().type());

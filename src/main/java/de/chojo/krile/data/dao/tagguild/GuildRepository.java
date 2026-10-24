@@ -24,14 +24,30 @@ public class GuildRepository extends Repository {
     private final TagGuild guild;
     private final int priority;
 
-    public GuildRepository(TagGuild guild, int priority, int id, String url, String identifier, String directory, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
+    public GuildRepository(
+            TagGuild guild,
+            int priority,
+            int id,
+            String url,
+            String identifier,
+            String directory,
+            Configuration<ConfigFile> configuration,
+            CategoryData categories,
+            AuthorData authors) {
         super(id, url, identifier, directory, configuration, categories, authors);
         this.guild = guild;
         this.priority = priority;
     }
 
-    public static GuildRepository build(Row row, TagGuild guild, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) throws SQLException {
-        return new GuildRepository(guild,
+    public static GuildRepository build(
+            Row row,
+            TagGuild guild,
+            Configuration<ConfigFile> configuration,
+            CategoryData categories,
+            AuthorData authors)
+            throws SQLException {
+        return new GuildRepository(
+                guild,
                 row.getInt("priority"),
                 row.getInt("id"),
                 row.getString("url"),
@@ -60,9 +76,6 @@ public class GuildRepository extends Repository {
         @Language("postgresql")
         var delete = """
                 DELETE FROM guild_repository WHERE guild_id = ? AND repository_id = ?""";
-        return query(delete)
-                .single(call().bind(guild.id()).bind(id()))
-                .delete()
-                .changed();
+        return query(delete).single(call().bind(guild.id()).bind(id())).delete().changed();
     }
 }

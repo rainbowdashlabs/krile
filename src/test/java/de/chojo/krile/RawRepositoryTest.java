@@ -54,12 +54,22 @@ class RawRepositoryTest {
         List<RawTag> tags = sub.tags();
         Assertions.assertEquals(2, tags.size());
     }
+
     @Test
     void tagsDeep() throws ImportException, ParsingException, NoSuchFieldException, IllegalAccessException {
         // Change tags to deep
         Field configuration = RawRepository.class.getDeclaredField("configuration");
         RepoConfig oldConf = sub.configuration();
-        RepoConfig newConf = RepoConfig.create(oldConf.name(), oldConf.description(), oldConf.category(), oldConf.publicRepo(), oldConf.language(), oldConf.directory(), oldConf.include(), oldConf.exclude(), true);
+        RepoConfig newConf = RepoConfig.create(
+                oldConf.name(),
+                oldConf.description(),
+                oldConf.category(),
+                oldConf.publicRepo(),
+                oldConf.language(),
+                oldConf.directory(),
+                oldConf.include(),
+                oldConf.exclude(),
+                true);
         configuration.setAccessible(true);
         configuration.set(sub, newConf);
         List<RawTag> tags = sub.tags();
@@ -68,11 +78,10 @@ class RawRepositoryTest {
         Assertions.assertTrue(tags.stream().anyMatch(t -> t.meta().id().equals("default_tag")));
         Assertions.assertTrue(tags.stream().anyMatch(t -> t.meta().id().equals("test tag")));
         configuration.set(sub, oldConf);
-
     }
 
     @AfterAll
     static void afterAll() throws IOException {
-        //repo.close();
+        // repo.close();
     }
 }

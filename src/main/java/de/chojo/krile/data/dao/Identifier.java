@@ -13,7 +13,6 @@ import java.util.Locale;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Objects.toIdentityString;
 
 public record Identifier(String platform, String user, String repo, String path) {
     /**
@@ -26,7 +25,11 @@ public record Identifier(String platform, String user, String repo, String path)
      * @return the new Identifier object
      */
     public static Identifier of(String platform, String user, String repo, @Nullable String path) {
-        return new Identifier(platform.toLowerCase(), requireNonNull(user), requireNonNull(repo), path != null ? path.replaceAll("^/", "") : null);
+        return new Identifier(
+                platform.toLowerCase(),
+                requireNonNull(user),
+                requireNonNull(repo),
+                path != null ? path.replaceAll("^/", "") : null);
     }
 
     public static Identifier of(String platform, String user, String repo) {

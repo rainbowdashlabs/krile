@@ -13,10 +13,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class Text {
-    private static final Pattern NEW_LINE = Pattern.compile("(?:(?<! {2})(?<!\\\\))(?<!\\R)\\R(?!^\\R)", Pattern.MULTILINE + Pattern.UNICODE_CASE);
-    private static final Pattern TRAILING_LINE_END = Pattern.compile("(\\\\|\\s\\s)$", Pattern.MULTILINE + Pattern.UNICODE_CASE);
-    private static final Pattern FUSE_CODE_BLOCKS = Pattern.compile("```\\R```", Pattern.MULTILINE + Pattern.UNICODE_CASE);
-    private static final Pattern PULL_TEXT_TO_CODE = Pattern.compile("```E\\R", Pattern.MULTILINE + Pattern.UNICODE_CASE);
+    private static final Pattern NEW_LINE =
+            Pattern.compile("(?:(?<! {2})(?<!\\\\))(?<!\\R)\\R(?!^\\R)", Pattern.MULTILINE + Pattern.UNICODE_CASE);
+    private static final Pattern TRAILING_LINE_END =
+            Pattern.compile("(\\\\|\\s\\s)$", Pattern.MULTILINE + Pattern.UNICODE_CASE);
+    private static final Pattern FUSE_CODE_BLOCKS =
+            Pattern.compile("```\\R```", Pattern.MULTILINE + Pattern.UNICODE_CASE);
+    private static final Pattern PULL_TEXT_TO_CODE =
+            Pattern.compile("```E\\R", Pattern.MULTILINE + Pattern.UNICODE_CASE);
     private static final Pattern LIST_ENTRY = Pattern.compile("^#*? *?([0-9]+?|[*-])", Pattern.UNICODE_CASE);
 
     /**
@@ -81,13 +85,18 @@ public class Text {
         blocks.addAll(process(collect, codeBlock, maxLength));
         blocks = blocks.stream().filter(p -> !p.isBlank()).toList();
         blocks = compressChunks(blocks, maxLength, "\n");
-        return blocks.stream().map(Text::compressCodeBlocks).map(Text::unescapeList).toList();
+        return blocks.stream()
+                .map(Text::compressCodeBlocks)
+                .map(Text::unescapeList)
+                .toList();
     }
 
     private static List<String> process(List<String> text, boolean codeBlock, int maxLength) {
         // preserve codeblocks
         // split and strip text
-        return codeBlock ? Collections.singletonList(String.join("\n", text)) : stripTextLineBreaks(String.join("\n", text), maxLength);
+        return codeBlock
+                ? Collections.singletonList(String.join("\n", text))
+                : stripTextLineBreaks(String.join("\n", text), maxLength);
     }
 
     public static List<String> stripTextLineBreaks(String text, int maxLength) {
@@ -113,11 +122,12 @@ public class Text {
     }
 
     private static String escapeList(String line) {
-        if(LIST_ENTRY.matcher(line).find()){
+        if (LIST_ENTRY.matcher(line).find()) {
             return "{{ li }}%s".formatted(line);
         }
         return line;
     }
+
     private static String unescapeList(String line) {
         return line.replaceAll(" ?\\{\\{ li \\}\\}", "\n");
     }

@@ -22,5 +22,4 @@ public record TagFilter(Integer category, String language, String name) {
     private String search(@Nullable String value) {
         return value == null ? null : "%%%s%%".formatted(value);
     }
-
 }

@@ -12,22 +12,19 @@ import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal", "CanBeFinal"})
-
 public class Repositories {
     public static final RepositoryLocation GITHUB = new RepositoryLocation(
             "GitHub",
             "https://github.com/{user}/{repo}.git",
             "https://github.com",
             "https://github.com/{user}/{repo}/blob/{branch}/{path}",
-            "https://github.com/{user}/{repo}/tree/{branch}/{path}"
-    );
+            "https://github.com/{user}/{repo}/tree/{branch}/{path}");
     public static final RepositoryLocation GITLAB = new RepositoryLocation(
             "GitLab",
             "https://gitlab.com/{user}/{repo}.git",
             "https://gitlab.com",
             "https://gitlab.com/{user}/{repo}/-/blob/{branch}/{path}",
-            "https://gitlab.com/{user}/{repo}/-/tree/{branch}/{path}"
-    );
+            "https://gitlab.com/{user}/{repo}/-/tree/{branch}/{path}");
     private List<RepositoryLocation> repositories = List.of(GITHUB, GITLAB);
     /**
      * Minutes after which a repository will be checked automatically

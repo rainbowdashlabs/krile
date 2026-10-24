@@ -1,3 +1,13 @@
+.git
 .gradle
+.kotlin
+.idea
+.direnv
+.concept
 build
-gradle
+config
+logs
+docs
+tags
+sub-tags
+help-tags

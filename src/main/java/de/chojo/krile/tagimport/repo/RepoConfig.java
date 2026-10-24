@@ -18,16 +18,16 @@ import static java.util.Objects.requireNonNullElse;
 
 // TODO: Idea: Parent repositories, to directly include them.
 // Also add a priority for this repo and parent repos to allow overwriting tags. (Probably too complex),
-public record RepoConfig(@Nullable String name,
-                         @Nullable String description,
-                         String directory,
-                         List<String> category,
-                         boolean publicRepo,
-                         @Nullable String language,
-                         List<String> include,
-                         List<String> exclude,
-                         boolean deep
-) {
+public record RepoConfig(
+        @Nullable String name,
+        @Nullable String description,
+        String directory,
+        List<String> category,
+        boolean publicRepo,
+        @Nullable String language,
+        List<String> include,
+        List<String> exclude,
+        boolean deep) {
 
     /**
      * Creates a new {@code RepoConfig} object with the given parameters.
@@ -44,16 +44,18 @@ public record RepoConfig(@Nullable String name,
      * @return a new {@code RepoConfig} object with the given parameters
      */
     @JsonCreator
-    public static RepoConfig create(@JsonProperty("name") String name,
-                                    @JsonProperty("description") String description,
-                                    @JsonProperty("category") List<String> category,
-                                    @JsonProperty("public") Boolean publicRepo,
-                                    @JsonProperty("language") String language,
-                                    @JsonProperty("directory") String directory,
-                                    @JsonProperty("include") List<String> include,
-                                    @JsonProperty("exclude") List<String> exclude,
-                                    @JsonProperty("deep") Boolean deep) {
-        return new RepoConfig(name,
+    public static RepoConfig create(
+            @JsonProperty("name") String name,
+            @JsonProperty("description") String description,
+            @JsonProperty("category") List<String> category,
+            @JsonProperty("public") Boolean publicRepo,
+            @JsonProperty("language") String language,
+            @JsonProperty("directory") String directory,
+            @JsonProperty("include") List<String> include,
+            @JsonProperty("exclude") List<String> exclude,
+            @JsonProperty("deep") Boolean deep) {
+        return new RepoConfig(
+                name,
                 description,
                 requireNonNullElse(directory, ""),
                 requireNonNullElse(category, emptyList()),

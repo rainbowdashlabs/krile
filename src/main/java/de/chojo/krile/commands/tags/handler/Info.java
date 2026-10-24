@@ -30,7 +30,9 @@ public class Info implements SlashHandler {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<Tag> byId = guilds.guild(event).tags().resolveTag(event.getOption("tag", OptionMapping::getAsString));
         if (byId.isEmpty()) {
-            event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
+            event.reply(context.localize("error.tag.notfound"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
         MessageEmbed messageEmbed = byId.get().infoEmbed(context.guildLocalizer());
@@ -39,7 +41,9 @@ public class Info implements SlashHandler {
 
     @Override
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
-        List<Command.Choice> choices = guilds.guild(event).tags()
+        List<Command.Choice> choices = guilds
+                .guild(event)
+                .tags()
                 .complete(event.getFocusedOption().getValue())
                 .stream()
                 .map(e -> new Command.Choice(e.name(), e.id()))

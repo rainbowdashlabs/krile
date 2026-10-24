@@ -21,7 +21,8 @@ import static de.chojo.sadu.queries.api.call.Call.call;
 import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class CategoryData {
-    private final Cache<Integer, Category> categpryCache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
+    private final Cache<Integer, Category> categpryCache =
+            CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
 
     public Optional<Category> getOrCreate(String name) {
         return get(name).or(() -> create(name));
@@ -96,10 +97,7 @@ public class CategoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, c.category FROM category c WHERE id = ?""";
-        return cache(query(query)
-                .single(call().bind(id))
-                .map(Category::build)
-                .first());
+        return cache(query(query).single(call().bind(id)).map(Category::build).first());
     }
 
     private String harmonize(@Nullable String name) {

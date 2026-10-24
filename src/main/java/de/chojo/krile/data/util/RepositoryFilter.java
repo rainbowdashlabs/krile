@@ -8,13 +8,8 @@ package de.chojo.krile.data.util;
 
 import org.jetbrains.annotations.Nullable;
 
-public record RepositoryFilter(Integer category,
-                               String language,
-                               String name,
-                               String platform,
-                               String user,
-                               String repo,
-                               Integer tags) {
+public record RepositoryFilter(
+        Integer category, String language, String name, String platform, String user, String repo, Integer tags) {
     @Override
     public String language() {
         return search(language);

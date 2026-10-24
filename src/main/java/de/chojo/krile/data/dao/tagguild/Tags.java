@@ -122,7 +122,8 @@ public class Tags {
                 """;
         return query(select)
                 .single(call().bind(name).bind(guild.id()))
-                .map(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .map(row -> Tag.build(
+                        row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
                 .first();
     }
 
@@ -142,7 +143,8 @@ public class Tags {
                   AND guild_id = ?""";
         return query(select)
                 .single(call().bind(tag).bind(guild.id()))
-                .map(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .map(row -> Tag.build(
+                        row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
                 .first();
     }
 
@@ -158,9 +160,7 @@ public class Tags {
                 VALUES (?, ?)
                 ON CONFLICT (guild_id, tag_id)
                 DO UPDATE SET views = s.views + 1""";
-        query(insert)
-                .single(call().bind(guild.id()).bind(tag.id()))
-                .insert();
+        query(insert).single(call().bind(guild.id()).bind(tag.id())).insert();
     }
 
     /**
@@ -231,7 +231,8 @@ public class Tags {
                 LIMIT 1""";
         return query(select)
                 .single(call().bind(guild.id()))
-                .map(row -> Tag.build(row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
+                .map(row -> Tag.build(
+                        row, repositories.byId(row.getInt("repository_id")).get(), categories, authors))
                 .first();
     }
 

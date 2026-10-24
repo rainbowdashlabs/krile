@@ -40,7 +40,14 @@ public class Repository {
     private final Meta meta;
     private final Tags tags;
 
-    public Repository(int id, String url, String identifier, String directory, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
+    public Repository(
+            int id,
+            String url,
+            String identifier,
+            String directory,
+            Configuration<ConfigFile> configuration,
+            CategoryData categories,
+            AuthorData authors) {
         this.id = id;
         this.url = url;
         this.identifier = Identifier.parse(identifier).get();
@@ -51,8 +58,17 @@ public class Repository {
         tags = new Tags(this, categories, authors);
     }
 
-    public static Repository build(Row row, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) throws SQLException {
-        return new Repository(row.getInt("id"), row.getString("url"), row.getString("identifier"), row.getString("directory"), configuration, categories, authors);
+    public static Repository build(
+            Row row, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors)
+            throws SQLException {
+        return new Repository(
+                row.getInt("id"),
+                row.getString("url"),
+                row.getString("identifier"),
+                row.getString("directory"),
+                configuration,
+                categories,
+                authors);
     }
 
     /**
@@ -67,7 +83,6 @@ public class Repository {
         data.update(repository);
         tags.update(repository);
     }
-
 
     public int id() {
         return id;
@@ -91,8 +106,10 @@ public class Repository {
     public String directoryLink(String path) {
         if (directory != null && !directory.isBlank()) path = directory + "/" + path;
         if (identifier.path() != null) path = identifier.path() + "/" + path;
-        RepositoryLocation repositoryLocation = configuration.config().repositories().find(identifier).get();
-        return repositoryLocation.dirPath(identifier.user(), identifier.repo(), data.get().branch(), path);
+        RepositoryLocation repositoryLocation =
+                configuration.config().repositories().find(identifier).get();
+        return repositoryLocation.dirPath(
+                identifier.user(), identifier.repo(), data.get().branch(), path);
     }
 
     /**
@@ -105,8 +122,10 @@ public class Repository {
     public String fileLink(String path) {
         if (directory != null && !directory.isBlank()) path = directory + "/" + path;
         if (identifier.path() != null) path = identifier.path() + "/" + path;
-        RepositoryLocation repositoryLocation = configuration.config().repositories().find(identifier).get();
-        return repositoryLocation.filePath(identifier.user(), identifier.repo(), data.get().branch(), path);
+        RepositoryLocation repositoryLocation =
+                configuration.config().repositories().find(identifier).get();
+        return repositoryLocation.filePath(
+                identifier.user(), identifier.repo(), data.get().branch(), path);
     }
 
     public Data data() {
@@ -142,7 +161,8 @@ public class Repository {
      * @return the generated embed message
      */
     public MessageEmbed infoEmbed(EventContext context) {
-        List<String> categories = meta.categories().all().stream().map(Category::name).toList();
+        List<String> categories =
+                meta.categories().all().stream().map(Category::name).toList();
         RepositoryMeta meta = this.meta.get();
         Data.RepositoryData data = this.data.get();
         EmbedBuilder builder = new LocalizedEmbedBuilder(context.guildLocalizer())

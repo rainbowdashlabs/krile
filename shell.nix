@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> {}, ... }:
 
 let
-jdk = pkgs.jdk21;
+jdk = pkgs.jdk25;
 gradle= pkgs.gradle.override { java = jdk; };
 in
 pkgs.mkShell

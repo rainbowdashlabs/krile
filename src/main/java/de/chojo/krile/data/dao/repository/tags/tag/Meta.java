@@ -24,7 +24,6 @@ import java.time.ZoneOffset;
 import static de.chojo.sadu.queries.api.call.Call.call;
 import static de.chojo.sadu.queries.api.query.Query.query;
 import static de.chojo.sadu.queries.converter.StandardValueConverter.INSTANT_TIMESTAMP;
-import static de.chojo.sadu.queries.converter.StandardValueConverter.OFFSET_DATE_TIME;
 
 public class Meta extends BaseMeta {
     private final Tag tag;
@@ -121,12 +120,12 @@ public class Meta extends BaseMeta {
                     WHERE tag_id = ?""";
             fileMeta = query(select)
                     .single(call().bind(tag.id()))
-                    .map(row -> new FileMeta(row.getString("file_name"),
+                    .map(row -> new FileMeta(
+                            row.getString("file_name"),
                             row.get("created", INSTANT_TIMESTAMP),
                             Author.build(row, "created_id", "created_name", "created_mail"),
                             row.get("modified", INSTANT_TIMESTAMP),
-                            Author.build(row, "modified_id", "modified_name", "modified_mail")
-                    ))
+                            Author.build(row, "modified_id", "modified_name", "modified_mail")))
                     .first()
                     .orElseGet(() -> new FileMeta("none", Instant.EPOCH, Author.NONE, Instant.EPOCH, Author.NONE));
         }

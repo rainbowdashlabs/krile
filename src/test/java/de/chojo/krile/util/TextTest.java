@@ -14,8 +14,7 @@ import java.util.List;
 class TextTest {
 
     @Test
-    void splitByLength() {
-    }
+    void splitByLength() {}
 
     @Test
     void toDiscordMarkdownAndSplit() {
@@ -23,14 +22,14 @@ class TextTest {
                 ```java
                 test
                 ```
-                                
+
                 Normal gap after code block
-                                
+
                 This has to be one line.\s\s
                 This has to be one line as well.\\
                 This line
                 and this line are together.
-                        
+
                 This has to be a new section.
                 ```java
                 test```
@@ -41,8 +40,8 @@ class TextTest {
                 ```java
                 test
                 ```
-                                
-                                
+
+
                 Very wide gap between code block and text""";
         var expected = List.of("""
                 ```java
@@ -53,7 +52,7 @@ class TextTest {
                 This has to be one line.
                 This has to be one line as well.
                 This line and this line are together.
-                        
+
                 This has to be a new section.
                 ```java
                 test``````java
@@ -62,7 +61,7 @@ class TextTest {
                 ```java
                 test
                 ```
-                                
+
                 Very wide gap between code block and text""");
         List<String> result = Text.toDiscordMarkdownAndSplit(text, 2000);
         Assertions.assertEquals(1, result.size());
@@ -71,33 +70,28 @@ class TextTest {
         result = Text.toDiscordMarkdownAndSplit(text, 100);
         Assertions.assertEquals(4, result.size());
 
-        expected = List.of(
-                """
+        expected = List.of("""
                 ```java
                 test
-                ```""",
-                """
-                                        
+                ```""", """
+
                 Normal gap after code block
 
                 This has to be one line.
-                This has to be one line as well.""",
-                """
+                This has to be one line as well.""", """
                 This line and this line are together.
-                                
+
                 This has to be a new section.
                 ```java
-                test```""",
-                """
+                test```""", """
                 ```java
                 test
                 ```no gap after code block
                 ```java
                 test
                 ```
-                                
-                Very wide gap between code block and text"""
-        );
+
+                Very wide gap between code block and text""");
         Assertions.assertEquals(expected, result);
     }
 
@@ -108,13 +102,13 @@ class TextTest {
                 This has to be one line as well.\\
                 This line
                 and this line are together.
-                        
+
                 This has to be a new section.""";
         var expected = """
                 This has to be one line.
                 This has to be one line as well.
                 This line and this line are together.
-                        
+
                 This has to be a new section.""";
         List<String> result = Text.stripTextLineBreaks(text, 2000);
         Assertions.assertEquals(1, result.size());
@@ -145,13 +139,13 @@ class TextTest {
                 Text
                 # - unsorted list
                 - another entry
-                                
+
                 Another text
                 with more text
                 #1. sorted
                 2. list
                 3. nice
-                                
+
                 Text
                 * test
                 * list""";
@@ -159,12 +153,12 @@ class TextTest {
                 Text
                 # - unsorted list
                 - another entry
-                                
+
                 Another text with more text
                 #1. sorted
                 2. list
                 3. nice
-                                
+
                 Text
                 * test
                 * list""";

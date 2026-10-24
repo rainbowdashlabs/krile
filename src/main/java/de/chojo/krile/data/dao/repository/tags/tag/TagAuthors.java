@@ -53,9 +53,7 @@ public class TagAuthors {
         @Language("postgresql")
         var insert = """
                 INSERT INTO tag_author(tag_id, author_id) VALUES(?,?)""";
-        query(insert)
-                .single(call().bind(meta.tag().id()).bind(author.id()))
-                .insert();
+        query(insert).single(call().bind(meta.tag().id()).bind(author.id())).insert();
     }
 
     /**

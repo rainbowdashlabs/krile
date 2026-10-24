@@ -27,9 +27,10 @@ public class Repositories implements SlashProvider<Slash> {
         return Slash.of("repositories", "command.repositories.description")
                 .subCommand(sub("info", "command.repositories.info.description")
                         .handler(new Info(guilds))
-                        .argument(text("repository", "command.repositories.info.options.repository.description").asRequired().withAutoComplete()))
-                .subCommand(sub("list", "command.repositories.list.description")
-                        .handler(new List(guilds)))
+                        .argument(text("repository", "command.repositories.info.options.repository.description")
+                                .asRequired()
+                                .withAutoComplete()))
+                .subCommand(sub("list", "command.repositories.list.description").handler(new List(guilds)))
                 .build();
     }
 }

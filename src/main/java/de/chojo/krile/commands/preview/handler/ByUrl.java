@@ -27,17 +27,24 @@ public class ByUrl extends PreviewBase {
         try {
             uri = URI.create(url);
         } catch (IllegalArgumentException e) {
-            event.reply(context.localize("error.url.invalidsource")).setEphemeral(true).queue();
+            event.reply(context.localize("error.url.invalidsource"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
         HttpRequest build = HttpRequest.newBuilder(uri).GET().build();
 
         try {
-            HttpResponse<String> send = client.sendAsync(build, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)).orTimeout(5, TimeUnit.SECONDS).join();
+            HttpResponse<String> send = client.sendAsync(
+                            build, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
+                    .orTimeout(5, TimeUnit.SECONDS)
+                    .join();
             String body = send.body();
             showTag(body, event, context);
         } catch (Exception e) {
-            event.reply(context.localize("error.repository.import")).setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.import"))
+                    .setEphemeral(true)
+                    .queue();
         }
     }
 }
