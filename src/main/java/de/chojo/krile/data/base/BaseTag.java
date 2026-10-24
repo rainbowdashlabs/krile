@@ -6,7 +6,6 @@
 
 package de.chojo.krile.data.base;
 
-import de.chojo.krile.data.dao.repository.tags.tag.Meta;
 import de.chojo.krile.data.dao.repository.tags.tag.meta.TagType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -25,6 +24,7 @@ public class BaseTag<M extends BaseMeta> {
         this.tag = tag;
         this.text = text;
     }
+
     public BaseTag(String tag, List<String> text, M meta) {
         this.tag = tag;
         this.text = text;
@@ -91,6 +91,4 @@ public class BaseTag<M extends BaseMeta> {
     public String tag() {
         return tag;
     }
-
-
 }

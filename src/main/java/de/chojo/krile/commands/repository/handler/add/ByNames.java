@@ -37,9 +37,12 @@ public class ByNames extends BaseAdd {
         String repo = event.getOption("repository", OptionMapping::getAsString);
         String path = event.getOption("path", OptionMapping::getAsString);
         Identifier identifier = Identifier.of(platform, name, repo, path);
-        Optional<RepositoryLocation> optLocation = configuration().config().repositories().find(identifier);
+        Optional<RepositoryLocation> optLocation =
+                configuration().config().repositories().find(identifier);
         if (optLocation.isEmpty()) {
-            event.reply(context.localize("error.source.invalid")).setEphemeral(true).queue();
+            event.reply(context.localize("error.source.invalid"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
         add(event, context, identifier);
@@ -49,20 +52,26 @@ public class ByNames extends BaseAdd {
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
         AutoCompleteQuery option = event.getFocusedOption();
         if (option.getName().equals("platform")) {
-            List<Command.Choice> complete = Completion.complete(option.getValue(), configuration().config().repositories().repositories().stream().map(RepositoryLocation::name));
+            List<Command.Choice> complete = Completion.complete(
+                    option.getValue(),
+                    configuration().config().repositories().repositories().stream()
+                            .map(RepositoryLocation::name));
             event.replyChoices(complete).queue();
             return;
         }
         if (option.getName().equals("name")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData().completeUser(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData().completeUser(option.getValue())))
+                    .queue();
             return;
         }
         if (option.getName().equals("repo")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData().completeRepository(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData().completeRepository(option.getValue())))
+                    .queue();
             return;
         }
         if (option.getName().equals("path")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData().completePath(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData().completePath(option.getValue())))
+                    .queue();
         }
     }
 }

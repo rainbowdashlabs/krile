@@ -8,7 +8,6 @@ package de.chojo.krile.configuration.elements;
 
 import de.chojo.jdautil.container.Pair;
 import de.chojo.krile.data.dao.Identifier;
-import org.intellij.lang.annotations.RegExp;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,11 +34,17 @@ public record RepositoryLocation(String name, String template, String tld, Strin
     }
 
     public String filePath(String user, String repo, String branch, String path) {
-        return filePath.replace("{user}", user).replace("{repo}", repo).replace("{branch}", branch).replace("{path}", path);
+        return filePath.replace("{user}", user)
+                .replace("{repo}", repo)
+                .replace("{branch}", branch)
+                .replace("{path}", path);
     }
 
     public String dirPath(String user, String repo, String branch, String path) {
-        return dirPath.replace("{user}", user).replace("{repo}", repo).replace("{branch}", branch).replace("{path}", path);
+        return dirPath.replace("{user}", user)
+                .replace("{repo}", repo)
+                .replace("{branch}", branch)
+                .replace("{path}", path);
     }
 
     public String url(Identifier identifier) {

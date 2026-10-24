@@ -56,9 +56,13 @@ public class TagInteractionListener extends ListenerAdapter {
         event.deferReply().setEphemeral(true).queue();
         Optional<Tag> byId = tags.byId(Integer.parseInt(id));
         if (byId.isEmpty()) {
-            event.getHook().editOriginal(localizer.localize("error.tag.notfound", event.getGuild())).queue();
+            event.getHook()
+                    .editOriginal(localizer.localize("error.tag.notfound", event.getGuild()))
+                    .queue();
             return;
         }
-        event.getHook().editOriginalEmbeds(byId.get().infoEmbed(localizer.context(LocaleProvider.guild(event.getGuild())))).queue();
+        event.getHook()
+                .editOriginalEmbeds(byId.get().infoEmbed(localizer.context(LocaleProvider.guild(event.getGuild()))))
+                .queue();
     }
 }

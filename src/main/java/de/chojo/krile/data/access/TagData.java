@@ -50,7 +50,8 @@ public class TagData {
                 LIMIT 1""";
         return query(select)
                 .single()
-                .map(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
+                .map(row -> Tag.build(
+                        row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
                 .first();
     }
 
@@ -109,13 +110,15 @@ public class TagData {
                 LIMIT 50;
                                 """;
         return query(select)
-                .single(call()
-                        .bind(filter.name()).bind(filter.name())
-                        .bind(filter.language()).bind(filter.language())
-                        .bind(filter.category()).bind(filter.category())
-                ).map(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
+                .single(call().bind(filter.name())
+                        .bind(filter.name())
+                        .bind(filter.language())
+                        .bind(filter.language())
+                        .bind(filter.category())
+                        .bind(filter.category()))
+                .map(row -> Tag.build(
+                        row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
                 .all();
-
     }
 
     /**
@@ -162,7 +165,8 @@ public class TagData {
                 WHERE id = ?""";
         return query(select)
                 .single(call().bind(id))
-                .map(row -> Tag.build(row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
+                .map(row -> Tag.build(
+                        row, repositoryData.byId(row.getInt("repository_id")).get(), categoryData, authorData))
                 .first();
     }
 }

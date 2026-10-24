@@ -52,9 +52,7 @@ public class TagCategories {
         @Language("postgresql")
         var insert = """
                 INSERT INTO tag_category(tag_id, category_id) VALUES(?,?)""";
-        query(insert)
-                .single(call().bind(meta.tag().id()).bind(category.id()))
-                .insert();
+        query(insert).single(call().bind(meta.tag().id()).bind(category.id())).insert();
     }
 
     /**

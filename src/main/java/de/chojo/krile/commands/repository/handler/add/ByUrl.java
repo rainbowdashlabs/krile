@@ -27,9 +27,12 @@ public class ByUrl extends BaseAdd {
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         String url = event.getOption("url", OptionMapping::getAsString);
-        Optional<RepositoryLocation> optLocation = configuration().config().repositories().find(url);
+        Optional<RepositoryLocation> optLocation =
+                configuration().config().repositories().find(url);
         if (optLocation.isEmpty()) {
-            event.reply(context.localize("error.url.invalidsource")).setEphemeral(true).queue();
+            event.reply(context.localize("error.url.invalidsource"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
 

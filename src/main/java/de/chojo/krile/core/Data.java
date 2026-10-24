@@ -45,7 +45,8 @@ public class Data {
         this.configuration = configuration;
     }
 
-    public static Data create(Threading threading, Configuration<ConfigFile> configuration) throws SQLException, IOException, InterruptedException {
+    public static Data create(Threading threading, Configuration<ConfigFile> configuration)
+            throws SQLException, IOException, InterruptedException {
         var data = new Data(threading, configuration);
         data.init();
         return data;
@@ -102,10 +103,10 @@ public class Data {
     private void updateDatabase() throws IOException, SQLException {
         var schema = configuration.config().database().schema();
         SqlUpdater.builder(dataSource, PostgreSql.get())
-                  .setReplacements(new QueryReplacement("krile", schema))
-                  .setVersionTable(schema + ".krile_version")
-                  .setSchemas(schema)
-                  .execute();
+                .setReplacements(new QueryReplacement("krile", schema))
+                .setVersionTable(schema + ".krile_version")
+                .setSchemas(schema)
+                .execute();
     }
 
     private void configure() {
@@ -114,9 +115,10 @@ public class Data {
         RowMapperRegistry rowMapperRegistry = new RowMapperRegistry();
         rowMapperRegistry.register(PostgresqlMapper.getDefaultMapper());
         QueryConfiguration.setDefault(QueryConfiguration.builder(dataSource)
-                                                        .setExceptionHandler(err -> logger.error(LogNotify.NOTIFY_ADMIN, "An error occurred during a database request", err))
-                                                        .setRowMapperRegistry(rowMapperRegistry)
-                                                        .build());
+                .setExceptionHandler(
+                        err -> logger.error(LogNotify.NOTIFY_ADMIN, "An error occurred during a database request", err))
+                .setRowMapperRegistry(rowMapperRegistry)
+                .build());
     }
 
     private void initDao() {
@@ -132,16 +134,15 @@ public class Data {
         log.info("Creating connection pool.");
         var data = configuration.config().database();
         return DataSourceCreator.create(PostgreSql.get())
-                                .configure(config -> config
-                                        .host(data.host())
-                                        .port(data.port())
-                                        .user(data.user())
-                                        .password(data.password())
-                                        .database(data.database()))
-                                .create()
-                                .withMaximumPoolSize(data.poolSize())
-                                .withThreadFactory(Threading.createThreadFactory(threading.hikariGroup()))
-                                .forSchema(data.schema())
-                                .build();
+                .configure(config -> config.host(data.host())
+                        .port(data.port())
+                        .user(data.user())
+                        .password(data.password())
+                        .database(data.database()))
+                .create()
+                .withMaximumPoolSize(data.poolSize())
+                .withThreadFactory(Threading.createThreadFactory(threading.hikariGroup()))
+                .forSchema(data.schema())
+                .build();
     }
 }

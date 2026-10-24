@@ -70,11 +70,9 @@ public class Data {
                         row.get("updated", INSTANT_TIMESTAMP),
                         row.get("checked", INSTANT_TIMESTAMP),
                         row.getString("commit"),
-                        row.getString("branch")
-                ))
+                        row.getString("branch")))
                 .first()
                 .get();
-
     }
 
     /**
@@ -88,10 +86,7 @@ public class Data {
                 WHERE repository_id = ?""";
         log.debug("Checked {} for updates", repository.identifier());
 
-        query(update)
-                .single(call().bind(repository.id()))
-                .update()
-        ;
+        query(update).single(call().bind(repository.id())).update();
     }
 
     /**
@@ -105,11 +100,8 @@ public class Data {
                 UPDATE repository_data SET status = ? WHERE repository_id = ?""";
         log.debug("Update for {} failed. Cause: {}", repository.identifier(), reason);
 
-        query(update)
-                .single(call().bind(reason).bind(repository.id()))
-                .update();
+        query(update).single(call().bind(reason).bind(repository.id())).update();
     }
 
-    public record RepositoryData(Instant updated, Instant checked, String commit, String branch) {
-    }
+    public record RepositoryData(Instant updated, Instant checked, String commit, String branch) {}
 }

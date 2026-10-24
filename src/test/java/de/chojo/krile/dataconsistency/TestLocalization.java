@@ -29,14 +29,12 @@ public class TestLocalization {
     private static final Pattern LOCALIZATION_CODE = Pattern.compile("\\$([a-zA-Z.]+?)\\$");
     private static final Pattern SIMPLE_LOCALIZATION_CODE = Pattern.compile("\"([a-zA-Z]+?\\.[a-zA-Z.]+)\"");
     private static final Pattern REPLACEMENTS = Pattern.compile("%[a-zA-Z\\d.]+?%");
-    private static final Set<String> WHITELIST = Set.of("bot.config", "bot.testmode", "bot.cleancommands", "yyyy.MM.dd");
-    private static final Set<String> WHITELIST_ENDS = Set.of(".gg", ".com", "bot.config", ".png", ".json", ".yml", ".yaml");
+    private static final Set<String> WHITELIST =
+            Set.of("bot.config", "bot.testmode", "bot.cleancommands", "yyyy.MM.dd");
+    private static final Set<String> WHITELIST_ENDS =
+            Set.of(".gg", ".com", "bot.config", ".png", ".json", ".yml", ".yaml");
 
-    private static final DiscordLocale[] LOCALES = {
-            DiscordLocale.ENGLISH_US,
-            DiscordLocale.GERMAN
-    };
-
+    private static final DiscordLocale[] LOCALES = {DiscordLocale.ENGLISH_US, DiscordLocale.GERMAN};
 
     @Test
     public void checkKeys() {
@@ -57,8 +55,8 @@ public class TestLocalization {
         var english = resourceBundles.get(DiscordLocale.ENGLISH_US);
         for (var key : english.keySet()) {
             replacements.put(key, getReplacements(english.getString(key)));
-            Assertions.assertFalse(english.getString(key)
-                                          .isBlank(), "Blank string at " + key + "@" + DiscordLocale.ENGLISH_US);
+            Assertions.assertFalse(
+                    english.getString(key).isBlank(), "Blank string at " + key + "@" + DiscordLocale.ENGLISH_US);
         }
 
         for (var resourceBundle : resourceBundles.values()) {
@@ -68,9 +66,10 @@ public class TestLocalization {
                 Assertions.assertFalse(locale.isBlank(), "Blank or unlocalized key at " + keyLoc);
                 var localeReplacements = getReplacements(locale);
                 var defReplacements = replacements.get(key);
-                Assertions.assertTrue(localeReplacements.containsAll(defReplacements),
-                        "Missing replacement key in " + keyLoc
-                        + ". Expected \"" + String.join(", ", defReplacements) + "\". Actual \"" + String.join(", ", localeReplacements) + "\"");
+                Assertions.assertTrue(
+                        localeReplacements.containsAll(defReplacements),
+                        "Missing replacement key in " + keyLoc + ". Expected \"" + String.join(", ", defReplacements)
+                                + "\". Actual \"" + String.join(", ", localeReplacements) + "\"");
             }
         }
     }
@@ -89,14 +88,11 @@ public class TestLocalization {
         var keys = ResourceBundle.getBundle("locale").keySet();
         List<Path> files;
         try (var stream = Files.walk(Path.of("src", "main", "java"))) {
-            files = stream
-                    .filter(p -> p.toFile().isFile())
-                    .collect(Collectors.toCollection(ArrayList::new));
+            files = stream.filter(p -> p.toFile().isFile()).collect(Collectors.toCollection(ArrayList::new));
         }
 
         try (var stream = Files.walk(Path.of("src", "main", "resources"))) {
-            files.addAll(stream
-                    .filter(p -> p.toFile().isFile())
+            files.addAll(stream.filter(p -> p.toFile().isFile())
                     .filter(p -> p.getFileName().startsWith("locale"))
                     .toList());
         }
@@ -120,7 +116,9 @@ public class TestLocalization {
                     localCount++;
                     var key = matcher.group(1);
                     foundKeys.add(key);
-                    Assertions.assertTrue(keys.contains(key) || whitelisted(key), "Found unkown key \"" + key + "\" in " + file + " at line " + currentLine);
+                    Assertions.assertTrue(
+                            keys.contains(key) || whitelisted(key),
+                            "Found unkown key \"" + key + "\" in " + file + " at line " + currentLine);
                 }
 
                 matcher = LOCALIZATION_CODE.matcher(line);
@@ -129,7 +127,9 @@ public class TestLocalization {
                     localCount++;
                     var key = matcher.group(1);
                     foundKeys.add(key);
-                    Assertions.assertTrue(keys.contains(key) || whitelisted(key), "Found unkown key \"" + key + "\" in " + file + " at line " + currentLine);
+                    Assertions.assertTrue(
+                            keys.contains(key) || whitelisted(key),
+                            "Found unkown key \"" + key + "\" in " + file + " at line " + currentLine);
                 }
             }
             System.out.println("Found " + localCount + " key in " + file);

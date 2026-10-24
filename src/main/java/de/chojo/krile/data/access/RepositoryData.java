@@ -69,10 +69,7 @@ public class RepositoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, url, identifier, directory FROM repository WHERE id = ?""";
-        return query(query)
-                .single(call().bind(id))
-                .map(this::buildRepository)
-                .first();
+        return query(query).single(call().bind(id)).map(this::buildRepository).first();
     }
 
     /**
@@ -86,10 +83,7 @@ public class RepositoryData {
         @Language("postgresql")
         var query = """
                 SELECT id, url, identifier, directory FROM repository WHERE url = ?""";
-        return query(query)
-                .single(call().bind(url))
-                .map(this::buildRepository)
-                .all();
+        return query(query).single(call().bind(url)).map(this::buildRepository).all();
     }
 
     /**
@@ -118,17 +112,25 @@ public class RepositoryData {
      * @throws ImportException  If an error occurs during the import process.
      * @throws ParsingException If an error occurs during the parsing process.
      */
-    public Optional<Repository> getOrCreateByIdentifier(Identifier identifier, EventContext context, IDeferrableCallback callback) throws ImportException, ParsingException {
+    public Optional<Repository> getOrCreateByIdentifier(
+            Identifier identifier, EventContext context, IDeferrableCallback callback)
+            throws ImportException, ParsingException {
         Optional<Repository> repository = byIdentifier(identifier);
         if (repository.isPresent()) return repository;
         log.info("Starting integration process for {}", identifier);
-        callback.getHook().editOriginal(context.guildLocale("command.add.message.unknown")).queue();
+        callback.getHook()
+                .editOriginal(context.guildLocale("command.add.message.unknown"))
+                .queue();
         RawRepository rawRepository = RawRepository.remote(configuration, identifier);
         log.info("Cloned repository");
-        callback.getHook().editOriginal(context.guildLocale("command.add.message.parsing")).queue();
+        callback.getHook()
+                .editOriginal(context.guildLocale("command.add.message.parsing"))
+                .queue();
         log.info("Creating database entry");
         Optional<Repository> repo = create(rawRepository);
-        callback.getHook().editOriginal(context.guildLocale("command.add.message.parsing")).queue();
+        callback.getHook()
+                .editOriginal(context.guildLocale("command.add.message.parsing"))
+                .queue();
         log.info("Inserting data");
         repo.get().update(rawRepository);
         log.info("Integration done.");
@@ -248,10 +250,7 @@ public class RepositoryData {
                 ORDER BY random()
                 LIMIT 1""";
 
-        return query(select)
-                .single()
-                .map(this::buildRepository)
-                .first();
+        return query(select).single().map(this::buildRepository).first();
     }
 
     /**
@@ -289,15 +288,21 @@ public class RepositoryData {
                   AND rm.public
                 LIMIT 50""";
         return query(select)
-                .single(call()
-                        .bind(filter.category()).bind(filter.category())
-                        .bind(filter.platform()).bind(filter.platform())
-                        .bind(filter.user()).bind(filter.user())
-                        .bind(filter.repo()).bind(filter.repo())
-                        .bind(filter.name()).bind(filter.name())
-                        .bind(filter.language()).bind(filter.language())
-                        .bind(filter.tags()).bind(filter.tags())
-                ).map(this::buildRepository)
+                .single(call().bind(filter.category())
+                        .bind(filter.category())
+                        .bind(filter.platform())
+                        .bind(filter.platform())
+                        .bind(filter.user())
+                        .bind(filter.user())
+                        .bind(filter.repo())
+                        .bind(filter.repo())
+                        .bind(filter.name())
+                        .bind(filter.name())
+                        .bind(filter.language())
+                        .bind(filter.language())
+                        .bind(filter.tags())
+                        .bind(filter.tags()))
+                .map(this::buildRepository)
                 .all();
     }
 

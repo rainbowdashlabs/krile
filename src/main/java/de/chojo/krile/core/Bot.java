@@ -73,8 +73,8 @@ public class Bot {
     }
 
     private void initShardManager() {
-        shardManager = DefaultShardManagerBuilder
-                .createDefault(configuration.config().baseSettings().token())
+        shardManager = DefaultShardManagerBuilder.createDefault(
+                        configuration.config().baseSettings().token())
                 .enableIntents(GatewayIntent.DIRECT_MESSAGES)
                 .setEnableShutdownHook(false)
                 .setThreadFactory(Threading.createThreadFactory(threading.jdaGroup()))
@@ -86,11 +86,15 @@ public class Bot {
     private void initInteractions() {
         InteractionHub.builder(shardManager)
                 .withCommandErrorHandler((context, throwable) -> {
-                    log.error(LogNotify.NOTIFY_ADMIN, "Command execution of {} failed\n{}",
-                            context.interaction().meta().name(), context.args(), throwable);
+                    log.error(
+                            LogNotify.NOTIFY_ADMIN,
+                            "Command execution of {} failed\n{}",
+                            context.interaction().meta().name(),
+                            context.args(),
+                            throwable);
                 })
-                .withGuildCommandMapper(cmd -> Collections.singletonList(configuration.config().baseSettings()
-                        .botGuild()))
+                .withGuildCommandMapper(cmd -> Collections.singletonList(
+                        configuration.config().baseSettings().botGuild()))
                 .withDefaultMenuService()
                 .withPagination(builder -> builder.previousText("").nextText(""))
                 .withDefaultModalService()

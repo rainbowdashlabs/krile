@@ -67,7 +67,8 @@ public class RawRepository {
      */
     public RawRepository updateIdentifier(Identifier identifier) {
         if (!this.identifier.equalsRepository(identifier)) {
-            throw new IllegalArgumentException("Identifier %s and %s do not share the same url".formatted(this.identifier, identifier));
+            throw new IllegalArgumentException(
+                    "Identifier %s and %s do not share the same url".formatted(this.identifier, identifier));
         }
         return new RawRepository(url, identifier, root, git);
     }
@@ -81,7 +82,8 @@ public class RawRepository {
      * @throws ImportException if there is an error importing the remote repository
      * @throws ParsingException if there is an error parsing the remote repository
      */
-    public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier) throws ImportException, ParsingException {
+    public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier)
+            throws ImportException, ParsingException {
         return remote(configuration, identifier, false);
     }
 
@@ -95,8 +97,10 @@ public class RawRepository {
      * @throws ImportException if there is an error importing the remote repository
      * @throws ParsingException if there is an error parsing the remote repository
      */
-    public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier, boolean flat) throws ImportException, ParsingException {
-        RepositoryLocation location = configuration.config().repositories().find(identifier).get();
+    public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier, boolean flat)
+            throws ImportException, ParsingException {
+        RepositoryLocation location =
+                configuration.config().repositories().find(identifier).get();
         String url = location.url(identifier);
         Path git = null;
         try {
@@ -104,9 +108,7 @@ public class RawRepository {
         } catch (IOException e) {
             throw new ImportException("Could not create temporary file", e);
         }
-        CloneCommand cloneCommand = Git.cloneRepository()
-                .setURI(url)
-                .setDirectory(git.toFile());
+        CloneCommand cloneCommand = Git.cloneRepository().setURI(url).setDirectory(git.toFile());
         if (flat) {
             log.info("Creating flat repo for {}", url);
             cloneCommand.setDepth(1);
@@ -172,7 +174,8 @@ public class RawRepository {
                     tags.add(parse.tag());
                 } catch (ParsingException e) {
                     log.error("Error while parsing file {}", tagPath.getFileName(), e);
-                    throw new ParsingException("Failed to parse file %s%n%s".formatted(tagPath.getFileName(), e.getMessage()), e);
+                    throw new ParsingException(
+                            "Failed to parse file %s%n%s".formatted(tagPath.getFileName(), e.getMessage()), e);
                 }
             }
             return tags;
@@ -291,10 +294,10 @@ public class RawRepository {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (RawRepository) obj;
-        return Objects.equals(this.url, that.url) &&
-               Objects.equals(this.identifier, that.identifier) &&
-               Objects.equals(this.root, that.root) &&
-               Objects.equals(this.git, that.git);
+        return Objects.equals(this.url, that.url)
+                && Objects.equals(this.identifier, that.identifier)
+                && Objects.equals(this.root, that.root)
+                && Objects.equals(this.git, that.git);
     }
 
     @Override
@@ -304,11 +307,11 @@ public class RawRepository {
 
     @Override
     public String toString() {
-        return "RawRepository[" +
-               "url=" + url + ", " +
-               "identifier=" + identifier + ", " +
-               "path=" + root + ", " +
-               "git=" + git + ']';
+        return "RawRepository[" + "url="
+                + url + ", " + "identifier="
+                + identifier + ", " + "path="
+                + root + ", " + "git="
+                + git + ']';
     }
 
     /**
@@ -319,14 +322,15 @@ public class RawRepository {
      */
     private Path findConfigPath() throws ParsingException {
         // TODO: Probably a bot config value
-        final String[] paths = new String[]{".krile", ".github", ".gitlab", ""};
-        final String[] files = new String[]{"krile.yaml", "krile.yml", "krile.json"};
+        final String[] paths = new String[] {".krile", ".github", ".gitlab", ""};
+        final String[] files = new String[] {"krile.yaml", "krile.yml", "krile.json"};
         for (String currPath : paths) {
             for (String currFile : files) {
                 Path resolved = path.resolve(currPath).resolve(currFile);
                 if (resolved.toFile().exists()) return resolved;
             }
         }
-        throw new ParsingException("No configuration file found. Create a file called krile.yaml, krile.yml or krile.json");
+        throw new ParsingException(
+                "No configuration file found. Create a file called krile.yaml, krile.yml or krile.json");
     }
 }

@@ -35,7 +35,8 @@ public class SearchRepo implements SlashHandler {
     private final RepositoryData repositoryData;
     private final CategoryData categoryData;
 
-    public SearchRepo(Configuration<ConfigFile> configuration, RepositoryData repositoryData, CategoryData categoryData) {
+    public SearchRepo(
+            Configuration<ConfigFile> configuration, RepositoryData repositoryData, CategoryData categoryData) {
         this.configuration = configuration;
         this.repositoryData = repositoryData;
         this.categoryData = categoryData;
@@ -54,11 +55,14 @@ public class SearchRepo implements SlashHandler {
         Optional<Category> resolve = categoryData.resolve(category);
 
         if (resolve.isEmpty() && category != null) {
-            event.reply(context.localize("error.category.unknown")).setEphemeral(true).queue();
+            event.reply(context.localize("error.category.unknown"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
 
-        List<Repository> search = repositoryData.search(new RepositoryFilter(resolve.map(Category::id).orElse(null), language, name, platform, user, repo, tags));
+        List<Repository> search = repositoryData.search(new RepositoryFilter(
+                resolve.map(Category::id).orElse(null), language, name, platform, user, repo, tags));
         IPageBag page = PageBuilder.list(search)
                 .syncPage(p -> MessageEditData.fromEmbeds(p.currentElement().infoEmbed(context)))
                 .syncEmptyPage(p -> MessageEditData.fromContent(context.localize("error.repository.notfound")))
@@ -70,30 +74,38 @@ public class SearchRepo implements SlashHandler {
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
         AutoCompleteQuery option = event.getFocusedOption();
 
-
         if (option.getName().equals("category")) {
-            event.replyChoices(repositoryData.completeCategories(option.getValue()).stream().map(e -> new Command.Choice(e.category(), e.id())).toList()).queue();
+            event.replyChoices(repositoryData.completeCategories(option.getValue()).stream()
+                            .map(e -> new Command.Choice(e.category(), e.id()))
+                            .toList())
+                    .queue();
             return;
         }
 
         if (option.getName().equals("language")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData.completeLanguage(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData.completeLanguage(option.getValue())))
+                    .queue();
             return;
         }
 
         if (option.getName().equals("platform")) {
-            List<Command.Choice> complete = Completion.complete(option.getValue(), configuration.config().repositories().repositories().stream().map(RepositoryLocation::name));
+            List<Command.Choice> complete = Completion.complete(
+                    option.getValue(),
+                    configuration.config().repositories().repositories().stream()
+                            .map(RepositoryLocation::name));
             event.replyChoices(complete).queue();
             return;
         }
 
         if (option.getName().equals("user")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData.completeUser(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData.completeUser(option.getValue())))
+                    .queue();
             return;
         }
 
         if (option.getName().equals("repo")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData.completeRepository(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData.completeRepository(option.getValue())))
+                    .queue();
         }
     }
 }

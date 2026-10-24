@@ -44,5 +44,4 @@ public class Info implements SlashProvider<Slash> {
                 .command(new Default(version, configuration))
                 .build();
     }
-
 }

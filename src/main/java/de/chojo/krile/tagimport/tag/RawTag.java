@@ -28,9 +28,11 @@ public record RawTag(RawTagMeta meta, FileMeta fileMeta, String text) {
         return splitText(text, meta);
     }
 
-    public static List<String> splitText(String text, RawTagMeta meta){
-                return Arrays.stream(text.split("<new_page>"))
-                .map(t -> meta.enhanceMarkdown() ? toDiscordMarkdownAndSplit(t, MAX_LENGTH) : splitByLength(t, MAX_LENGTH))
+    public static List<String> splitText(String text, RawTagMeta meta) {
+        return Arrays.stream(text.split("<new_page>"))
+                .map(t -> meta.enhanceMarkdown()
+                        ? toDiscordMarkdownAndSplit(t, MAX_LENGTH)
+                        : splitByLength(t, MAX_LENGTH))
                 .flatMap(Collection::stream)
                 .toList();
     }

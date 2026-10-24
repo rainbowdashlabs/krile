@@ -47,7 +47,9 @@ public class SearchTag implements SlashHandler {
         Optional<Category> resolve = categoryData.resolve(category);
 
         if (resolve.isEmpty() && category != null) {
-            event.reply(context.localize("error.category.unknown")).setEphemeral(true).queue();
+            event.reply(context.localize("error.category.unknown"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
 
@@ -64,11 +66,15 @@ public class SearchTag implements SlashHandler {
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
         AutoCompleteQuery option = event.getFocusedOption();
         if (option.getName().equals("language")) {
-            event.replyChoices(Choice.toStringChoice(repositoryData.completeLanguage(option.getValue()))).queue();
+            event.replyChoices(Choice.toStringChoice(repositoryData.completeLanguage(option.getValue())))
+                    .queue();
             return;
         }
         if (option.getName().equals("category")) {
-            event.replyChoices(tagData.completeCategories(option.getValue()).stream().map(e -> new Command.Choice(e.category(), e.id())).toList()).queue();
+            event.replyChoices(tagData.completeCategories(option.getValue()).stream()
+                            .map(e -> new Command.Choice(e.category(), e.id()))
+                            .toList())
+                    .queue();
         }
     }
 }

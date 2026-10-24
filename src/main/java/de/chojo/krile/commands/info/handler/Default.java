@@ -39,7 +39,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Default implements SlashHandler {
     private static final String SOURCE = "[rainbowdashlabs/krile](https://github.com/rainbowdashlabs/krile)";
     private static final Logger log = getLogger(Default.class);
-    private final HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
+    private final HttpClient client =
+            HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
     private final ObjectMapper mapper = new ObjectMapper()
             .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -61,7 +62,8 @@ public class Default implements SlashHandler {
     @NotNull
     private MessageEmbed getResponse(SlashCommandInteractionEvent event, EventContext context) {
         if (contributors == null || lastFetch.isBefore(Instant.now().minus(5, ChronoUnit.MINUTES))) {
-            var request = HttpRequest.newBuilder().GET()
+            var request = HttpRequest.newBuilder()
+                    .GET()
                     .uri(URI.create("https://api.github.com/repos/rainbowdashlabs/krile/contributors?anon=1"))
                     .header("accept", "application/vnd.github.v3+json")
                     .header("User-Agent", "krile")
@@ -80,7 +82,8 @@ public class Default implements SlashHandler {
             for (var contributor : contributors) {
                 if (ContributorType.BOT == contributor.type) continue;
 
-                var profile = HttpRequest.newBuilder().GET()
+                var profile = HttpRequest.newBuilder()
+                        .GET()
                         .uri(URI.create(contributor.url))
                         .header("accept", "application/vnd.github.v3+json")
                         .header("User-Agent", "krile")
@@ -112,10 +115,10 @@ public class Default implements SlashHandler {
         var links = List.of(
                 getLink("phrases.inviteme", configuration.config().links().invite()),
                 getLink("words.support", configuration.config().links().support()),
-                //getLink("TOS", configuration.config().tos()),
-                getLink( "words.website", configuration.config().links().website())
-                //getLink("FAQ", configuration.config().faq())
-        );
+                // getLink("TOS", configuration.config().tos()),
+                getLink("words.website", configuration.config().links().website())
+                // getLink("FAQ", configuration.config().faq())
+                );
         return String.join(" ᠅ ", links);
     }
 
@@ -135,8 +138,10 @@ public class Default implements SlashHandler {
     private static class Contributor {
         private String login;
         private String url;
+
         @JsonProperty("html_url")
         private String htmlUrl;
+
         private ContributorType type;
     }
 
@@ -144,6 +149,7 @@ public class Default implements SlashHandler {
     private static class GithubProfile {
         private String login;
         private String name;
+
         @JsonProperty("html_url")
         private String htmlUrl;
 

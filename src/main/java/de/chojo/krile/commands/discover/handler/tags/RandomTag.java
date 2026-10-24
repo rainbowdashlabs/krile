@@ -26,10 +26,14 @@ public class RandomTag implements SlashHandler {
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
         Optional<Tag> random = tagData.random();
         if (random.isEmpty()) {
-            event.reply(context.localize("error.tag.notfound")).setEphemeral(true).queue();
+            event.reply(context.localize("error.tag.notfound"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
         Show.showTag(event, context, random.get());
-        event.replyEmbeds(random.get().infoEmbed(context.guildLocalizer())).setEphemeral(true).queue();
+        event.replyEmbeds(random.get().infoEmbed(context.guildLocalizer()))
+                .setEphemeral(true)
+                .queue();
     }
 }

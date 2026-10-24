@@ -6,7 +6,6 @@
 
 package de.chojo.krile.configuration.elements;
 
-
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal", "CanBeFinal"})
 public class Database {
     private String host = "localhost";

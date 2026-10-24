@@ -31,12 +31,17 @@ public class ByIdentifier extends BaseAdd {
         String identifier = event.getOption("identifier", OptionMapping::getAsString);
         Optional<Identifier> parsed = Identifier.parse(identifier);
         if (parsed.isEmpty()) {
-            event.reply(context.localize("error.identifier.invalid")).setEphemeral(true).queue();
+            event.reply(context.localize("error.identifier.invalid"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
-        Optional<RepositoryLocation> optLocation = configuration().config().repositories().find(parsed.get());
+        Optional<RepositoryLocation> optLocation =
+                configuration().config().repositories().find(parsed.get());
         if (optLocation.isEmpty()) {
-            event.reply(context.localize("error.source.invalid")).setEphemeral(true).queue();
+            event.reply(context.localize("error.source.invalid"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
         add(event, context, parsed.get());
@@ -44,6 +49,8 @@ public class ByIdentifier extends BaseAdd {
 
     @Override
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
-        event.replyChoices(Choice.toStringChoice(repositoryData().completeIdentifier(event.getFocusedOption().getValue()))).queue();
+        event.replyChoices(Choice.toStringChoice(repositoryData()
+                        .completeIdentifier(event.getFocusedOption().getValue())))
+                .queue();
     }
 }

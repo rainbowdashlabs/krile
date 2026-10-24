@@ -26,7 +26,8 @@ public class Repositories {
     private final AuthorData authors;
     private final CategoryData categories;
 
-    public Repositories(TagGuild guild, Configuration<ConfigFile> configuration, AuthorData authors, CategoryData categories) {
+    public Repositories(
+            TagGuild guild, Configuration<ConfigFile> configuration, AuthorData authors, CategoryData categories) {
         this.guild = guild;
         this.configuration = configuration;
         this.authors = authors;
@@ -87,9 +88,7 @@ public class Repositories {
                 VALUES (?, ?)
                 ON CONFLICT DO NOTHING""";
 
-        query(insert)
-                .single(call().bind(guild.id()).bind(repository.id()))
-                .insert();
+        query(insert).single(call().bind(guild.id()).bind(repository.id())).insert();
     }
 
     /**
@@ -159,7 +158,5 @@ public class Repositories {
                 .all();
     }
 
-    public record CompletedRepository(int id, String identifier) {
-
-    }
+    public record CompletedRepository(int id, String identifier) {}
 }

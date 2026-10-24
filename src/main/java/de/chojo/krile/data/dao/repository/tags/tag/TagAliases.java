@@ -46,9 +46,7 @@ public class TagAliases {
         @Language("postgresql")
         var insert = """
                 INSERT INTO tag_alias(tag_id, alias) VALUES(?,?)""";
-        query(insert)
-                .single(call().bind(meta.tag().id()).bind(alias))
-                .insert();
+        query(insert).single(call().bind(meta.tag().id()).bind(alias)).insert();
     }
 
     /**

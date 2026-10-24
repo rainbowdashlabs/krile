@@ -33,8 +33,7 @@ public class List implements SlashHandler {
         PageBag page = new PageBag(pages) {
             @Override
             public CompletableFuture<MessageEditData> buildPage() {
-                String message = repositories.page(current(), PAGE_SIZE)
-                        .stream()
+                String message = repositories.page(current(), PAGE_SIZE).stream()
                         .map("%s"::formatted)
                         .collect(Collectors.joining("\n"));
                 MessageEditData tags = MessageEditData.fromEmbeds(new LocalizedEmbedBuilder(context.guildLocalizer())
@@ -45,6 +44,5 @@ public class List implements SlashHandler {
             }
         };
         context.registerPage(page, true);
-
     }
 }

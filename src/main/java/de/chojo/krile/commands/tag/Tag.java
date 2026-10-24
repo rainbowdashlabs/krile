@@ -24,7 +24,9 @@ public class Tag implements SlashProvider<Slash> {
     public Slash slash() {
         return Slash.of("tag", "command.tag.description")
                 .command(new Show(guilds))
-                .argument(text("tag", "command.tag.options.tag.description").withAutoComplete().asRequired())
+                .argument(text("tag", "command.tag.options.tag.description")
+                        .withAutoComplete()
+                        .asRequired())
                 .build();
     }
 }

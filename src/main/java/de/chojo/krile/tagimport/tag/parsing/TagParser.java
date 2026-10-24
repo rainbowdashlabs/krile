@@ -6,7 +6,6 @@
 
 package de.chojo.krile.tagimport.tag.parsing;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -75,7 +74,10 @@ public class TagParser {
         Set<RawAuthor> rawAuthors = new HashSet<>();
         BlameResult blameResult = null;
         try {
-            blameResult = new Git(repository()).blame().setFilePath(relativePath().toString()).call();
+            blameResult = new Git(repository())
+                    .blame()
+                    .setFilePath(relativePath().toString())
+                    .call();
         } catch (GitAPIException e) {
             throw new ImportException("Could not create blame", e);
         }
@@ -119,7 +121,12 @@ public class TagParser {
     public RawTagMeta tagMeta() throws ParsingException, ImportException {
         TagFile file = tagFile();
         String id = tagRepository.tagPath().relativize(filePath).toString().replace(".md", "");
-        String tag = tagRepository.tagPath().relativize(filePath).getFileName().toString().replace(".md", "");
+        String tag = tagRepository
+                .tagPath()
+                .relativize(filePath)
+                .getFileName()
+                .toString()
+                .replace(".md", "");
         return RawTagMeta.parse(file, id, tag);
     }
 
@@ -161,7 +168,10 @@ public class TagParser {
     private FileEvent getTimeModified() throws ImportException {
         Iterable<RevCommit> commits;
         try {
-            commits = new Git(repository()).log().addPath(relativePath().toString()).call();
+            commits = new Git(repository())
+                    .log()
+                    .addPath(relativePath().toString())
+                    .call();
         } catch (GitAPIException e) {
             throw new ImportException(e);
         }
@@ -171,7 +181,8 @@ public class TagParser {
             break;
         }
         if (firstcommit == null) throw new RuntimeException("Could not parse time created");
-        return new FileEvent(firstcommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(firstcommit.getAuthorIdent()));
+        return new FileEvent(
+                firstcommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(firstcommit.getAuthorIdent()));
     }
 
     /**
@@ -183,7 +194,10 @@ public class TagParser {
     private FileEvent getTimeCreated() throws ImportException {
         Iterable<RevCommit> commits;
         try {
-            commits = new Git(repository()).log().addPath(relativePath().toString()).call();
+            commits = new Git(repository())
+                    .log()
+                    .addPath(relativePath().toString())
+                    .call();
         } catch (GitAPIException e) {
             throw new ImportException(e);
         }
@@ -193,7 +207,8 @@ public class TagParser {
             lastCommit = commit;
         }
         if (lastCommit == null) throw new ImportException("Could not parse time modified");
-        return new FileEvent(lastCommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(lastCommit.getAuthorIdent()));
+        return new FileEvent(
+                lastCommit.getCommitterIdent().getWhenAsInstant(), RawAuthor.of(lastCommit.getAuthorIdent()));
     }
 
     private Repository repository() {

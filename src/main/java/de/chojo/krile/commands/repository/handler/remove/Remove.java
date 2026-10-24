@@ -28,27 +28,38 @@ public class Remove implements SlashHandler {
 
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event, EventContext context) {
-        Optional<GuildRepository> optRepo = guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
+        Optional<GuildRepository> optRepo =
+                guilds.guild(event).repositories().byId(event.getOption("repository", OptionMapping::getAsInt));
         if (optRepo.isEmpty()) {
-            event.reply(context.localize("error.repository.unknown")).setEphemeral(true).queue();
+            event.reply(context.localize("error.repository.unknown"))
+                    .setEphemeral(true)
+                    .queue();
             return;
         }
         GuildRepository repository = optRepo.get();
         if (repository.unsubscribe()) {
-            event.reply(context.localize("command.repository.remove.message.removed", Replacement.create("identifier", repository.identifier()))).setEphemeral(true).queue();
+            event.reply(context.localize(
+                            "command.repository.remove.message.removed",
+                            Replacement.create("identifier", repository.identifier())))
+                    .setEphemeral(true)
+                    .queue();
         } else {
-            event.reply("command.repository.remove.message.notsubscribed").setEphemeral(true).queue();
+            event.reply("command.repository.remove.message.notsubscribed")
+                    .setEphemeral(true)
+                    .queue();
         }
     }
 
     @Override
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
-        List<Command.Choice> choices = guilds.guild(event)
-                .repositories()
-                .complete(event.getFocusedOption().getValue())
-                .stream()
-                .map(v -> new Command.Choice(v.identifier(), v.id()))
-                .toList();
+        List<Command.Choice> choices =
+                guilds
+                        .guild(event)
+                        .repositories()
+                        .complete(event.getFocusedOption().getValue())
+                        .stream()
+                        .map(v -> new Command.Choice(v.identifier(), v.id()))
+                        .toList();
         event.replyChoices(choices).queue();
     }
 }

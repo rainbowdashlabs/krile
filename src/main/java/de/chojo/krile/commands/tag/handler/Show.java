@@ -53,32 +53,42 @@ public class Show implements SlashHandler {
     }
 
     public static void showTag(SlashCommandInteractionEvent event, EventContext context, Tag tag) {
-        boolean delete = event.getGuild().getSelfMember().hasPermission(event.getChannel().asGuildMessageChannel(), Permission.VIEW_CHANNEL);
+        boolean delete = event.getGuild()
+                .getSelfMember()
+                .hasPermission(event.getChannel().asGuildMessageChannel(), Permission.VIEW_CHANNEL);
         if (tag.isPaged()) {
-            context.registerPage(new PrivateListPageBag<>(tag.paged(), event.getUser().getIdLong()) {
-                @Override
-                public CompletableFuture<MessageEditData> buildPage() {
-                    MessageEditBuilder builder = new MessageEditBuilder().setContent(currentElement()).setAllowedMentions(Collections.emptyList());
-                    Optional.ofNullable(tag.meta().tagMeta().image()).ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
-                    return CompletableFuture.completedFuture(builder.build());
-                }
+            context.registerPage(
+                    new PrivateListPageBag<>(tag.paged(), event.getUser().getIdLong()) {
+                        @Override
+                        public CompletableFuture<MessageEditData> buildPage() {
+                            MessageEditBuilder builder = new MessageEditBuilder()
+                                    .setContent(currentElement())
+                                    .setAllowedMentions(Collections.emptyList());
+                            Optional.ofNullable(tag.meta().tagMeta().image())
+                                    .ifPresent(image -> builder.setEmbeds(
+                                            new EmbedBuilder().setImage(image).build()));
+                            return CompletableFuture.completedFuture(builder.build());
+                        }
 
-                @Override
-                public List<PageButton> buttons() {
-                    PageButton info = PageButton.of(p -> infoButton(tag), (p, ctx) -> Consumers.empty());
-                    if (!delete) return List.of(info);
-                    return List.of(PageButton.of(p -> deleteButton(event.getUser()), (p, ctx) -> Consumers.empty()), info);
-                }
-            });
+                        @Override
+                        public List<PageButton> buttons() {
+                            PageButton info = PageButton.of(p -> infoButton(tag), (p, ctx) -> Consumers.empty());
+                            if (!delete) return List.of(info);
+                            return List.of(
+                                    PageButton.of(p -> deleteButton(event.getUser()), (p, ctx) -> Consumers.empty()),
+                                    info);
+                        }
+                    });
             return;
         }
 
-        MessageCreateBuilder builder = new MessageCreateBuilder()
-                .setAllowedMentions(Collections.emptyList());
+        MessageCreateBuilder builder = new MessageCreateBuilder().setAllowedMentions(Collections.emptyList());
         switch (tag.meta().tagMeta().type()) {
             case TEXT -> {
                 builder.setContent(tag.text());
-                Optional.ofNullable(tag.meta().tagMeta().image()).ifPresent(image -> builder.setEmbeds(new EmbedBuilder().setImage(image).build()));
+                Optional.ofNullable(tag.meta().tagMeta().image())
+                        .ifPresent(image -> builder.setEmbeds(
+                                new EmbedBuilder().setImage(image).build()));
             }
             case EMBED -> {
                 if (!tag.text().isBlank()) builder.setContent(tag.text());
@@ -114,7 +124,9 @@ public class Show implements SlashHandler {
 
     @Override
     public void onAutoComplete(CommandAutoCompleteInteractionEvent event, EventContext context) {
-        List<Command.Choice> choices = guilds.guild(event).tags()
+        List<Command.Choice> choices = guilds
+                .guild(event)
+                .tags()
                 .complete(event.getFocusedOption().getValue())
                 .stream()
                 .map(e -> new Command.Choice(e.name(), e.id()))

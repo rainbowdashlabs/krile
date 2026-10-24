@@ -28,11 +28,11 @@ public class Tags implements SlashProvider<Slash> {
         return Slash.of("tags", "command.tags.description")
                 .subCommand(sub("info", "command.tags.info.description")
                         .handler(new Info(guilds))
-                        .argument(Argument.text("tag", "command.tags.info.options.tag.description").withAutoComplete().asRequired()))
-                .subCommand(sub("list", "command.tags.list.description")
-                        .handler(new List(guilds)))
-                .subCommand(sub("random", "command.tags.random.description")
-                        .handler(new Random(guilds)))
+                        .argument(Argument.text("tag", "command.tags.info.options.tag.description")
+                                .withAutoComplete()
+                                .asRequired()))
+                .subCommand(sub("list", "command.tags.list.description").handler(new List(guilds)))
+                .subCommand(sub("random", "command.tags.random.description").handler(new Random(guilds)))
                 .build();
     }
 }

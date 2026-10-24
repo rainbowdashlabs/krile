@@ -33,6 +33,5 @@ public class FileMeta {
         return fileName;
     }
 
-    public record FileEvent(Instant when, Author who) {
-    }
+    public record FileEvent(Instant when, Author who) {}
 }

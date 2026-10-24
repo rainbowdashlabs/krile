@@ -38,21 +38,30 @@ public abstract class BaseAdd implements SlashHandler {
     }
 
     public void add(SlashCommandInteractionEvent event, EventContext context, Identifier identifier) {
-        event.reply(context.guildLocale("command.add.message.resolving")).setEphemeral(true).queue();
+        event.reply(context.guildLocale("command.add.message.resolving"))
+                .setEphemeral(true)
+                .queue();
         Optional<Repository> repository;
         try {
             repository = repositoryData.getOrCreateByIdentifier(identifier, context, event);
         } catch (ParsingException e) {
-            event.getHook().editOriginal(context.guildLocale("error.repository.parsing", Replacement.create("error", e.getMessage()))).queue();
+            event.getHook()
+                    .editOriginal(context.guildLocale(
+                            "error.repository.parsing", Replacement.create("error", e.getMessage())))
+                    .queue();
             log.error("Error while parsing", e);
             return;
         } catch (ImportException e) {
             log.error(LogNotify.NOTIFY_ADMIN, "Could not import repository", e);
-            event.getHook().editOriginal(context.guildLocale("error.repository.import")).queue();
+            event.getHook()
+                    .editOriginal(context.guildLocale("error.repository.import"))
+                    .queue();
             return;
         }
         guilds.guild(event.getGuild()).repositories().add(repository.get());
-        event.getHook().editOriginal(context.localize("command.add.message.added")).queue();
+        event.getHook()
+                .editOriginal(context.localize("command.add.message.added"))
+                .queue();
     }
 
     public Configuration<ConfigFile> configuration() {

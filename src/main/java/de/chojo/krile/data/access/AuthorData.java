@@ -19,7 +19,8 @@ import static de.chojo.sadu.queries.api.call.Call.call;
 import static de.chojo.sadu.queries.api.query.Query.query;
 
 public class AuthorData {
-    private final Cache<Integer, Author> authorCache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
+    private final Cache<Integer, Author> authorCache =
+            CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
 
     public Optional<Author> getOrCreate(RawAuthor author) {
         return get(author).or(() -> create(author));
@@ -88,9 +89,6 @@ public class AuthorData {
         @Language("postgresql")
         var query = """
                 SELECT id, name, mail FROM author WHERE id = ?""";
-        return query(query)
-                .single(call().bind(id))
-                .map(Author::build)
-                .first();
+        return query(query).single(call().bind(id)).map(Author::build).first();
     }
 }

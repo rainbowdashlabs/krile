@@ -53,7 +53,8 @@ public class RepoUpdateService implements Runnable {
      * @param repositoryData the RepositoryData object containing the repository data
      * @return a new instance of RepoUpdateService
      */
-    public static RepoUpdateService create(Threading threading, Configuration<ConfigFile> configuration, RepositoryData repositoryData) {
+    public static RepoUpdateService create(
+            Threading threading, Configuration<ConfigFile> configuration, RepositoryData repositoryData) {
         log.info("Starting repository update service");
         RepoUpdateService repoUpdateService = new RepoUpdateService(configuration, repositoryData);
         threading.botWorker().scheduleAtFixedRate(repoUpdateService, 30, 30, TimeUnit.SECONDS);
@@ -108,7 +109,10 @@ public class RepoUpdateService implements Runnable {
             return;
         }
 
-        log.info("Repository {} is outdated. Performing update for {} outdated repositories", first.url(), repositories.size());
+        log.info(
+                "Repository {} is outdated. Performing update for {} outdated repositories",
+                first.url(),
+                repositories.size());
         try (var raw = RawRepository.remote(configuration, first.identifier())) {
             for (Repository repo : repositories) {
                 updateRepository(raw.updateIdentifier(repo.identifier()), repo);
@@ -129,7 +133,8 @@ public class RepoUpdateService implements Runnable {
      * The method adds the least updated repositories to the repository queue for further processing.
      */
     void schedule() {
-        repositoryQueue.addAll(repositoryData.leastUpdated(configuration.config().repositories().check(), 10));
+        repositoryQueue.addAll(repositoryData.leastUpdated(
+                configuration.config().repositories().check(), 10));
     }
 
     /**

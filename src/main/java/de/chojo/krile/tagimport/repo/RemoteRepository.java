@@ -34,9 +34,7 @@ public class RemoteRepository extends RawRepository implements Closeable {
     public void close() throws IOException {
         git().close();
         try (var stream = Files.walk(root())) {
-            stream.sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
+            stream.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
         }
     }
 }

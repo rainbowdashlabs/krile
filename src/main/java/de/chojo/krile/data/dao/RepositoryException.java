@@ -12,7 +12,6 @@ import de.chojo.krile.tagimport.repo.RawRepository;
  * Represents an exception that occurs when a repository update fails.
  * Extends the RuntimeException class.
  */
-
 public class RepositoryException extends RuntimeException {
     /**
      * Creates a new instance of RepositoryException with the given repository and message.
@@ -44,6 +43,4 @@ public class RepositoryException extends RuntimeException {
     public RepositoryException(RawRepository repo, Throwable cause) {
         super("Failed to update Repo: %s".formatted(repo.url()), cause);
     }
-
-
 }

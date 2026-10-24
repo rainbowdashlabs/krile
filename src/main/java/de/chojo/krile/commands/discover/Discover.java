@@ -29,7 +29,11 @@ public class Discover implements SlashProvider<Slash> {
     private final Configuration<ConfigFile> configuration;
     private final CategoryData categoryData;
 
-    public Discover(RepositoryData repositoryData, TagData tagData, Configuration<ConfigFile> configuration, CategoryData categoryData) {
+    public Discover(
+            RepositoryData repositoryData,
+            TagData tagData,
+            Configuration<ConfigFile> configuration,
+            CategoryData categoryData) {
         this.repositoryData = repositoryData;
         this.tagData = tagData;
         this.configuration = configuration;
@@ -42,27 +46,40 @@ public class Discover implements SlashProvider<Slash> {
                 .group(group("repositories", "command.discover.repositories.description")
                         .subCommand(sub("search", "command.discover.repositories.search.description")
                                 .handler(new SearchRepo(configuration, repositoryData, categoryData))
-                                .argument(text("category", "command.discover.repositories.search.options.category.description").withAutoComplete())
-                                .argument(text("language", "command.discover.repositories.search.options.language.description").withAutoComplete())
+                                .argument(text(
+                                                "category",
+                                                "command.discover.repositories.search.options.category.description")
+                                        .withAutoComplete())
+                                .argument(text(
+                                                "language",
+                                                "command.discover.repositories.search.options.language.description")
+                                        .withAutoComplete())
                                 .argument(text("name", "command.discover.repositories.search.options.name.description"))
-                                .argument(text("platform", "command.discover.repositories.search.options.platform.description").withAutoComplete())
-                                .argument(text("user", "command.discover.repositories.search.options.user.description").withAutoComplete())
-                                .argument(text("repository", "command.discover.repositories.search.options.repository.description").withAutoComplete())
-                                .argument(integer("tags", "command.discover.repositories.search.options.tags.description").withAutoComplete())
-                        )
+                                .argument(text(
+                                                "platform",
+                                                "command.discover.repositories.search.options.platform.description")
+                                        .withAutoComplete())
+                                .argument(text("user", "command.discover.repositories.search.options.user.description")
+                                        .withAutoComplete())
+                                .argument(text(
+                                                "repository",
+                                                "command.discover.repositories.search.options.repository.description")
+                                        .withAutoComplete())
+                                .argument(
+                                        integer("tags", "command.discover.repositories.search.options.tags.description")
+                                                .withAutoComplete()))
                         .subCommand(sub("random", "command.discover.repositories.random.description")
-                                .handler(new RandomRepo(repositoryData)))
-                )
+                                .handler(new RandomRepo(repositoryData))))
                 .group(group("tags", "command.discover.tags.description")
                         .subCommand(sub("search", "command.discover.tags.search.description")
                                 .handler(new SearchTag(tagData, repositoryData, categoryData))
-                                .argument(text("category", "command.discover.tags.search.options.category.description").withAutoComplete())
-                                .argument(text("language", "command.discover.tags.search.options.language.description").withAutoComplete())
-                                .argument(text("name", "command.discover.tags.search.options.name.description"))
-                        )
+                                .argument(text("category", "command.discover.tags.search.options.category.description")
+                                        .withAutoComplete())
+                                .argument(text("language", "command.discover.tags.search.options.language.description")
+                                        .withAutoComplete())
+                                .argument(text("name", "command.discover.tags.search.options.name.description")))
                         .subCommand(sub("random", "command.discover.tags.random.description")
-                                .handler(new RandomTag(tagData)))
-                )
+                                .handler(new RandomTag(tagData))))
                 .build();
     }
 }

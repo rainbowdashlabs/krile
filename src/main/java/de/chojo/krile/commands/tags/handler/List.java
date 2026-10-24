@@ -34,9 +34,7 @@ public class List implements SlashHandler {
         PageBag page = new PageBag(pages) {
             @Override
             public CompletableFuture<MessageEditData> buildPage() {
-                String message = guild.tags()
-                        .rankingPage(current(), PAGE_SIZE)
-                        .stream()
+                String message = guild.tags().rankingPage(current(), PAGE_SIZE).stream()
                         .map("%s"::formatted)
                         .collect(Collectors.joining("\n"));
                 MessageEditData tags = MessageEditData.fromEmbeds(new LocalizedEmbedBuilder(context.guildLocalizer())
