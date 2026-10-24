@@ -19,12 +19,12 @@ import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.repository.tags.Tag;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode;
@@ -60,14 +59,14 @@ public class Show implements SlashHandler {
             context.registerPage(
                     new PrivateListPageBag<>(tag.paged(), event.getUser().getIdLong()) {
                         @Override
-                        public CompletableFuture<MessageEditData> buildPage() {
+                        public MessageEditData buildPage() {
                             MessageEditBuilder builder = new MessageEditBuilder()
                                     .setContent(currentElement())
                                     .setAllowedMentions(Collections.emptyList());
                             Optional.ofNullable(tag.meta().tagMeta().image())
                                     .ifPresent(image -> builder.setEmbeds(
                                             new EmbedBuilder().setImage(image).build()));
-                            return CompletableFuture.completedFuture(builder.build());
+                            return builder.build();
                         }
 
                         @Override

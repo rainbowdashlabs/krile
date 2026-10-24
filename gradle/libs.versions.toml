@@ -3,7 +3,7 @@ palantir = "2.102.0"
 spotless = "8.10.4"
 shadow = "9.6.1"
 
-cjda-util = "2.10.3+jda-5.1.0"
+cjda-util = "2.15.0+jda-6.3.0"
 jgit = "7.8.0.202609011348-r"
 jackson = "2.22.4"
 postgresql = "42.7.14"
