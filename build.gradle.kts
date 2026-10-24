@@ -83,6 +83,9 @@ tasks {
     }
 
     shadowJar {
+        filesMatching(listOf("META-INF/services/**", "**/Log4j2Plugins.dat")) {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
         transform(Log4j2PluginsCacheFileTransformer::class.java)
         mergeServiceFiles()
         manifest {
