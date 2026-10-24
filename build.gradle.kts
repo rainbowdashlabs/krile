@@ -6,9 +6,6 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
-group = "de.chojo"
-version = "1.1.2"
-
 repositories {
     mavenCentral()
     maven("https://eldonexus.de/repository/maven-public/")
@@ -63,15 +60,13 @@ dependencies {
 
 tasks {
     processResources {
-        from(sourceSets.main.get().resources.srcDirs) {
-            filesMatching("version") {
-                expand(
-                        "version" to project.version
-                )
-            }
-            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        val version = project.version.toString()
+        inputs.property("version", version)
+        filesMatching("version") {
+            expand("version" to version)
         }
     }
+
     compileJava {
         options.encoding = "UTF-8"
     }
