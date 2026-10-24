@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+sidebar_label: Meta
+---
+
 # Tag Meta
 
 The tag meta is at the top of the file.

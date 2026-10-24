@@ -1,3 +1,8 @@
+---
+sidebar_position: 5
+sidebar_label: Privacy Policy
+---
+
 # Privacy
 
 Krile does not store any user-specific data.

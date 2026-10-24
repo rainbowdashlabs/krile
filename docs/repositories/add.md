@@ -1,3 +1,8 @@
+---
+sidebar_position: 3
+sidebar_label: Add
+---
+
 # Add a repository
 
 There are multiple ways to add a repository.

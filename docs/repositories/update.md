@@ -1,3 +1,8 @@
+---
+sidebar_position: 4
+sidebar_label: Update
+---
+
 # Update a repository
 
 Repositories are checked regularly for updates.

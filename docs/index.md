@@ -1,3 +1,8 @@
+---
+title: Krile
+sidebar_position: 0
+---
+
 # Krile
 
 Krile is a **tag bot**.

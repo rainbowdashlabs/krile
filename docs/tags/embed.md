@@ -1,3 +1,8 @@
+---
+sidebar_position: 4
+sidebar_label: Embed
+---
+
 # Embed Tag
 
 An embed tag uses a json object to build an embed.
