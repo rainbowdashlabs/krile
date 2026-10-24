@@ -4,7 +4,7 @@ The tag meta is at the top of the file.
 It is optional, but provides further configuration of a tag.
 It starts and end with `---`.
 
-After that the [content](https://krile.chojo.dev/tags/#content) follows.
+After that the [content](https://docs.chojo.dev/krile/tags#content) follows.
 If you do not set a meta you can directly start with the content.
 
 A complete meta looks like this:

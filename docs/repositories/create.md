@@ -1,3 +1,8 @@
+---
+sidebar_position: 2
+sidebar_label: Create
+---
+
 # Create a repository
 
 Repositories contain tags. One git repository can contain multiple Krile repositories.

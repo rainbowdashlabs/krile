@@ -1,3 +1,8 @@
+---
+sidebar_position: 3
+sidebar_label: Paginated
+---
+
 # Paginated Tag
 
 If your [Markdown tag](markdown.md) reaches 2000 characters is will become a paginated tag.

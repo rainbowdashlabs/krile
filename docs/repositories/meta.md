@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+sidebar_label: Meta
+---
+
 # Repository Meta
 
 The repository meta allows you to add additional data to your repository.

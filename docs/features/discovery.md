@@ -1,3 +1,8 @@
+---
+sidebar_position: 1
+sidebar_label: Discovery
+---
+
 # Discovery
 
 Discovery is located under the `/discover` command.

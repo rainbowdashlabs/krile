@@ -51,6 +51,11 @@
           "items": {
             "type": "string"
           }
+        },
+        "deep": {
+          "type": "boolean",
+          "default": false,
+          "description": "Process files in subdirectories of the directory as well.\nDefault is false"
         }
       },
       "required": [],

@@ -1,18 +1,39 @@
-[![wakatime](https://wakatime.com/badge/user/59659c8f-065c-4750-9d78-132c2e51f4bf/project/84590aa1-1fc9-4672-bfbf-7fc9e2174572.svg)](https://wakatime.com/badge/user/59659c8f-065c-4750-9d78-132c2e51f4bf/project/84590aa1-1fc9-4672-bfbf-7fc9e2174572)
-
 # Krile
 
-Krile is a discord bot to manage public provided tags.
+Krile is a Discord bot to manage publicly provided tags.
 Those tags are provided by git repositories.
 
 Servers can import the repositories they need and make the tags inside them available to their community.
 
-You can either use the docker image or the [public instance](https://discord.com/oauth2/authorize?client_id=1126568385732419615&scope=bot&permissions=274877959168) provided by me.
+Documentation: https://docs.chojo.dev/krile
 
-If you want to learn how to use the bot take a look at the [website](https://krile.chojo.dev/).
+- [Importing an existing repository](https://docs.chojo.dev/krile/repositories/add)
+- [Setting up a repository](https://docs.chojo.dev/krile/repositories/create)
+- [Setting up a tag](https://docs.chojo.dev/krile/tags)
 
-Here is a quick reference if you don't know where to start
+## Use it
 
-- [Importing an existing repository](https://krile.chojo.dev/repositories/add/)
-- [Setting up a repository](https://krile.chojo.dev/repositories/create/)
-- [Setting up a tag](https://krile.chojo.dev/tags/)
+Invite the [public instance](https://discord.com/oauth2/authorize?client_id=1126568385732419615&scope=bot&permissions=274877959168).
+
+## Run it yourself
+
+You need Docker and a PostgreSQL database. The image is `ghcr.io/rainbowdashlabs/krile`: `latest` is the newest
+release, `dev` follows the `main` branch.
+
+[`compose.yml`](compose.yml) starts the bot together with PostgreSQL. The bot reads `config/config.json` and
+`config/log4j2.xml` from the mounted `config` folder.
+
+## Build
+
+Java 25 is required.
+
+```bash
+./gradlew build
+```
+
+The runnable jar is `build/libs/krile-<version>-all.jar`. Start it with
+`java -Dbot.config=config/config.json -jar krile-<version>-all.jar`.
+
+## Licence
+
+[AGPL-3.0-only](LICENSE.md)

@@ -12,8 +12,8 @@ public class Links {
     private String invite =
             "https://discord.com/oauth2/authorize?client_id=1126568385732419615&scope=bot&permissions=274877959168";
     private String support = "";
-    private String website = "https://rainbowdashlabs.github.io/krile/";
-    private String faq = "https://rainbowdashlabs.github.io/krile/faq";
+    private String website = "https://docs.chojo.dev/krile";
+    private String faq = "https://docs.chojo.dev/krile";
 
     public String tos() {
         return tos;

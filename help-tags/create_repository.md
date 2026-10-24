@@ -13,7 +13,7 @@ This file can be located at:
 - .krile
 
 You can also leave the file empty if you just want the basic functionality.
-For the available values see the [repository meta](https://krile.chojo.dev/repositories/meta/) page.
+For the available values see the [repository meta](https://docs.chojo.dev/krile/repositories/meta) page.
 
 Note: You can also use `krile.json` if you like json more. A schema is also available.
 ```json
@@ -25,7 +25,7 @@ Note: You can also use `krile.json` if you like json more. A schema is also avai
 ## Setting up a sub repository
 
 If you do not want to directly include all your tags in one repository and want a more fine-grained distribution you can make use of sub repositories.
-However, this will only allow users to import your repository via the [identifier](https://krile.chojo.dev/repositories/add/#identifier).
+However, this will only allow users to import your repository via the [identifier](https://docs.chojo.dev/krile/repositories/add#identifier).
 To declare a sub repository all you need to do is create a directory with a krile repository configuration in it.
 Tags can still be in a subdirectory, however the directory is now resolved from the directory your configuration is in.
 

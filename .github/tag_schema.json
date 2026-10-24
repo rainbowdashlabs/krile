@@ -8,7 +8,7 @@
             "properties": {
                 "id": {
                     "type": "string",
-                  "description": "Change the tag id.\nBy default the tag id will be the file name without .md\nSetting the id here is helpful if you rename the file, but want to stick with the id.\nThe id is used for e.g. counting statistics."
+                    "description": "Change the tag id.\nBy default the tag id will be the file name without .md\nSetting the id here is helpful if you rename the file, but want to stick with the id.\nThe id is used for e.g. counting statistics."
                 },
                 "tag": {
                     "type": "string",
@@ -47,14 +47,25 @@
                 "type": {
                     "description": "Type of the tag",
                     "type": "string",
-                    "enum": ["EMBED", "TEXT"]
+                    "enum": [
+                        "EMBED",
+                        "TEXT"
+                    ]
+                },
+                "enhanceMarkdown": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Convert GitHub markdown to a more compact Discord markdown representation.\nDefault is true"
+                },
+                "$schema": {
+                    "type": "string",
+                    "description": ""
                 }
             },
             "default": {
                 "type": "TEXT"
             },
-            "required": [
-            ],
+            "required": [],
             "title": "Welcome1"
         }
     }
