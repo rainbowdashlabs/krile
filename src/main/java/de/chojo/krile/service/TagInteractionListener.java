@@ -30,7 +30,7 @@ public class TagInteractionListener extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-        String[] split = event.getButton().getId().split(":");
+        String[] split = event.getButton().getCustomId().split(":");
         if (split.length <= 2) return;
         String action = split[split.length - 2];
         if (action.equals("delete")) {

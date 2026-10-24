@@ -9,8 +9,8 @@ package de.chojo.krile.commands.preview.handler;
 import de.chojo.jdautil.modals.handler.ModalHandler;
 import de.chojo.jdautil.modals.handler.TextInputHandler;
 import de.chojo.jdautil.wrapper.EventContext;
+import net.dv8tion.jda.api.components.textinput.TextInputStyle;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 public class ByModal extends PreviewBase {
     @Override

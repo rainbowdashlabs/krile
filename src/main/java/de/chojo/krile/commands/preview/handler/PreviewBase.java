@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class PreviewBase implements SlashHandler {
     public void showTag(String text, IReplyCallback event, EventContext context) {
@@ -53,7 +52,7 @@ public abstract class PreviewBase implements SlashHandler {
                             new PrivateListPageBag<>(
                                     tag.paged(), event.getUser().getIdLong()) {
                                 @Override
-                                public CompletableFuture<MessageEditData> buildPage() {
+                                public MessageEditData buildPage() {
                                     MessageEditBuilder builder = new MessageEditBuilder()
                                             .setContent(currentElement())
                                             .setAllowedMentions(Collections.emptyList());
@@ -61,7 +60,7 @@ public abstract class PreviewBase implements SlashHandler {
                                             .ifPresent(image -> builder.setEmbeds(new EmbedBuilder()
                                                     .setImage(image)
                                                     .build()));
-                                    return CompletableFuture.completedFuture(builder.build());
+                                    return builder.build();
                                 }
                             },
                             true);

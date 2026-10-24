@@ -15,7 +15,6 @@ import de.chojo.krile.data.dao.tagguild.Repositories;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class List implements SlashHandler {
@@ -32,7 +31,7 @@ public class List implements SlashHandler {
         int pages = Math.ceilDiv(repositories.count(), PAGE_SIZE);
         PageBag page = new PageBag(pages) {
             @Override
-            public CompletableFuture<MessageEditData> buildPage() {
+            public MessageEditData buildPage() {
                 String message = repositories.page(current(), PAGE_SIZE).stream()
                         .map("%s"::formatted)
                         .collect(Collectors.joining("\n"));
@@ -40,7 +39,7 @@ public class List implements SlashHandler {
                         .setTitle("words.repositories")
                         .setDescription(message)
                         .build());
-                return CompletableFuture.completedFuture(tags);
+                return tags;
             }
         };
         context.registerPage(page, true);
