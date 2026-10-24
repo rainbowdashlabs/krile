@@ -29,15 +29,15 @@ spotless {
 
 
 dependencies {
-    implementation("org.eclipse.jgit:org.eclipse.jgit:7.3.0.202506031305-r")
-    implementation("de.chojo", "cjda-util", "2.10.3+jda-5.1.0") {
+    implementation("org.eclipse.jgit:org.eclipse.jgit:7.8.0.202609011348-r")
+    implementation("de.chojo", "cjda-util", "2.15.0+jda-6.3.0") {
         exclude(group = "club.minnced", module = "opus-java")
     }
 
-    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.2")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.22.4")
 
     // database
-    implementation("org.postgresql", "postgresql", "42.7.7")
+    implementation("org.postgresql", "postgresql", "42.7.14")
     implementation(libs.bundles.sadu)
 
     // Logging
@@ -46,7 +46,7 @@ dependencies {
         exclude("org.apache.logging.log4j")
     }
 
-    testImplementation(platform("org.junit:junit-bom:5.11.3"))
+    testImplementation(platform("org.junit:junit-bom:5.14.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation(kotlin("stdlib-jdk8"))
 }
