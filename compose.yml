@@ -10,7 +10,7 @@ services:
   postgres:
     networks:
       - krile
-    image: postgres:17.11
+    image: postgres:18.6
     expose:
       - 5432
     volumes:
