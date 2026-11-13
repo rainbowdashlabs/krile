@@ -1,13 +1,13 @@
 [versions]
 palantir = "2.102.0"
-spotless = "8.10.4"
+spotless = "8.11.0"
 shadow = "9.6.1"
 
 cjda-util = "2.15.0+jda-6.3.0"
-jgit = "7.8.0.202609011348-r"
-jackson = "2.22.4"
+jgit = "7.8.1.202611041320-r"
+jackson = "2.23.0"
 postgresql = "42.7.14"
-sadu = "2.4.0"
+sadu = "2.4.2"
 log4j = "2.26.1"
 slf4j = "2.0.20"
 log-util = "1.0.1"
