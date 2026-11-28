@@ -22,6 +22,9 @@ public class Text {
     private static final Pattern PULL_TEXT_TO_CODE =
             Pattern.compile("```E\\R", Pattern.MULTILINE + Pattern.UNICODE_CASE);
     private static final Pattern LIST_ENTRY = Pattern.compile("^#*? *?([0-9]+?|[*-])", Pattern.UNICODE_CASE);
+    private static final Pattern HEADING = Pattern.compile("^#{1,6}\\s", Pattern.UNICODE_CASE);
+    private static final Pattern LEADING_LINE_MARKER = Pattern.compile("^\\{\\{ li }}");
+    private static final Pattern LINE_MARKER = Pattern.compile("(?:\\R| )?\\{\\{ li }}");
 
     /**
      * Splits the given text into chunks of maximum length specified by maxLength parameter.
@@ -78,7 +81,7 @@ public class Text {
                 }
                 codeBlock = !codeBlock;
             } else {
-                collect.add(escapeList(line));
+                collect.add(escapeLine(line));
             }
         }
 
@@ -87,7 +90,7 @@ public class Text {
         blocks = compressChunks(blocks, maxLength, "\n");
         return blocks.stream()
                 .map(Text::compressCodeBlocks)
-                .map(Text::unescapeList)
+                .map(Text::unescapeLine)
                 .toList();
     }
 
@@ -121,14 +124,34 @@ public class Text {
         return splitByLength(cleaned, maxLength);
     }
 
-    private static String escapeList(String line) {
+    /**
+     * Marks lines that have to keep their own line when markdown line breaks are stripped.
+     * List entries and headings start on a new line. Headings also end with a hard line break, so the next line is
+     * never merged into them.
+     *
+     * @param line line to escape
+     * @return escaped line
+     */
+    private static String escapeLine(String line) {
+        if (HEADING.matcher(line).find()) {
+            return "{{ li }}%s\\".formatted(line);
+        }
         if (LIST_ENTRY.matcher(line).find()) {
             return "{{ li }}%s".formatted(line);
         }
         return line;
     }
 
-    private static String unescapeList(String line) {
-        return line.replaceAll(" ?\\{\\{ li \\}\\}", "\n");
+    /**
+     * Replaces the markers set by {@link #escapeLine(String)} with a single line break.
+     * A marker at the start of the text is removed, and a line break or space directly before a marker is absorbed,
+     * so a marked line never adds an empty line.
+     *
+     * @param text text with markers
+     * @return text with line breaks
+     */
+    private static String unescapeLine(String text) {
+        String withoutLeading = LEADING_LINE_MARKER.matcher(text).replaceFirst("");
+        return LINE_MARKER.matcher(withoutLeading).replaceAll("\n");
     }
 }

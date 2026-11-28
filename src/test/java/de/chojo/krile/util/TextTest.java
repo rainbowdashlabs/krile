@@ -168,6 +168,26 @@ class TextTest {
     }
 
     @Test
+    void preserveHeadings() {
+        var text = """
+                # Title
+                First line
+                second line
+                ## Section
+                Text below the section
+                ### Last heading""";
+        var expected = """
+                # Title
+                First line second line
+                ## Section
+                Text below the section
+                ### Last heading""";
+
+        var result = Text.toDiscordMarkdownAndSplit(text, 2000);
+        Assertions.assertEquals(List.of(expected), result);
+    }
+
+    @Test
     void compressChunks() {
         List<String> chunks = List.of("", "test", "test2", "", "test");
         List<String> result = Text.compressChunks(chunks, 2000, "\n");
