@@ -6,11 +6,10 @@
 
 package de.chojo.krile.commands.repository.handler.add;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.util.Completion;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
@@ -26,7 +25,7 @@ import java.util.Optional;
 
 public class ByNames extends BaseAdd {
 
-    public ByNames(RepositoryData repositoryData, GuildData guilds, Configuration<ConfigFile> configuration) {
+    public ByNames(RepositoryData repositoryData, GuildData guilds, Configuration configuration) {
         super(repositoryData, guilds, configuration);
     }
 
@@ -38,7 +37,7 @@ public class ByNames extends BaseAdd {
         String path = event.getOption("path", OptionMapping::getAsString);
         Identifier identifier = Identifier.of(platform, name, repo, path);
         Optional<RepositoryLocation> optLocation =
-                configuration().config().repositories().find(identifier);
+                configuration().main().repositories().find(identifier);
         if (optLocation.isEmpty()) {
             event.reply(context.localize("error.source.invalid"))
                     .setEphemeral(true)
@@ -54,7 +53,7 @@ public class ByNames extends BaseAdd {
         if (option.getName().equals("platform")) {
             List<Command.Choice> complete = Completion.complete(
                     option.getValue(),
-                    configuration().config().repositories().repositories().stream()
+                    configuration().main().repositories().repositories().stream()
                             .map(RepositoryLocation::name));
             event.replyChoices(complete).queue();
             return;

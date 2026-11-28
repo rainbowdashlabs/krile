@@ -6,11 +6,10 @@
 
 package de.chojo.krile.commands.repository.handler.update;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.dao.tagguild.GuildRepository;
 import de.chojo.krile.service.RepoUpdateService;
@@ -28,9 +27,9 @@ import java.util.Optional;
 public class Update implements SlashHandler {
     private final GuildData guilds;
     private final RepoUpdateService updateService;
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
 
-    public Update(GuildData guilds, RepoUpdateService updateService, Configuration<ConfigFile> configuration) {
+    public Update(GuildData guilds, RepoUpdateService updateService, Configuration configuration) {
         this.guilds = guilds;
         this.updateService = updateService;
         this.configuration = configuration;
@@ -47,7 +46,7 @@ public class Update implements SlashHandler {
             return;
         }
         Instant checked = repository.get().data().get().checked();
-        int minCheck = configuration.config().repositories().minCheck();
+        int minCheck = configuration.main().repositories().minCheck();
         if (checked.isAfter(Instant.now().minus(minCheck, ChronoUnit.MINUTES))) {
             event.reply(context.localize(
                             "command.repository.update.message.cooldown",

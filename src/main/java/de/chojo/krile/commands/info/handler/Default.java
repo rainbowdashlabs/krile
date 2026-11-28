@@ -8,19 +8,18 @@ package de.chojo.krile.commands.info.handler;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
 import de.chojo.jdautil.util.Colors;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,15 +40,16 @@ public class Default implements SlashHandler {
     private static final Logger log = getLogger(Default.class);
     private final HttpClient client =
             HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
-    private final ObjectMapper mapper = new ObjectMapper()
-            .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    private final JsonMapper mapper = JsonMapper.builder()
+            .changeDefaultVisibility(visibility -> visibility.withFieldVisibility(JsonAutoDetect.Visibility.ANY))
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
     private final String version;
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private String contributors;
     private Instant lastFetch = Instant.MIN;
 
-    public Default(String version, Configuration<ConfigFile> configuration) {
+    public Default(String version, Configuration configuration) {
         this.version = version;
         this.configuration = configuration;
     }
@@ -73,7 +73,7 @@ public class Default implements SlashHandler {
             try {
                 var response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 contributors = mapper.readerForListOf(Contributor.class).readValue(response.body());
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException | InterruptedException | JacksonException e) {
                 log.error("Could not read response", e);
                 contributors = Collections.emptyList();
             }
@@ -92,7 +92,7 @@ public class Default implements SlashHandler {
                 try {
                     var response = client.send(profile, HttpResponse.BodyHandlers.ofString());
                     profiles.add(mapper.readValue(response.body(), GithubProfile.class));
-                } catch (IOException | InterruptedException e) {
+                } catch (IOException | InterruptedException | JacksonException e) {
                     log.error("Could not read response", e);
                 }
             }
@@ -113,12 +113,9 @@ public class Default implements SlashHandler {
 
     private String getLinks(EventContext context) {
         var links = List.of(
-                getLink("phrases.inviteme", configuration.config().links().invite()),
-                getLink("words.support", configuration.config().links().support()),
-                // getLink("TOS", configuration.config().tos()),
-                getLink("words.website", configuration.config().links().website())
-                // getLink("FAQ", configuration.config().faq())
-                );
+                getLink("phrases.inviteme", configuration.main().links().invite()),
+                getLink("words.support", configuration.main().links().support()),
+                getLink("words.website", configuration.main().links().website()));
         return String.join(" ᠅ ", links);
     }
 

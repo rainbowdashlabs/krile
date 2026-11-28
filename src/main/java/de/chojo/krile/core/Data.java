@@ -7,8 +7,7 @@
 package de.chojo.krile.core;
 
 import com.zaxxer.hikari.HikariDataSource;
-import de.chojo.jdautil.configuration.Configuration;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.access.GuildData;
@@ -32,7 +31,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Data {
     private static final Logger log = getLogger(Data.class);
     private final Threading threading;
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private HikariDataSource dataSource;
     private GuildData guilds;
     private AuthorData authors;
@@ -40,12 +39,12 @@ public class Data {
     private RepositoryData repositoryData;
     private TagData tagData;
 
-    private Data(Threading threading, Configuration<ConfigFile> configuration) {
+    private Data(Threading threading, Configuration configuration) {
         this.threading = threading;
         this.configuration = configuration;
     }
 
-    public static Data create(Threading threading, Configuration<ConfigFile> configuration)
+    public static Data create(Threading threading, Configuration configuration)
             throws SQLException, IOException, InterruptedException {
         var data = new Data(threading, configuration);
         data.init();
@@ -101,7 +100,7 @@ public class Data {
     }
 
     private void updateDatabase() throws IOException, SQLException {
-        var schema = configuration.config().database().schema();
+        var schema = configuration.main().database().schema();
         SqlUpdater.builder(dataSource, PostgreSql.get())
                 .setReplacements(new QueryReplacement("krile", schema))
                 .setVersionTable(schema + ".krile_version")
@@ -132,7 +131,7 @@ public class Data {
 
     private HikariDataSource getConnectionPool() {
         log.info("Creating connection pool.");
-        var data = configuration.config().database();
+        var data = configuration.main().database();
         return DataSourceCreator.create(PostgreSql.get())
                 .configure(config -> config.host(data.host())
                         .port(data.port())

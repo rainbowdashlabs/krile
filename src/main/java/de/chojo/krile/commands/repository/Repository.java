@@ -6,7 +6,6 @@
 
 package de.chojo.krile.commands.repository;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.slash.Group;
 import de.chojo.jdautil.interactions.slash.Slash;
 import de.chojo.jdautil.interactions.slash.provider.SlashCommand;
@@ -15,7 +14,7 @@ import de.chojo.krile.commands.repository.handler.add.ByNames;
 import de.chojo.krile.commands.repository.handler.add.ByUrl;
 import de.chojo.krile.commands.repository.handler.remove.Remove;
 import de.chojo.krile.commands.repository.handler.update.Update;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.service.RepoUpdateService;
@@ -27,7 +26,7 @@ public class Repository extends SlashCommand {
     public Repository(
             RepositoryData repositoryData,
             GuildData guilds,
-            Configuration<ConfigFile> configuration,
+            Configuration configuration,
             RepoUpdateService updateService) {
         super(Slash.of("repository", "command.repository.description")
                 .adminCommand()

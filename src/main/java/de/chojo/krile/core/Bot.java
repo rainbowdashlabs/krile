@@ -8,7 +8,6 @@ package de.chojo.krile.core;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.dispatching.InteractionHub;
 import de.chojo.jdautil.localization.Localizer;
 import de.chojo.krile.commands.discover.Discover;
@@ -18,7 +17,7 @@ import de.chojo.krile.commands.repositories.Repositories;
 import de.chojo.krile.commands.repository.Repository;
 import de.chojo.krile.commands.tag.Tag;
 import de.chojo.krile.commands.tags.Tags;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
@@ -41,7 +40,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Bot {
     private static final Logger log = getLogger(Bot.class);
     private final Threading threading;
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private final GuildData guilds;
     private final RepositoryData repositories;
     private final TagData tags;
@@ -53,7 +52,7 @@ public class Bot {
     @Inject
     public Bot(
             Threading threading,
-            Configuration<ConfigFile> configuration,
+            Configuration configuration,
             GuildData guilds,
             RepositoryData repositories,
             TagData tags,
@@ -93,7 +92,7 @@ public class Bot {
 
     private void initShardManager() {
         shardManager = DefaultShardManagerBuilder.createDefault(
-                        configuration.config().baseSettings().token())
+                        configuration.main().baseSettings().token())
                 .enableIntents(GatewayIntent.DIRECT_MESSAGES)
                 .setEnableShutdownHook(false)
                 .setThreadFactory(Threading.createThreadFactory(threading.jdaGroup()))
@@ -113,7 +112,7 @@ public class Bot {
                             throwable);
                 })
                 .withGuildCommandMapper(cmd -> Collections.singletonList(
-                        configuration.config().baseSettings().botGuild()))
+                        configuration.main().baseSettings().botGuild()))
                 .withDefaultMenuService()
                 .withPagination(builder -> builder.previousText("").nextText(""))
                 .withDefaultModalService()

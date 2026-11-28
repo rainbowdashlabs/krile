@@ -6,10 +6,9 @@
 
 package de.chojo.krile.commands.repository.handler.add;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
@@ -22,7 +21,7 @@ import java.util.Optional;
 
 public class ByIdentifier extends BaseAdd {
 
-    public ByIdentifier(RepositoryData repositoryData, GuildData guilds, Configuration<ConfigFile> configuration) {
+    public ByIdentifier(RepositoryData repositoryData, GuildData guilds, Configuration configuration) {
         super(repositoryData, guilds, configuration);
     }
 
@@ -37,7 +36,7 @@ public class ByIdentifier extends BaseAdd {
             return;
         }
         Optional<RepositoryLocation> optLocation =
-                configuration().config().repositories().find(parsed.get());
+                configuration().main().repositories().find(parsed.get());
         if (optLocation.isEmpty()) {
             event.reply(context.localize("error.source.invalid"))
                     .setEphemeral(true)

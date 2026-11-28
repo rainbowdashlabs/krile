@@ -6,9 +6,8 @@
 
 package de.chojo.krile.data.access;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.util.CompletedCategory;
@@ -33,11 +32,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 public class RepositoryData {
     private static final Logger log = getLogger(RepositoryData.class);
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private final CategoryData categories;
     private final AuthorData authors;
 
-    public RepositoryData(Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors) {
+    public RepositoryData(Configuration configuration, CategoryData categories, AuthorData authors) {
         this.configuration = configuration;
         this.categories = categories;
         this.authors = authors;

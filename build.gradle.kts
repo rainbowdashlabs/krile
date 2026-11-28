@@ -47,6 +47,8 @@ dependencies {
         exclude(group = "org.slf4j", module = "slf4j-simple")
     }
 
+    implementation(libs.ocular)
+    implementation(libs.jackson.databind)
     implementation(libs.jackson.yaml)
     compileOnly(libs.jetbrains.annotations)
 

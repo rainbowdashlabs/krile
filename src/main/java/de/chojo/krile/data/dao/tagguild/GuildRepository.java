@@ -6,8 +6,7 @@
 
 package de.chojo.krile.data.dao.tagguild;
 
-import de.chojo.jdautil.configuration.Configuration;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.Repository;
@@ -31,7 +30,7 @@ public class GuildRepository extends Repository {
             String url,
             String identifier,
             String directory,
-            Configuration<ConfigFile> configuration,
+            Configuration configuration,
             CategoryData categories,
             AuthorData authors) {
         super(id, url, identifier, directory, configuration, categories, authors);
@@ -40,11 +39,7 @@ public class GuildRepository extends Repository {
     }
 
     public static GuildRepository build(
-            Row row,
-            TagGuild guild,
-            Configuration<ConfigFile> configuration,
-            CategoryData categories,
-            AuthorData authors)
+            Row row, TagGuild guild, Configuration configuration, CategoryData categories, AuthorData authors)
             throws SQLException {
         return new GuildRepository(
                 guild,

@@ -8,8 +8,7 @@ package de.chojo.krile;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import de.chojo.jdautil.configuration.Configuration;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.core.Bot;
 import de.chojo.krile.core.Data;
 import de.chojo.krile.core.KrileModule;
@@ -20,7 +19,7 @@ import java.sql.SQLException;
 
 public class Krile {
     public static void main(String[] args) throws SQLException, IOException, InterruptedException {
-        Configuration<ConfigFile> configuration = Configuration.create(new ConfigFile());
+        Configuration configuration = Configuration.create();
         var threading = new Threading();
         Data data = Data.create(threading, configuration);
         Injector injector = Guice.createInjector(new KrileModule(configuration, threading, data));

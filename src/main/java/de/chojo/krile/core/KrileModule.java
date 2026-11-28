@@ -9,9 +9,7 @@ package de.chojo.krile.core;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
-import de.chojo.jdautil.configuration.Configuration;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.access.GuildData;
@@ -27,11 +25,11 @@ import net.dv8tion.jda.api.sharding.ShardManager;
  * {@link Data} created.
  */
 public class KrileModule extends AbstractModule {
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private final Threading threading;
     private final Data data;
 
-    public KrileModule(Configuration<ConfigFile> configuration, Threading threading, Data data) {
+    public KrileModule(Configuration configuration, Threading threading, Data data) {
         this.configuration = configuration;
         this.threading = threading;
         this.data = data;
@@ -39,7 +37,7 @@ public class KrileModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(new TypeLiteral<Configuration<ConfigFile>>() {}).toInstance(configuration);
+        bind(Configuration.class).toInstance(configuration);
         bind(Threading.class).toInstance(threading);
         bind(Data.class).toInstance(data);
         bind(AuthorData.class).toInstance(data.authors());

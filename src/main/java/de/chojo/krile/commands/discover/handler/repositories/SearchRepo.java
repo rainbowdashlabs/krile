@@ -6,14 +6,13 @@
 
 package de.chojo.krile.commands.discover.handler.repositories;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.pagination.bag.IPageBag;
 import de.chojo.jdautil.pagination.bag.PageBuilder;
 import de.chojo.jdautil.util.Choice;
 import de.chojo.jdautil.util.Completion;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.access.RepositoryData;
@@ -31,12 +30,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class SearchRepo implements SlashHandler {
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private final RepositoryData repositoryData;
     private final CategoryData categoryData;
 
-    public SearchRepo(
-            Configuration<ConfigFile> configuration, RepositoryData repositoryData, CategoryData categoryData) {
+    public SearchRepo(Configuration configuration, RepositoryData repositoryData, CategoryData categoryData) {
         this.configuration = configuration;
         this.repositoryData = repositoryData;
         this.categoryData = categoryData;
@@ -91,8 +89,7 @@ public class SearchRepo implements SlashHandler {
         if (option.getName().equals("platform")) {
             List<Command.Choice> complete = Completion.complete(
                     option.getValue(),
-                    configuration.config().repositories().repositories().stream()
-                            .map(RepositoryLocation::name));
+                    configuration.main().repositories().repositories().stream().map(RepositoryLocation::name));
             event.replyChoices(complete).queue();
             return;
         }

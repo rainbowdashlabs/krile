@@ -6,11 +6,10 @@
 
 package de.chojo.krile.commands.repository.handler.add;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.slash.structure.handler.SlashHandler;
 import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Identifier;
@@ -29,9 +28,9 @@ public abstract class BaseAdd implements SlashHandler {
     private static final Logger log = getLogger(BaseAdd.class);
     private final RepositoryData repositoryData;
     private final GuildData guilds;
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
 
-    public BaseAdd(RepositoryData repositoryData, GuildData guilds, Configuration<ConfigFile> configuration) {
+    public BaseAdd(RepositoryData repositoryData, GuildData guilds, Configuration configuration) {
         this.repositoryData = repositoryData;
         this.guilds = guilds;
         this.configuration = configuration;
@@ -64,7 +63,7 @@ public abstract class BaseAdd implements SlashHandler {
                 .queue();
     }
 
-    public Configuration<ConfigFile> configuration() {
+    public Configuration configuration() {
         return configuration;
     }
 

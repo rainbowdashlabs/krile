@@ -8,10 +8,10 @@ package de.chojo.krile.tagimport.tag.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import de.chojo.krile.data.dao.repository.tags.tag.meta.TagType;
 import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.tag.parsing.TagFile;
+import tools.jackson.core.JacksonException;
 
 import java.util.Collections;
 import java.util.List;
@@ -80,7 +80,7 @@ public record RawTagMeta(
         if (file.meta().isPresent()) {
             try {
                 return MAPPER.readValue(file.meta().get(), RawTagMeta.class).inject(defaultId, defaultTag);
-            } catch (JsonProcessingException e) {
+            } catch (JacksonException e) {
                 throw new ParsingException("Failed to parse tag meta.%n%s".formatted(e.getMessage()), e);
             }
         }

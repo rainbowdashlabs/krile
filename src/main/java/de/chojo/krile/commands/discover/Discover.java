@@ -6,14 +6,13 @@
 
 package de.chojo.krile.commands.discover;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.slash.Slash;
 import de.chojo.jdautil.interactions.slash.provider.SlashProvider;
 import de.chojo.krile.commands.discover.handler.repositories.RandomRepo;
 import de.chojo.krile.commands.discover.handler.repositories.SearchRepo;
 import de.chojo.krile.commands.discover.handler.tags.RandomTag;
 import de.chojo.krile.commands.discover.handler.tags.SearchTag;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.access.TagData;
@@ -26,14 +25,11 @@ import static de.chojo.jdautil.interactions.slash.SubCommand.sub;
 public class Discover implements SlashProvider<Slash> {
     private final RepositoryData repositoryData;
     private final TagData tagData;
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private final CategoryData categoryData;
 
     public Discover(
-            RepositoryData repositoryData,
-            TagData tagData,
-            Configuration<ConfigFile> configuration,
-            CategoryData categoryData) {
+            RepositoryData repositoryData, TagData tagData, Configuration configuration, CategoryData categoryData) {
         this.repositoryData = repositoryData;
         this.tagData = tagData;
         this.configuration = configuration;

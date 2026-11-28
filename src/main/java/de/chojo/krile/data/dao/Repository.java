@@ -6,10 +6,9 @@
 
 package de.chojo.krile.data.dao;
 
-import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
 import de.chojo.jdautil.wrapper.EventContext;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
@@ -35,7 +34,7 @@ public class Repository {
     private final String url;
     private final Identifier identifier;
     private final String directory;
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private final Data data;
     private final Meta meta;
     private final Tags tags;
@@ -45,7 +44,7 @@ public class Repository {
             String url,
             String identifier,
             String directory,
-            Configuration<ConfigFile> configuration,
+            Configuration configuration,
             CategoryData categories,
             AuthorData authors) {
         this.id = id;
@@ -58,8 +57,7 @@ public class Repository {
         tags = new Tags(this, categories, authors);
     }
 
-    public static Repository build(
-            Row row, Configuration<ConfigFile> configuration, CategoryData categories, AuthorData authors)
+    public static Repository build(Row row, Configuration configuration, CategoryData categories, AuthorData authors)
             throws SQLException {
         return new Repository(
                 row.getInt("id"),
@@ -107,7 +105,7 @@ public class Repository {
         if (directory != null && !directory.isBlank()) path = directory + "/" + path;
         if (identifier.path() != null) path = identifier.path() + "/" + path;
         RepositoryLocation repositoryLocation =
-                configuration.config().repositories().find(identifier).get();
+                configuration.main().repositories().find(identifier).get();
         return repositoryLocation.dirPath(
                 identifier.user(), identifier.repo(), data.get().branch(), path);
     }
@@ -123,7 +121,7 @@ public class Repository {
         if (directory != null && !directory.isBlank()) path = directory + "/" + path;
         if (identifier.path() != null) path = identifier.path() + "/" + path;
         RepositoryLocation repositoryLocation =
-                configuration.config().repositories().find(identifier).get();
+                configuration.main().repositories().find(identifier).get();
         return repositoryLocation.filePath(
                 identifier.user(), identifier.repo(), data.get().branch(), path);
     }
