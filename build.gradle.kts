@@ -35,17 +35,16 @@ spotless {
     }
 }
 
+configurations.all {
+    exclude(group = "org.slf4j", module = "slf4j-simple")
+    exclude(group = "club.minnced", module = "opus-java")
+}
+
 dependencies {
     implementation(libs.jgit)
-    implementation(libs.cjda.util) {
-        exclude(group = "club.minnced", module = "opus-java")
-    }
-    implementation(libs.jda) {
-        exclude(group = "club.minnced", module = "opus-java")
-    }
-    implementation(libs.jda.commands) {
-        exclude(group = "org.slf4j", module = "slf4j-simple")
-    }
+    implementation(libs.aether.common)
+    implementation(libs.jda)
+    implementation(libs.jda.commands)
 
     implementation(libs.ocular)
     implementation(libs.jackson.databind)

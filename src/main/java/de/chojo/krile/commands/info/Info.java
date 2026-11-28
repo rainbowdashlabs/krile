@@ -11,6 +11,7 @@ import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.configuration.Links;
 import de.chojo.krile.service.Contributors;
 import de.chojo.krile.util.Texts;
+import dev.chojo.aether.common.util.Colors;
 import io.github.kaktushose.jdac.annotations.interactions.Command;
 import io.github.kaktushose.jdac.annotations.interactions.CommandConfig;
 import io.github.kaktushose.jdac.annotations.interactions.Interaction;
@@ -19,7 +20,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.interactions.InteractionContextType;
 import org.slf4j.Logger;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -34,7 +34,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class Info {
     private static final Logger log = getLogger(Info.class);
     private static final String SOURCE = "[rainbowdashlabs/krile](https://github.com/rainbowdashlabs/krile)";
-    private static final Color COLOR = new Color(132, 161, 240);
     private static final String VERSION = readVersion();
     private final Configuration configuration;
     private final Contributors contributors;
@@ -55,7 +54,7 @@ public class Info {
                 .addField(texts.get("words-sourcecode"), SOURCE, true)
                 .addField(texts.get("words-version"), VERSION, true)
                 .addField("", "**" + links(texts) + "**", false)
-                .setColor(COLOR)
+                .setColor(Colors.Pastel.BLUE)
                 .build());
     }
 

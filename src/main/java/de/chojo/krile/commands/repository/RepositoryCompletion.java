@@ -10,6 +10,9 @@ import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.tagguild.GuildRepository;
+import de.chojo.krile.util.Numbers;
+import dev.chojo.aether.common.completion.Choice;
+import dev.chojo.aether.common.completion.Completion;
 import io.github.kaktushose.jdac.dispatching.events.interactions.AutoCompleteEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
@@ -43,11 +46,7 @@ public final class RepositoryCompletion {
      * @return the repository, or empty when the value is no id of a repository of the guild
      */
     public static Optional<GuildRepository> resolve(TagGuild guild, String value) {
-        try {
-            return guild.repositories().byId(Integer.parseInt(value.trim()));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
+        return Numbers.parseInt(value.trim()).flatMap(id -> guild.repositories().byId(id));
     }
 
     /**
@@ -57,13 +56,8 @@ public final class RepositoryCompletion {
      * @param configuration configuration holding the platforms
      */
     public static void completePlatform(AutoCompleteEvent event, Configuration configuration) {
-        String typed = event.getValue().toLowerCase();
-        completeStrings(
-                event,
-                configuration.main().repositories().repositories().stream()
-                        .map(RepositoryLocation::name)
-                        .filter(name -> name.toLowerCase().startsWith(typed))
-                        .toList());
+        event.replyChoices(Completion.complete(
+                event.getValue(), configuration.main().repositories().repositories(), RepositoryLocation::name));
     }
 
     /**
@@ -73,9 +67,6 @@ public final class RepositoryCompletion {
      * @param values values to offer
      */
     public static void completeStrings(AutoCompleteEvent event, List<String> values) {
-        event.replyChoices(values.stream()
-                .limit(25)
-                .map(value -> new Command.Choice(value, value))
-                .toList());
+        event.replyChoices(Choice.toStringChoice(values.stream().limit(25)));
     }
 }

@@ -6,11 +6,11 @@
 
 package de.chojo.krile.data.dao.tagguild;
 
-import de.chojo.jdautil.parsing.ValueParser;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.dao.TagGuild;
 import de.chojo.krile.data.dao.repository.tags.Tag;
+import de.chojo.krile.util.Numbers;
 import de.chojo.sadu.mapper.wrapper.Row;
 import org.intellij.lang.annotations.Language;
 
@@ -84,7 +84,7 @@ public class Tags {
      * @return An optional containing the resolved tag if it exists, or an empty optional if the tag does not exist.
      */
     public Optional<Tag> resolveTag(String tagNameOrId) {
-        Optional<Integer> id = ValueParser.parseInt(tagNameOrId);
+        Optional<Integer> id = Numbers.parseInt(tagNameOrId);
         if (id.isPresent()) {
             return getById(id.get());
         }
