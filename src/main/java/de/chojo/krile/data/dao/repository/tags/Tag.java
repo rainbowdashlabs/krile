@@ -6,9 +6,6 @@
 
 package de.chojo.krile.data.dao.repository.tags;
 
-import de.chojo.jdautil.localization.LocalizationContext;
-import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
-import de.chojo.jdautil.localization.util.Replacement;
 import de.chojo.krile.data.access.AuthorData;
 import de.chojo.krile.data.access.CategoryData;
 import de.chojo.krile.data.base.BaseTag;
@@ -19,6 +16,7 @@ import de.chojo.krile.data.dao.Repository;
 import de.chojo.krile.data.dao.repository.tags.tag.Meta;
 import de.chojo.krile.data.dao.repository.tags.tag.meta.FileMeta;
 import de.chojo.krile.tagimport.tag.RawTag;
+import de.chojo.krile.util.Texts;
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.postgresql.types.PostgreSqlTypes;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -34,6 +32,7 @@ import java.util.List;
 
 import static de.chojo.sadu.queries.api.call.Call.call;
 import static de.chojo.sadu.queries.api.query.Query.query;
+import static io.github.kaktushose.jdac.message.placeholder.Entry.entry;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public final class Tag extends BaseTag<Meta> {
@@ -140,47 +139,53 @@ public final class Tag extends BaseTag<Meta> {
     /**
      * Generates a MessageEmbed containing information about the tag.
      *
-     * @param context The LocalizationContext used for localization.
+     * @param texts texts in the language of the reader
      * @return A MessageEmbed object containing the tag information.
      */
-    public MessageEmbed infoEmbed(LocalizationContext context) {
+    public MessageEmbed infoEmbed(Texts texts) {
         Identifier identifier = repository.identifier();
-        EmbedBuilder builder = new LocalizedEmbedBuilder(context)
+        EmbedBuilder builder = new EmbedBuilder()
                 .setAuthor(
-                        "embeds.tag.author",
-                        link(),
-                        Replacement.create("id", tagId),
-                        Replacement.create("identifier", identifier))
+                        texts.get("embeds-tag-author", entry("id", tagId), entry("identifier", identifier.toString())),
+                        link())
                 .setTitle(tag);
         List<String> aliases = meta.aliases().all();
-        if (!aliases.isEmpty()) builder.addField("words.aliases", String.join(", ", aliases), true);
+        if (!aliases.isEmpty()) builder.addField(texts.get("words-aliases"), String.join(", ", aliases), true);
         List<String> categories =
                 meta.categories().all().stream().map(Category::name).toList();
-        if (!categories.isEmpty()) builder.addField("words.categories", String.join(", ", categories), true);
+        if (!categories.isEmpty()) builder.addField(texts.get("words-categories"), String.join(", ", categories), true);
         List<String> authors =
                 meta.tagAuthors().all().stream().map(Author::name).distinct().toList();
-        if (!authors.isEmpty()) builder.addField("words.authors", String.join(", ", authors), true);
+        if (!authors.isEmpty()) builder.addField(texts.get("words-authors"), String.join(", ", authors), true);
 
         FileMeta fileMeta = meta.fileMeta();
         var created = fileMeta.created();
         var modified = fileMeta.modified();
         builder.addField(
-                "words.created",
-                ("%s $words.by$ %s")
+                texts.get("words-created"),
+                "%s %s %s"
                         .formatted(
                                 TimeFormat.RELATIVE.format(created.when()),
+                                texts.get("words-by"),
                                 created.who().name()),
                 true);
         builder.addField(
-                "words.modified",
-                "%s $words.by$ %s"
+                texts.get("words-modified"),
+                "%s %s %s"
                         .formatted(
                                 TimeFormat.RELATIVE.format(modified.when()),
+                                texts.get("words-by"),
                                 modified.who().name()),
                 true);
         builder.addField(
                 "",
-                "$words.links$: [$words.file$](%s) | [$words.repository$](%s)".formatted(link(), repository.link()),
+                "%s: [%s](%s) | [%s](%s)"
+                        .formatted(
+                                texts.get("words-links"),
+                                texts.get("words-file"),
+                                link(),
+                                texts.get("words-repository"),
+                                repository.link()),
                 false);
         return builder.build();
     }

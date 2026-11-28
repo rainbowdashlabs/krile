@@ -8,6 +8,7 @@ package de.chojo.krile;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Stage;
 import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.core.Bot;
 import de.chojo.krile.core.Data;
@@ -22,7 +23,7 @@ public class Krile {
         Configuration configuration = Configuration.create();
         var threading = new Threading();
         Data data = Data.create(threading, configuration);
-        Injector injector = Guice.createInjector(new KrileModule(configuration, threading, data));
+        Injector injector = Guice.createInjector(Stage.PRODUCTION, new KrileModule(configuration, threading, data));
         injector.getInstance(Bot.class).start();
     }
 }

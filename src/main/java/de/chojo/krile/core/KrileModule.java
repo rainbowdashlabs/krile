@@ -16,7 +16,11 @@ import de.chojo.krile.data.access.GuildData;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.access.TagData;
 import de.chojo.krile.service.RepoUpdateService;
+import dev.goldmensch.fluava.Bundle;
+import dev.goldmensch.fluava.Fluava;
 import net.dv8tion.jda.api.sharding.ShardManager;
+
+import java.util.Locale;
 
 /**
  * Binds the configuration, the threading setup, the data access classes and the services of Krile.
@@ -47,10 +51,40 @@ public class KrileModule extends AbstractModule {
         bind(TagData.class).toInstance(data.tags());
     }
 
+    /**
+     * Provides the repository update service. The injector is created in the production stage, so the service and
+     * its schedule start together with the injector.
+     *
+     * @param repositoryData repository access
+     * @return the update service
+     */
     @Provides
     @Singleton
     public RepoUpdateService repoUpdateService(RepositoryData repositoryData) {
         return RepoUpdateService.create(threading, configuration, repositoryData);
+    }
+
+    /**
+     * Provides the Fluent texts in {@code locale/<bundle>/<language>.ftl}, falling back to English.
+     *
+     * @return the Fluava instance
+     */
+    @Provides
+    @Singleton
+    public Fluava fluava() {
+        return Fluava.builder().bundleRoot("locale").fallback(Locale.ENGLISH).build();
+    }
+
+    /**
+     * Provides the default bundle, for texts needed outside JDA-Commands events.
+     *
+     * @param fluava the Fluava instance
+     * @return the default bundle
+     */
+    @Provides
+    @Singleton
+    public Bundle texts(Fluava fluava) {
+        return fluava.loadBundle("default");
     }
 
     /**

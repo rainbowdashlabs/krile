@@ -7,64 +7,61 @@
 package de.chojo.krile.core;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Singleton;
-import de.chojo.jdautil.interactions.dispatching.InteractionHub;
-import de.chojo.jdautil.localization.Localizer;
-import de.chojo.krile.commands.discover.Discover;
-import de.chojo.krile.commands.info.Info;
-import de.chojo.krile.commands.preview.Preview;
-import de.chojo.krile.commands.repositories.Repositories;
-import de.chojo.krile.commands.repository.Repository;
-import de.chojo.krile.commands.tag.Tag;
-import de.chojo.krile.commands.tags.Tags;
 import de.chojo.krile.configuration.Configuration;
-import de.chojo.krile.data.access.CategoryData;
-import de.chojo.krile.data.access.GuildData;
-import de.chojo.krile.data.access.RepositoryData;
+import de.chojo.krile.configuration.elements.BaseSettings;
 import de.chojo.krile.data.access.TagData;
-import de.chojo.krile.service.RepoUpdateService;
 import de.chojo.krile.service.TagInteractionListener;
-import de.chojo.logutil.marker.LogNotify;
-import net.dv8tion.jda.api.interactions.DiscordLocale;
+import dev.goldmensch.fluava.Bundle;
+import dev.goldmensch.fluava.Fluava;
+import io.github.kaktushose.jdac.JDACBuilder;
+import io.github.kaktushose.jdac.JDACommands;
+import io.github.kaktushose.jdac.annotations.interactions.CommandScope;
+import io.github.kaktushose.jdac.definitions.interactions.command.CommandDefinition;
+import io.github.kaktushose.jdac.embeds.error.DefaultErrorMessageFactory;
+import io.github.kaktushose.jdac.guice.GuiceExtensionData;
+import io.github.kaktushose.jdac.message.i18n.FluavaLocalizer;
+import io.github.kaktushose.jdac.property.JDACProperty;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.InteractionContextType;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import org.slf4j.Logger;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.Set;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
+/**
+ * Connects Krile to Discord and registers its interactions with JDA-Commands.
+ * <p>
+ * Commands are registered globally and offered in guilds. Commands that also work in direct messages set this in
+ * their own {@code @CommandConfig}. With {@link BaseSettings#testMode()} commands are registered in the bot guild
+ * only, except those with their own {@code @CommandConfig}, which replaces the global one.
+ */
 @Singleton
 public class Bot {
-    private static final Logger log = getLogger(Bot.class);
     private final Threading threading;
     private final Configuration configuration;
-    private final GuildData guilds;
-    private final RepositoryData repositories;
     private final TagData tags;
-    private final CategoryData categories;
-    private final RepoUpdateService repoUpdateService;
+    private final Fluava fluava;
+    private final Bundle texts;
+    private final Injector injector;
     private ShardManager shardManager;
-    private Localizer localizer;
 
     @Inject
     public Bot(
             Threading threading,
             Configuration configuration,
-            GuildData guilds,
-            RepositoryData repositories,
             TagData tags,
-            CategoryData categories,
-            RepoUpdateService repoUpdateService) {
+            Fluava fluava,
+            Bundle texts,
+            Injector injector) {
         this.threading = threading;
         this.configuration = configuration;
-        this.guilds = guilds;
-        this.repositories = repositories;
         this.tags = tags;
-        this.categories = categories;
-        this.repoUpdateService = repoUpdateService;
+        this.fluava = fluava;
+        this.texts = texts;
+        this.injector = injector;
     }
 
     public ShardManager shardManager() {
@@ -72,22 +69,16 @@ public class Bot {
     }
 
     /**
-     * Connects to Discord and registers the interactions.
+     * Connects to Discord, waits until every shard is ready and registers the interactions.
+     *
+     * @throws InterruptedException when interrupted while waiting for the shards
      */
-    public void start() {
-        initServices();
+    public void start() throws InterruptedException {
         initShardManager();
+        for (JDA shard : shardManager.getShards()) {
+            shard.awaitReady();
+        }
         initInteractions();
-    }
-
-    private void initServices() {
-        localizer = Localizer.builder(DiscordLocale.ENGLISH_US)
-                .addLanguage(DiscordLocale.GERMAN)
-                // TODO: replace with database access
-                // Or just use guild locale
-                .withLanguageProvider(guild -> Optional.empty())
-                .withGuildLocaleCodeProvider((guild, key) -> Optional.empty())
-                .build();
     }
 
     private void initShardManager() {
@@ -97,34 +88,27 @@ public class Bot {
                 .setEnableShutdownHook(false)
                 .setThreadFactory(Threading.createThreadFactory(threading.jdaGroup()))
                 .setEventPool(threading.jdaWorker())
-                .addEventListeners(new TagInteractionListener(localizer, tags))
+                .addEventListeners(new TagInteractionListener(texts, tags))
                 .build();
     }
 
     private void initInteractions() {
-        InteractionHub.builder(shardManager)
-                .withCommandErrorHandler((context, throwable) -> {
-                    log.error(
-                            LogNotify.NOTIFY_ADMIN,
-                            "Command execution of {} failed\n{}",
-                            context.interaction().meta().name(),
-                            context.args(),
-                            throwable);
-                })
-                .withGuildCommandMapper(cmd -> Collections.singletonList(
-                        configuration.main().baseSettings().botGuild()))
-                .withDefaultMenuService()
-                .withPagination(builder -> builder.previousText("").nextText(""))
-                .withDefaultModalService()
-                .withLocalizer(localizer)
-                .withCommands(
-                        new Repository(repositories, guilds, configuration, repoUpdateService),
-                        new Tag(guilds),
-                        Info.create(configuration),
-                        new Tags(guilds),
-                        new Repositories(guilds),
-                        new Discover(repositories, tags, configuration, categories),
-                        new Preview())
-                .build();
+        BaseSettings settings = configuration.main().baseSettings();
+        JDACBuilder builder = JDACommands.builder(shardManager)
+                .packages("de.chojo.krile")
+                .extensionData(new GuiceExtensionData(injector))
+                .localizer(FluavaLocalizer.create(fluava))
+                .globalCommandConfig(CommandDefinition.CommandConfig.of(config -> {
+                    config.context(InteractionContextType.GUILD);
+                    if (settings.testMode()) config.scope(CommandScope.GUILD);
+                }))
+                .setProperty(
+                        JDACProperty.ERROR_MESSAGE_FACTORY,
+                        introspection -> new LoggingErrorMessageFactory(
+                                new DefaultErrorMessageFactory(introspection.get(JDACProperty.MESSAGE_RESOLVER))));
+        if (settings.testMode()) {
+            builder.guildScopeProvider(command -> Set.of(settings.botGuild()));
+        }
+        builder.start();
     }
 }

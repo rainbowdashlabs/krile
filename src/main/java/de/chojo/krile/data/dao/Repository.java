@@ -6,8 +6,6 @@
 
 package de.chojo.krile.data.dao;
 
-import de.chojo.jdautil.localization.util.LocalizedEmbedBuilder;
-import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.access.AuthorData;
@@ -19,6 +17,7 @@ import de.chojo.krile.data.dao.repository.Tags;
 import de.chojo.krile.tagimport.exception.ImportException;
 import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
+import de.chojo.krile.util.Texts;
 import de.chojo.sadu.mapper.wrapper.Row;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -155,26 +154,27 @@ public class Repository {
     /**
      * Generates an embed message with information about a repository.
      *
-     * @param context the event context
+     * @param texts texts in the language of the reader
      * @return the generated embed message
      */
-    public MessageEmbed infoEmbed(EventContext context) {
+    public MessageEmbed infoEmbed(Texts texts) {
         List<String> categories =
                 meta.categories().all().stream().map(Category::name).toList();
         RepositoryMeta meta = this.meta.get();
         Data.RepositoryData data = this.data.get();
-        EmbedBuilder builder = new LocalizedEmbedBuilder(context.guildLocalizer())
+        EmbedBuilder builder = new EmbedBuilder()
                 .setAuthor(identifier.toString())
                 .setTitle(requireNonNullElse(meta.name(), identifier.name()), link());
         if (meta.description() != null) builder.setDescription(meta.description());
-        if (meta.language() != null) builder.addField("words.language", meta.language(), true);
-        builder.addField("words.public", (meta.visible() ? "words.yes" : "words.no"), true);
-        if (!categories.isEmpty()) builder.addField("words.categories", String.join(", ", categories), true);
-        builder.addField("words.tags", String.valueOf(tags.count()), true);
+        if (meta.language() != null) builder.addField(texts.get("words-language"), meta.language(), true);
+        builder.addField(texts.get("words-public"), texts.get(meta.visible() ? "words-yes" : "words-no"), true);
+        if (!categories.isEmpty()) builder.addField(texts.get("words-categories"), String.join(", ", categories), true);
+        builder.addField(texts.get("words-tags"), String.valueOf(tags.count()), true);
         builder.addBlankField(false);
-        builder.addField("words.status", "%s / %s".formatted(data.commit().substring(0, 8), data.branch()), true);
-        builder.addField("embeds.repository.last.checked", TimeFormat.RELATIVE.format(data.checked()), true);
-        builder.addField("embeds.repository.last.update", TimeFormat.RELATIVE.format(data.updated()), true);
+        builder.addField(
+                texts.get("words-status"), "%s / %s".formatted(data.commit().substring(0, 8), data.branch()), true);
+        builder.addField(texts.get("embeds-repository-last-checked"), TimeFormat.RELATIVE.format(data.checked()), true);
+        builder.addField(texts.get("embeds-repository-last-update"), TimeFormat.RELATIVE.format(data.updated()), true);
         // TODO add rankings and metrics c:
         return builder.build();
     }

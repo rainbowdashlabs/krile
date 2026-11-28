@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -26,14 +27,16 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Checks the Fluent files of the default bundle: both parse, define the same keys, every message has text, and every
- * translation uses the same placeholders as the English message.
+ * Checks the Fluent files of the default bundle: both parse, define the same keys, every message has text, every
+ * translation uses the same placeholders as the English message, and every key used in the code exists.
  */
 class FluentLocalizationTest {
     private static final Path BUNDLE = Path.of("src", "main", "resources", "locale", "default");
     private static final Pattern KEY = Pattern.compile("^([a-zA-Z][a-zA-Z0-9_-]*) *=", Pattern.MULTILINE);
+    private static final Pattern CODE_KEY = Pattern.compile("\"((?:command|error|embeds|words|phrases)-[a-z0-9-]+)\"");
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{ *\\$([a-zA-Z0-9_-]+) *}");
 
     @Test
@@ -78,6 +81,24 @@ class FluentLocalizationTest {
             assertFalse(bundle.message(Locale.forLanguageTag("en-US"), key).notFound(), "Missing " + key + " in en-US");
             assertFalse(bundle.message(Locale.GERMAN, key).notFound(), "Missing " + key + " in de");
         }
+    }
+
+    @Test
+    void everyKeyInCodeExists() throws IOException {
+        Set<String> keys = keys(read("en"));
+        List<Path> sources;
+        try (var files = Files.walk(Path.of("src", "main", "java"))) {
+            sources = files.filter(file -> file.toString().endsWith(".java")).toList();
+        }
+        int found = 0;
+        for (Path source : sources) {
+            Matcher matcher = CODE_KEY.matcher(Files.readString(source));
+            while (matcher.find()) {
+                found++;
+                assertTrue(keys.contains(matcher.group(1)), "Unknown key " + matcher.group(1) + " in " + source);
+            }
+        }
+        assertTrue(found > 0, "No keys found in the code");
     }
 
     private static String read(String language) throws IOException {

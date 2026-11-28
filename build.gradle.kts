@@ -30,7 +30,7 @@ spotless {
     }
 
     format("locales") {
-        target("src/main/resources/locale*.properties", "src/main/resources/locale/**/*.ftl")
+        target("src/main/resources/locale/**/*.ftl")
         encoding("UTF-8")
     }
 }

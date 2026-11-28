@@ -6,7 +6,6 @@
 
 package de.chojo.krile.data.access;
 
-import de.chojo.jdautil.wrapper.EventContext;
 import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.data.dao.Repository;
@@ -17,7 +16,6 @@ import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
 import de.chojo.krile.tagimport.repo.RepoConfig;
 import de.chojo.sadu.mapper.wrapper.Row;
-import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import org.intellij.lang.annotations.Language;
 import org.slf4j.Logger;
 
@@ -25,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static de.chojo.sadu.queries.api.call.Call.call;
 import static de.chojo.sadu.queries.api.query.Query.query;
@@ -105,31 +104,22 @@ public class RepositoryData {
      * Retrieves an existing repository by its identifier or creates a new one if it doesn't exist.
      *
      * @param identifier The identifier of the repository.
-     * @param context    The event context.
-     * @param callback   The deferrable callback for handling the process.
+     * @param progress   Receives the key of a progress text whenever the import reaches a new step.
      * @return An Optional containing the retrieved or created repository.
      * @throws ImportException  If an error occurs during the import process.
      * @throws ParsingException If an error occurs during the parsing process.
      */
-    public Optional<Repository> getOrCreateByIdentifier(
-            Identifier identifier, EventContext context, IDeferrableCallback callback)
+    public Optional<Repository> getOrCreateByIdentifier(Identifier identifier, Consumer<String> progress)
             throws ImportException, ParsingException {
         Optional<Repository> repository = byIdentifier(identifier);
         if (repository.isPresent()) return repository;
         log.info("Starting integration process for {}", identifier);
-        callback.getHook()
-                .editOriginal(context.guildLocale("command.add.message.unknown"))
-                .queue();
+        progress.accept("command-add-message-unknown");
         RawRepository rawRepository = RawRepository.remote(configuration, identifier);
         log.info("Cloned repository");
-        callback.getHook()
-                .editOriginal(context.guildLocale("command.add.message.parsing"))
-                .queue();
+        progress.accept("command-add-message-parsing");
         log.info("Creating database entry");
         Optional<Repository> repo = create(rawRepository);
-        callback.getHook()
-                .editOriginal(context.guildLocale("command.add.message.parsing"))
-                .queue();
         log.info("Inserting data");
         repo.get().update(rawRepository);
         log.info("Integration done.");
