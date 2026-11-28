@@ -4,6 +4,8 @@ spotless = "8.12.0"
 shadow = "9.6.1"
 
 cjda-util = "2.15.0+jda-6.3.0"
+jda = "6.7.0"
+jda-commands = "5.1.1"
 jgit = "7.8.1.202611041320-r"
 jackson = "2.23.0"
 postgresql = "42.7.15"
@@ -17,6 +19,8 @@ junit = "6.1.3"
 
 [libraries]
 cjda-util = { module = "de.chojo:cjda-util", version.ref = "cjda-util" }
+jda = { module = "net.dv8tion:JDA", version.ref = "jda" }
+jda-commands = { module = "io.github.kaktushose:jda-commands", version.ref = "jda-commands" }
 jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
 jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains-annotations" }

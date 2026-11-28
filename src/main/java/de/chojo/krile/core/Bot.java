@@ -6,6 +6,8 @@
 
 package de.chojo.krile.core;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import de.chojo.jdautil.configuration.Configuration;
 import de.chojo.jdautil.interactions.dispatching.InteractionHub;
 import de.chojo.jdautil.localization.Localizer;
@@ -17,6 +19,10 @@ import de.chojo.krile.commands.repository.Repository;
 import de.chojo.krile.commands.tag.Tag;
 import de.chojo.krile.commands.tags.Tags;
 import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.data.access.CategoryData;
+import de.chojo.krile.data.access.GuildData;
+import de.chojo.krile.data.access.RepositoryData;
+import de.chojo.krile.data.access.TagData;
 import de.chojo.krile.service.RepoUpdateService;
 import de.chojo.krile.service.TagInteractionListener;
 import de.chojo.logutil.marker.LogNotify;
@@ -31,32 +37,45 @@ import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+@Singleton
 public class Bot {
     private static final Logger log = getLogger(Bot.class);
-    private final Data data;
     private final Threading threading;
     private final Configuration<ConfigFile> configuration;
+    private final GuildData guilds;
+    private final RepositoryData repositories;
+    private final TagData tags;
+    private final CategoryData categories;
+    private final RepoUpdateService repoUpdateService;
     private ShardManager shardManager;
-    private RepoUpdateService repoUpdateService;
     private Localizer localizer;
 
-    private Bot(Data data, Threading threading, Configuration<ConfigFile> configuration) {
-        this.data = data;
+    @Inject
+    public Bot(
+            Threading threading,
+            Configuration<ConfigFile> configuration,
+            GuildData guilds,
+            RepositoryData repositories,
+            TagData tags,
+            CategoryData categories,
+            RepoUpdateService repoUpdateService) {
         this.threading = threading;
         this.configuration = configuration;
-    }
-
-    public static Bot create(Data data, Threading threading, Configuration<ConfigFile> configuration) {
-        Bot bot = new Bot(data, threading, configuration);
-        bot.init();
-        return bot;
+        this.guilds = guilds;
+        this.repositories = repositories;
+        this.tags = tags;
+        this.categories = categories;
+        this.repoUpdateService = repoUpdateService;
     }
 
     public ShardManager shardManager() {
         return shardManager;
     }
 
-    private void init() {
+    /**
+     * Connects to Discord and registers the interactions.
+     */
+    public void start() {
         initServices();
         initShardManager();
         initInteractions();
@@ -70,7 +89,6 @@ public class Bot {
                 .withLanguageProvider(guild -> Optional.empty())
                 .withGuildLocaleCodeProvider((guild, key) -> Optional.empty())
                 .build();
-        repoUpdateService = RepoUpdateService.create(threading, configuration, data.repositories());
     }
 
     private void initShardManager() {
@@ -80,7 +98,7 @@ public class Bot {
                 .setEnableShutdownHook(false)
                 .setThreadFactory(Threading.createThreadFactory(threading.jdaGroup()))
                 .setEventPool(threading.jdaWorker())
-                .addEventListeners(new TagInteractionListener(localizer, data.tags()))
+                .addEventListeners(new TagInteractionListener(localizer, tags))
                 .build();
     }
 
@@ -101,12 +119,12 @@ public class Bot {
                 .withDefaultModalService()
                 .withLocalizer(localizer)
                 .withCommands(
-                        new Repository(data.repositories(), data.guilds(), configuration, repoUpdateService),
-                        new Tag(data.guilds()),
+                        new Repository(repositories, guilds, configuration, repoUpdateService),
+                        new Tag(guilds),
                         Info.create(configuration),
-                        new Tags(data.guilds()),
-                        new Repositories(data.guilds()),
-                        new Discover(data.repositories(), data.tags(), configuration, data.categories()),
+                        new Tags(guilds),
+                        new Repositories(guilds),
+                        new Discover(repositories, tags, configuration, categories),
                         new Preview())
                 .build();
     }

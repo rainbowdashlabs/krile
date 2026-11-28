@@ -40,6 +40,12 @@ dependencies {
     implementation(libs.cjda.util) {
         exclude(group = "club.minnced", module = "opus-java")
     }
+    implementation(libs.jda) {
+        exclude(group = "club.minnced", module = "opus-java")
+    }
+    implementation(libs.jda.commands) {
+        exclude(group = "org.slf4j", module = "slf4j-simple")
+    }
 
     implementation(libs.jackson.yaml)
     compileOnly(libs.jetbrains.annotations)
