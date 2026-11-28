@@ -6,12 +6,7 @@
 
 package de.chojo.krile.tagimport.repo;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import de.chojo.jdautil.configuration.Configuration;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.configuration.elements.RepositoryLocation;
 import de.chojo.krile.data.dao.Identifier;
 import de.chojo.krile.tagimport.exception.ImportException;
@@ -22,6 +17,11 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -82,7 +82,7 @@ public class RawRepository {
      * @throws ImportException if there is an error importing the remote repository
      * @throws ParsingException if there is an error parsing the remote repository
      */
-    public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier)
+    public static RemoteRepository remote(Configuration configuration, Identifier identifier)
             throws ImportException, ParsingException {
         return remote(configuration, identifier, false);
     }
@@ -97,10 +97,10 @@ public class RawRepository {
      * @throws ImportException if there is an error importing the remote repository
      * @throws ParsingException if there is an error parsing the remote repository
      */
-    public static RemoteRepository remote(Configuration<ConfigFile> configuration, Identifier identifier, boolean flat)
+    public static RemoteRepository remote(Configuration configuration, Identifier identifier, boolean flat)
             throws ImportException, ParsingException {
         RepositoryLocation location =
-                configuration.config().repositories().find(identifier).get();
+                configuration.main().repositories().find(identifier).get();
         String url = location.url(identifier);
         Path git = null;
         try {
@@ -146,7 +146,7 @@ public class RawRepository {
         Path path = findConfigPath();
         try {
             configuration = MAPPER.readValue(path.toFile(), RepoConfig.class);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             log.error("Could not parse config file", e);
             throw new ParsingException("Could not parse configuration file.\n" + e.getMessage(), e);
         }

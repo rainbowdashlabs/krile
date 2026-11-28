@@ -6,8 +6,8 @@
 
 package de.chojo.krile.configuration.elements;
 
-import de.chojo.jdautil.container.Pair;
 import de.chojo.krile.data.dao.Identifier;
+import dev.chojo.aether.common.container.Pair;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

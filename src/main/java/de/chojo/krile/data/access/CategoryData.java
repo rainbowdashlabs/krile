@@ -8,8 +8,8 @@ package de.chojo.krile.data.access;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import de.chojo.jdautil.parsing.ValueParser;
 import de.chojo.krile.data.dao.Category;
+import de.chojo.krile.util.Numbers;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +64,7 @@ public class CategoryData {
      * @return an Optional object which may contain the resolved Category, or empty if the resolution fails
      */
     public Optional<Category> resolve(String idOrName) {
-        Optional<Integer> id = ValueParser.parseInt(idOrName);
+        Optional<Integer> id = Numbers.parseInt(idOrName);
         if (id.isPresent()) {
             return get(id.get());
         }

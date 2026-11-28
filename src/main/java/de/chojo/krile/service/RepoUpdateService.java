@@ -6,8 +6,7 @@
 
 package de.chojo.krile.service;
 
-import de.chojo.jdautil.configuration.Configuration;
-import de.chojo.krile.configuration.ConfigFile;
+import de.chojo.krile.configuration.Configuration;
 import de.chojo.krile.core.Threading;
 import de.chojo.krile.data.access.RepositoryData;
 import de.chojo.krile.data.dao.Repository;
@@ -35,12 +34,12 @@ import static org.slf4j.LoggerFactory.getLogger;
  */
 public class RepoUpdateService implements Runnable {
     private static final Logger log = getLogger(RepoUpdateService.class);
-    private final Configuration<ConfigFile> configuration;
+    private final Configuration configuration;
     private final RepositoryData repositoryData;
     private final Queue<String> priorityQueue = new ArrayDeque<>();
     private final Queue<String> repositoryQueue = new ArrayDeque<>();
 
-    RepoUpdateService(Configuration<ConfigFile> configuration, RepositoryData repositoryData) {
+    RepoUpdateService(Configuration configuration, RepositoryData repositoryData) {
         this.configuration = configuration;
         this.repositoryData = repositoryData;
     }
@@ -54,7 +53,7 @@ public class RepoUpdateService implements Runnable {
      * @return a new instance of RepoUpdateService
      */
     public static RepoUpdateService create(
-            Threading threading, Configuration<ConfigFile> configuration, RepositoryData repositoryData) {
+            Threading threading, Configuration configuration, RepositoryData repositoryData) {
         log.info("Starting repository update service");
         RepoUpdateService repoUpdateService = new RepoUpdateService(configuration, repositoryData);
         threading.botWorker().scheduleAtFixedRate(repoUpdateService, 30, 30, TimeUnit.SECONDS);
@@ -133,8 +132,8 @@ public class RepoUpdateService implements Runnable {
      * The method adds the least updated repositories to the repository queue for further processing.
      */
     void schedule() {
-        repositoryQueue.addAll(repositoryData.leastUpdated(
-                configuration.config().repositories().check(), 10));
+        repositoryQueue.addAll(
+                repositoryData.leastUpdated(configuration.main().repositories().check(), 10));
     }
 
     /**

@@ -6,10 +6,6 @@
 
 package de.chojo.krile.tagimport.tag.parsing;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import de.chojo.krile.tagimport.exception.ImportException;
 import de.chojo.krile.tagimport.exception.ParsingException;
 import de.chojo.krile.tagimport.repo.RawRepository;
@@ -24,6 +20,10 @@ import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;

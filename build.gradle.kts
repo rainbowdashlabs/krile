@@ -30,17 +30,24 @@ spotless {
     }
 
     format("locales") {
-        target("src/main/resources/locale*.properties")
+        target("src/main/resources/locale/**/*.ftl")
         encoding("UTF-8")
     }
 }
 
+configurations.all {
+    exclude(group = "org.slf4j", module = "slf4j-simple")
+    exclude(group = "club.minnced", module = "opus-java")
+}
+
 dependencies {
     implementation(libs.jgit)
-    implementation(libs.cjda.util) {
-        exclude(group = "club.minnced", module = "opus-java")
-    }
+    implementation(libs.aether.common)
+    implementation(libs.jda)
+    implementation(libs.jda.commands)
 
+    implementation(libs.ocular)
+    implementation(libs.jackson.databind)
     implementation(libs.jackson.yaml)
     compileOnly(libs.jetbrains.annotations)
 
