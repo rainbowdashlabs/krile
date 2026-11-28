@@ -68,6 +68,7 @@ public class Bot {
                 // TODO: replace with database access
                 // Or just use guild locale
                 .withLanguageProvider(guild -> Optional.empty())
+                .withGuildLocaleCodeProvider((guild, key) -> Optional.empty())
                 .build();
         repoUpdateService = RepoUpdateService.create(threading, configuration, data.repositories());
     }
